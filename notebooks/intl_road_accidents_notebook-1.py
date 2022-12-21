@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.4
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -375,11 +375,15 @@ departments_2019_df.rename(columns={'department':'n_accidents'}, inplace=True)
 departments_2019_df['n_accidents_per_10k'] = departments_2019_df.apply(lambda row: row['n_accidents']*10_000/row['PTOT'] ,axis=1)
 departments_2019_df.dropna(axis=0,subset='n_accidents_per_10k', inplace=True)
 
-# -
 
+# +
 #departments_2019_df['n_accidents_per_10k'].plot(kind='bar')
 departments_2019_df.sort_values(by='n_accidents_per_10k').tail(10).plot.barh(x='DEP',y='n_accidents_per_10k',    
     figsize=(5,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
+
+departments_2019_df.sort_values(by='n_accidents_per_10k').head(10).plot.barh(x='DEP',y='n_accidents_per_10k',    
+    figsize=(5,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
+# -
 
 plt.plot(departments_2019_df['PTOT'], departments_2019_df['n_accidents'], 'x');
 plt.title('Accidents in a Department in Function of its Population 2009');
