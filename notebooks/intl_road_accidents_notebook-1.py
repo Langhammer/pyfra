@@ -426,19 +426,31 @@ sns.countplot( y = places.Rd_Cat);
 plt.title('Road Categories with most Accidents');
 plt.yticks(ticks=list(range(0,9)),labels=['0=Nans','1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = Urban Metropolis Roads' , '9 = other']);
 
-# ### Conclusion Road Categories with most Accidents: 
+# ### Conclusion for road categories with most accidents: 
 # Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
 
-g = sns.FacetGrid(places, col = 'Traf_Direct')
-g.map(plt.hist, 'Rd_Cat')
-g.fig.subplots_adjust(top=0.8)
-g.fig.suptitle('Accidents according to traffic direction and road category')
-print('Rd.Cats: 1 = Highway ; 2 = National Road ; 3 = Departmental Road ; 4 = Communal Way ; 5 = Off puplic Network  ; 6 = Parking Lot (puplic) ; 7 = ? ; 8 = ? ; 9 = other')
-print()
-print('Traff.Direct: -1 = False ; 0 = False ; 1 = One Way ; 2 = Bidirectional ; 3 = Separated Carriageways ; 4 = With variable assignment Channels')
+# +
+
+g = sns.FacetGrid(places, col = 'Traf_Direct');
+g.map(plt.hist, 'Rd_Cat');
+g.fig.subplots_adjust(top=0.8);
+g.fig.suptitle('Accidents according to traffic direction and road category');
+# -
 
 
-# Higher accident risk with oncoming traffic, do we have a lot of frontal collisions?
+# Legend:
+# - Rd.Cats:-----------------------------                    - Traff.Direct: 
+# - 1=Highway--------------------------                  - 1=False
+# - 2=National Road--------------------              - 0=False 
+# - 3=Departmental Road--------------          - 1=One Way 
+# - 4=Communal Way------------------               - 2=Bidirectional
+# - 5=Off puplic Network---------------         - 3=Separated Carriageways 
+# - 6=Parking Lot (puplic)--------------       - 4=With variable assignment Channels
+# - 7=Urban Metropolis Roads
+# - 9=other                                            
+
+# ### Conclusion for accidents according to traffic direction and road category:
+# We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic.
 
 # road width against road condition
 placess = places.loc[places['Rd_Cond'] == 1]
