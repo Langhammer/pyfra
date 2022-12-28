@@ -8,12 +8,12 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.4
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
-#SS commit main branch
+# SS commit main branch
 
 # +
 import pandas as pd
@@ -421,12 +421,13 @@ sns.heatmap(users.corr() , annot = True );
 
 sns.countplot(data=users, y='grav');  #•	1 - Unscathed•	2 - Killed•	3 - Hospitalized wounded•	4 - Light injury
 
+plt.figure(figsize = (10,9));
 sns.countplot( y = places.Rd_Cat);
 plt.title('Road Categories with most Accidents');
-print('Most accidents happened in town.')
-plt.yticks(ticks=list(range(0,9)),labels=['1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = ?' , '8 = ?', '9 = other']);
+plt.yticks(ticks=list(range(0,9)),labels=['0=Nans','1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = Urban Metropolis Roads' , '9 = other']);
 
-# Most accidents happened in town.
+# ### Conclusion Road Categories with most Accidents: 
+# Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
 
 g = sns.FacetGrid(places, col = 'Traf_Direct')
 g.map(plt.hist, 'Rd_Cat')
