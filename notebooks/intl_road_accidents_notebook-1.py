@@ -452,15 +452,13 @@ g.fig.suptitle('Accidents according to traffic direction and road category');
 # ### Conclusion for accidents according to traffic direction and road category:
 # We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic.
 
-# road width against road condition
-placess = places.loc[places['Rd_Cond'] == 1]
-g = sns.FacetGrid(placess, col = 'Rd_Cond')
-g.map(plt.hist, 'Rd_Width');
-g.fig.subplots_adjust(top=0.8)
-g.fig.suptitle('Accidents on  road condition vs. road width')
-print('Legend : -1 = False ; 0 = False ; 1 = normal ; 2 = wet ; 3 = puddles ; 4 = flopded ; 5 = snow ; 6 = mud ; 7 = icy ; 8 = fat - oil ; 9 = other')
+plt.figure(figsize = (10,9));
+sns.countplot( y = places.Rd_Cond);
+plt.title('Road Conditions with most Accidents');
+plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '2 = Wet', '3 = Puddles', '4 = Flooded' ,'5 = Snow-Convered','6 = Mud' , '7 = Icy' , '8=Greasy (Oil)', '9 = other']);
 
-# I like to show that the weather conditions are not a big factor for accidents. Most accidents happened under normal condition on a lower road width.
+# ### Conclusion for road conditions with most accidents:
+# By far the most accidents happend during normal weather conditions.
 
 # +
 
