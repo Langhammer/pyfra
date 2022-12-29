@@ -460,6 +460,14 @@ plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '
 # ### Conclusion for road conditions with most accidents:
 # By far the most accidents happend during normal weather conditions.
 
+plt.figure(figsize = (10,9));
+sns.countplot( y = places.Pos_Acc);
+plt.title('Accident Location');
+plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', '2 = On Emergancy Lane', '3 = On Hard Shoulder', '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']);
+
+# ### Conclusion for accident location:
+# By far the most accidents happend on the carriage way.
+
 # +
 
 places_4 = places.loc[places['Rd_Cond'] == 1]
