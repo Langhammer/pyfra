@@ -468,20 +468,23 @@ plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriage
 # ### Conclusion for accident location:
 # By far the most accidents happend on the carriage way.
 
+# ### Summary of the most important variables of the data set places.
+# Many changes have been made to this data set over time. Unfortunately, no new columns were created for this but existing columns were used for other inputs, so that one column can have several meanings. Unfortunately, some very interesting data cannot be used very well. In general, there is hardly any meaningful connection between the variables. It's not clear which place-descriptive variables give clear clues, but I'll try to come to a conclusion anyway.
+
 # +
 
-places_4 = places.loc[places['Rd_Cond'] == 1]
-places_5 = places.loc[places['Pos_Acc'] == 1]
-places_6 = places.loc[places['Rd_Prof'] == 1]
-plt.hist([places_5.Pos_Acc, places_6.Rd_Prof, places_4.Rd_Cond], color=['blue','lightgrey','red'], label= ['On the Road', 'Dish', 'Normal']);
-plt.xlabel('Normal - On the Road - Dish');
+places_a = places.loc[places['Rd_Cond'] == 1]
+places_b = places.loc[places['Pos_Acc'] == 1]
+places_c = places.loc[places['Rd_Prof'] == 1]
+places_d = places.loc[places['Rd_Cat'] == 4]
+plt.hist([places_b.Pos_Acc, places_c.Rd_Prof, places_a.Rd_Cond,places_d.Rd_Cat], color=['blue','lightgrey','red','green'], label= ['On the Road', 'Flat Road', 'Normal Condition', 'Communal Way']);
 plt.ylabel('Count');
-plt.title('the most common accidents');
+plt.title('The Most Common Accidents');
 plt.legend();
 # -
 
-#
-# I assume that most accidents happen on a dry and flat road.
+# ### Conclusion for the most common accidents:
+# I'm not saying that all of these accidents are related, but I think one can deduce that a high number of accidents occur with "good" parameters. At least as far as the place of the accident is concerned.
 
 # # Export DataFrame to csv
 # This step is necessary to be able to work with the data in another notebook.
