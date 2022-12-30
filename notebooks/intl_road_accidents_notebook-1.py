@@ -472,19 +472,25 @@ plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriage
 # Many changes have been made to this data set over time. Unfortunately, no new columns were created for this but existing columns were used for other inputs, so that one column can have several meanings. Unfortunately, some very interesting data cannot be used very well. In general, there is hardly any meaningful connection between the variables. It's not clear which place-descriptive variables give clear clues, but I'll try to come to a conclusion anyway.
 
 # +
+plt.figure(figsize = (10,8));
 
 places_a = places.loc[places['Rd_Cond'] == 1]
 places_b = places.loc[places['Pos_Acc'] == 1]
 places_c = places.loc[places['Rd_Prof'] == 1]
 places_d = places.loc[places['Rd_Cat'] == 4]
-plt.hist([places_b.Pos_Acc, places_c.Rd_Prof, places_a.Rd_Cond,places_d.Rd_Cat], color=['blue','lightgrey','red','green'], label= ['On the Road', 'Flat Road', 'Normal Condition', 'Communal Way']);
+
+places_a.loc[places_a["Rd_Cond"]==1, "Rd_Cond"] = "Normal Condition"
+places_b.loc[places_b["Pos_Acc"]==1, "Pos_Acc"] = "On the Road"
+places_c.loc[places_c["Rd_Prof"]==1, "Rd_Prof"] = "Flat Road"
+places_d.loc[places_d["Rd_Cat"]==4, "Rd_Cat"] = "Communal Way"
+
+plt.hist([places_b.Pos_Acc, places_c.Rd_Prof, places_a.Rd_Cond,places_d.Rd_Cat],color=['blue','lightgrey','red','green'], width = 0.7, rwidth=50);
 plt.ylabel('Count');
 plt.title('The Most Common Accidents');
-plt.legend();
 # -
 
 # ### Conclusion for the most common accidents:
-# I'm not saying that all of these accidents are related, but I think one can deduce that a high number of accidents occur with "good" parameters. At least as far as the place of the accident is concerned.
+# I'm not saying that all of these accidents are related, but I think one can deduce thatfrom the total number of accidents (1.121.571 accidents) a high number of accidents occur with "good" parameters. At least as far as the place of the accident is concerned.
 
 # # Export DataFrame to csv
 # This step is necessary to be able to work with the data in another notebook.
