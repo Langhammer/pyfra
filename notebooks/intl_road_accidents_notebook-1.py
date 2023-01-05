@@ -13,7 +13,10 @@
 #     name: python3
 # ---
 
-#SS commit main branch
+#
+# Notebook 1
+# ==============
+# Exploring Data and Visualization
 
 # +
 import pandas as pd
@@ -23,6 +26,8 @@ from matplotlib import pyplot as plt
 
 import seaborn as sns
 # -
+
+# # Import Data
 
 french_categories = {'characteristics': 'caracteristiques', 'places':'lieux', 'users':'usagers', 'vehicles':'vehicules'}
 data_categories = french_categories.keys()
