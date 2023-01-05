@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.4
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -426,45 +426,78 @@ sns.heatmap(users.corr() , annot = True );
 
 sns.countplot(data=users, y='grav');  #•	1 - Unscathed•	2 - Killed•	3 - Hospitalized wounded•	4 - Light injury
 
+plt.figure(figsize = (10,9));
 sns.countplot( y = places.Rd_Cat);
 plt.title('Road Categories with most Accidents');
-print('Most accidents happened in town.')
-plt.yticks(ticks=list(range(0,9)),labels=['1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = ?' , '8 = ?', '9 = other']);
+plt.yticks(ticks=list(range(0,9)),labels=['0=Nans','1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = Urban Metropolis Roads' , '9 = other']);
 
-# Most accidents happened in town.
-
-g = sns.FacetGrid(places, col = 'Traf_Direct')
-g.map(plt.hist, 'Rd_Cat')
-g.fig.subplots_adjust(top=0.8)
-g.fig.suptitle('Accidents according to traffic direction and road category')
-print('Rd.Cats: 1 = Highway ; 2 = National Road ; 3 = Departmental Road ; 4 = Communal Way ; 5 = Off puplic Network  ; 6 = Parking Lot (puplic) ; 7 = ? ; 8 = ? ; 9 = other')
-print()
-print('Traff.Direct: -1 = False ; 0 = False ; 1 = One Way ; 2 = Bidirectional ; 3 = Separated Carriageways ; 4 = With variable assignment Channels')
-
-
-# Higher accident risk with oncoming traffic, do we have a lot of frontal collisions?
-
-# road width against road condition
-placess = places.loc[places['Rd_Cond'] == 1]
-g = sns.FacetGrid(placess, col = 'Rd_Cond')
-g.map(plt.hist, 'Rd_Width');
-g.fig.subplots_adjust(top=0.8)
-g.fig.suptitle('Accidents on  road condition vs. road width')
-print('Legend : -1 = False ; 0 = False ; 1 = normal ; 2 = wet ; 3 = puddles ; 4 = flopded ; 5 = snow ; 6 = mud ; 7 = icy ; 8 = fat - oil ; 9 = other')
-
-# I like to show that the weather conditions are not a big factor for accidents. Most accidents happened under normal condition on a lower road width.
+# ### Conclusion for road categories with most accidents: 
+# Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
 
 # +
 
-places_4 = places.loc[places['Rd_Cond'] == 1]
-places_5 = places.loc[places['Pos_Acc'] == 1]
-places_6 = places.loc[places['Rd_Prof'] == 1]
-plt.hist([places_5.Pos_Acc, places_6.Rd_Prof, places_4.Rd_Cond], color=['blue','lightgrey','red'], label= ['On the Road', 'Dish', 'Normal']);
-plt.xlabel('Normal - On the Road - Dish');
-plt.ylabel('Count');
-plt.title('the most common accidents');
-plt.legend();
+g = sns.FacetGrid(places, col = 'Traf_Direct');
+g.map(plt.hist, 'Rd_Cat');
+g.fig.subplots_adjust(top=0.8);
+g.fig.suptitle('Accidents according to traffic direction and road category');
 # -
 
-#
-# I assume that most accidents happen on a dry and flat road.
+
+# Legend:
+# - Rd.Cats:-----------------------------                    - Traff.Direct: 
+# - 1=Highway--------------------------                  - 1=False
+# - 2=National Road--------------------              - 0=False 
+# - 3=Departmental Road--------------          - 1=One Way 
+# - 4=Communal Way------------------               - 2=Bidirectional
+# - 5=Off puplic Network---------------         - 3=Separated Carriageways 
+# - 6=Parking Lot (puplic)--------------       - 4=With variable assignment Channels
+# - 7=Urban Metropolis Roads
+# - 9=other                                            
+
+# ### Conclusion for accidents according to traffic direction and road category:
+# We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic.
+
+plt.figure(figsize = (10,9));
+sns.countplot( y = places.Rd_Cond);
+plt.title('Road Conditions with most Accidents');
+plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '2 = Wet', '3 = Puddles', '4 = Flooded' ,'5 = Snow-Convered','6 = Mud' , '7 = Icy' , '8=Greasy (Oil)', '9 = other']);
+
+# ### Conclusion for road conditions with most accidents:
+# By far the most accidents happend during normal weather conditions.
+
+plt.figure(figsize = (10,9));
+sns.countplot( y = places.Pos_Acc);
+plt.title('Accident Location');
+plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', '2 = On Emergancy Lane', '3 = On Hard Shoulder', '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']);
+
+# ### Conclusion for accident location:
+# By far the most accidents happend on the carriage way.
+
+# ### Summary of the most important variables of the data set places.
+# Many changes have been made to this data set over time. Unfortunately, no new columns were created for this but existing columns were used for other inputs, so that one column can have several meanings. Unfortunately, some very interesting data cannot be used very well. In general, there is hardly any meaningful connection between the variables. It's not clear which place-descriptive variables give clear clues, but I'll try to come to a conclusion anyway.
+
+# +
+plt.figure(figsize = (10,8));
+
+places_a = places.loc[places['Rd_Cond'] == 1]
+places_b = places.loc[places['Pos_Acc'] == 1]
+places_c = places.loc[places['Rd_Prof'] == 1]
+places_d = places.loc[places['Rd_Cat'] == 4]
+
+places_a.loc[places_a["Rd_Cond"]==1, "Rd_Cond"] = "Normal Condition"
+places_b.loc[places_b["Pos_Acc"]==1, "Pos_Acc"] = "On the Road"
+places_c.loc[places_c["Rd_Prof"]==1, "Rd_Prof"] = "Flat Road"
+places_d.loc[places_d["Rd_Cat"]==4, "Rd_Cat"] = "Communal Way"
+
+plt.hist([places_b.Pos_Acc, places_c.Rd_Prof, places_a.Rd_Cond,places_d.Rd_Cat],color=['blue','lightgrey','red','green'], width = 0.7, rwidth=50);
+plt.ylabel('Count');
+plt.title('The Most Common Accidents');
+# -
+
+# ### Conclusion for the most common accidents:
+# I'm not saying that all of these accidents are related, but I think one can deduce thatfrom the total number of accidents (1.121.571 accidents) a high number of accidents occur with "good" parameters. At least as far as the place of the accident is concerned.
+
+# # Export DataFrame to csv
+# This step is necessary to be able to work with the data in another notebook.
+
+df.to_csv('../Data/df.csv')
