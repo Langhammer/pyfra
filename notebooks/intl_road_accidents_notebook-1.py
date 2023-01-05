@@ -463,8 +463,3 @@ plt.legend();
 
 #
 # I assume that most accidents happen on a dry and flat road.
-
-# # Export DataFrame to csv
-# This step is necessary to be able to work with the data in another notebook.
-
-df.to_csv('../Data/df.csv')
