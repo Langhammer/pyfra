@@ -8,12 +8,15 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.4
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
 
-#SS commit main branch
+#
+# Notebook 1
+# ==============
+# Exploring Data and Visualization
 
 # +
 import pandas as pd
@@ -23,6 +26,8 @@ from matplotlib import pyplot as plt
 
 import seaborn as sns
 # -
+
+# # Import Data
 
 french_categories = {'characteristics': 'caracteristiques', 'places':'lieux', 'users':'usagers', 'vehicles':'vehicules'}
 data_categories = french_categories.keys()
@@ -521,46 +526,6 @@ sns.countplot( y = places.Rd_Cat);
 plt.title('Road Categories with most Accidents');
 print('Most accidents happened in town.')
 plt.yticks(ticks=list(range(0,9)),labels=['1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = ?' , '8 = ?', '9 = other']);
-<<<<<<< Updated upstream
-
-# Most accidents happened in town.
-
-g = sns.FacetGrid(places, col = 'Traf_Direct')
-g.map(plt.hist, 'Rd_Cat')
-g.fig.subplots_adjust(top=0.8)
-g.fig.suptitle('Accidents according to traffic direction and road category')
-print('Rd.Cats: 1 = Highway ; 2 = National Road ; 3 = Departmental Road ; 4 = Communal Way ; 5 = Off puplic Network  ; 6 = Parking Lot (puplic) ; 7 = ? ; 8 = ? ; 9 = other')
-print()
-print('Traff.Direct: -1 = False ; 0 = False ; 1 = One Way ; 2 = Bidirectional ; 3 = Separated Carriageways ; 4 = With variable assignment Channels')
-
-
-# Higher accident risk with oncoming traffic, do we have a lot of frontal collisions?
-
-# road width against road condition
-placess = places.loc[places['Rd_Cond'] == 1]
-g = sns.FacetGrid(placess, col = 'Rd_Cond')
-g.map(plt.hist, 'Rd_Width');
-g.fig.subplots_adjust(top=0.8)
-g.fig.suptitle('Accidents on  road condition vs. road width')
-print('Legend : -1 = False ; 0 = False ; 1 = normal ; 2 = wet ; 3 = puddles ; 4 = flopded ; 5 = snow ; 6 = mud ; 7 = icy ; 8 = fat - oil ; 9 = other')
-
-# I like to show that the weather conditions are not a big factor for accidents. Most accidents happened under normal condition on a lower road width.
-
-# +
-
-places_4 = places.loc[places['Rd_Cond'] == 1]
-places_5 = places.loc[places['Pos_Acc'] == 1]
-places_6 = places.loc[places['Rd_Prof'] == 1]
-plt.hist([places_5.Pos_Acc, places_6.Rd_Prof, places_4.Rd_Cond], color=['blue','lightgrey','red'], label= ['On the Road', 'Dish', 'Normal']);
-plt.xlabel('Normal - On the Road - Dish');
-plt.ylabel('Count');
-plt.title('the most common accidents');
-plt.legend();
-# -
-
-#
-# I assume that most accidents happen on a dry and flat road.
-=======
 
 # Most accidents happened in town.
 
@@ -600,71 +565,46 @@ plt.legend();
 #
 # I assume that most accidents happen on a dry and flat road.
 
+# Most accidents happened in town.
+
+g = sns.FacetGrid(places, col = 'Traf_Direct')
+g.map(plt.hist, 'Rd_Cat')
+g.fig.subplots_adjust(top=0.8)
+g.fig.suptitle('Accidents according to traffic direction and road category')
+print('Rd.Cats: 1 = Highway ; 2 = National Road ; 3 = Departmental Road ; 4 = Communal Way ; 5 = Off puplic Network  ; 6 = Parking Lot (puplic) ; 7 = ? ; 8 = ? ; 9 = other')
+print()
+print('Traff.Direct: -1 = False ; 0 = False ; 1 = One Way ; 2 = Bidirectional ; 3 = Separated Carriageways ; 4 = With variable assignment Channels')
 
 
-# # Using a KNN model and analyzing different scores
+# Higher accident risk with oncoming traffic, do we have a lot of frontal collisions?
 
-DF_KNN = df
-#DF_KNN.drop(columns=['id_vehicule','motor','num_veh'] ,axis=1,inplace=True)
-DF_KNN = DF_KNN.select_dtypes(include=np.number)
+# road width against road condition
+placess = places.loc[places['Rd_Cond'] == 1]
+g = sns.FacetGrid(placess, col = 'Rd_Cond')
+g.map(plt.hist, 'Rd_Width');
+g.fig.subplots_adjust(top=0.8)
+g.fig.suptitle('Accidents on  road condition vs. road width')
+print('Legend : -1 = False ; 0 = False ; 1 = normal ; 2 = wet ; 3 = puddles ; 4 = flopded ; 5 = snow ; 6 = mud ; 7 = icy ; 8 = fat - oil ; 9 = other')
 
-temp = DF_KNN.dropna(axis=1)
-temp = temp.iloc[0:50000,:]
+# I like to show that the weather conditions are not a big factor for accidents. Most accidents happened under normal condition on a lower road width.
 
-temp
+# +
 
-na_percentage(temp)
+places_4 = places.loc[places['Rd_Cond'] == 1]
+places_5 = places.loc[places['Pos_Acc'] == 1]
+places_6 = places.loc[places['Rd_Prof'] == 1]
+plt.hist([places_5.Pos_Acc, places_6.Rd_Prof, places_4.Rd_Cond], color=['blue','lightgrey','red'], label= ['On the Road', 'Dish', 'Normal']);
+plt.xlabel('Normal - On the Road - Dish');
+plt.ylabel('Count');
+plt.title('the most common accidents');
+plt.legend();
+# -
 
-data = temp.drop(columns='grav',axis=1)
-target = temp.grav
-
-
-print(temp.grav.value_counts())
-
-from sklearn.model_selection import train_test_split
-X_train  , X_test, y_train ,y_test  = train_test_split(data, target, test_size = 0.2 ,random_state =23)
-
-# # trying 3 different models and checking the scores
-
-from sklearn import neighbors
-knn = neighbors.KNeighborsClassifier(n_neighbors=3,metric='manhattan')
-knn.fit(X_train, y_train)
-knn.score(X_test, y_test)
->>>>>>> Stashed changes
-
-
-# from sklearn import neighbors
 #
-# score_minko = []
-# score_man = []
-# score_cheb = []
-#
-# for k in range(1, 6):
-#  knn = neighbors.KNeighborsClassifier(n_neighbors=k)
-#  knn.fit(X_train, y_train)
-#  score_minko.append(knn.score(X_test, y_test))
-#     
-# for k in range(1, 6):
-#     knn = neighbors.KNeighborsClassifier(n_neighbors=k, metric='manhattan')
-#     knn.fit(X_train, y_train)
-#     score_man.append(knn.score(X_test, y_test))
-#     
-# #for k in range(1, 6):
-#     knn = neighbors.KNeighborsClassifier(n_neighbors=k, metric='chebyshev')
-#     knn.fit(X_train, y_train)
-#     score_cheb.append(knn.score(X_test, y_test))
+# I assume that most accidents happen on a dry and flat road.
 
-# import matplotlib.pyplot as plt
-# # %matplotlib inline
-# plt.plot(range(1,41),score_minko,label='Minko')
-# plt.plot(range(1,41),score_man,label='man')
-# plt.plot(range(1,41),score_cheb,label='cheb')
-# plt.legend();
-
-
-y_pred = knn.predict(X_test)
-
-y_pred
-
+# # Export DataFrame to csv
+# This step is necessary to be able to work with the data in another notebook.
 
 pd.crosstab(y_test, y_pred, rownames=['Classe réelle'], colnames=['Classe prédite'])
+
