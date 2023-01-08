@@ -295,8 +295,73 @@ cm["grav"].sort_values(ascending=False)[1:]
 plt.figure(figsize=(14,14));
 sns.heatmap(cm, annot=False);
 
+# # USER DATASET in df
+
+# ### Missing Values for "users" in df
+
+# +
+#users.isna().sum() #Place , secu , locp , actp , etatp , an_nais
+
+# +
+#Place
+df.place.value_counts()
+df.place.fillna(1,inplace=True) #replace is with mode
+df.place.replace(to_replace=-1,value=0,inplace=True) #-1 is unassigned , will put 0 unknown #Same result
+df.place.isna().sum()
+
+#Trajet
+
+df.trajet.replace(to_replace=-1,value=0,inplace=True) #-1 is unassigned , will put 0 unknown #Same result
+df.trajet.fillna(5,inplace=True) #replace is with mode
+#df.trajet.isna().sum()
+df.trajet.value_counts()
+
+#locp
+df.locp.replace(to_replace=-1,value=0,inplace=True) #-1 is unassigned , will put 0 unknown #Same result
+df.locp.isna().sum() #119199
+df.locp.value_counts()
+df.locp.fillna(0,inplace=True) #replace is with mode
+
+
+#actp
+df.actp.replace(to_replace=[-1,'B'],value=0,inplace=True) #-1,B is unassigned , will put 0 unknown #Same result
+df.actp.replace(to_replace=['A'],value=8,inplace=True) #A is coming in/out of vehicule , will put 8 instead (int)
+df.actp.isna().sum() #119199
+df.actp.value_counts() #HAVE DOUBLE VALUES 0,1 Must check LATER
+df.actp.fillna(0,inplace=True) #replace is with mode
+
+
+#etatp
+df.etatp.replace(to_replace=-1,value=0,inplace=True) #-1, is unassigned , will put 0 unknown #Same result
+df.etatp.isna().sum() #119291
+df.etatp.value_counts() 
+df.etatp.fillna(0,inplace=True) #replace is with mode
+
+
+#an_nais
+df.an_nais.isna().sum() #10080
+df.an_nais.value_counts() 
+df.an_nais.fillna(1986.0,inplace=True)
+#replace is with mode #the first 5 values of value_counts are close to each other aned 
+#the nan values are only 10% of the top value so will not split Nan on different values
+
+
+
+# -
+
+# # Changing target variable "grav" values to 0-unkilled / 1-killed
+
+df.grav.value_counts()
+
+# FOR PROBLEM WITH VALUE COUNTS RUN,REMOVE TAG AND RUN BELOW CELLS ONLY ONCE
+#df.grav.replace(to_replace=[-1,1,3,4],value=0,inplace=True)
+#df.grav.replace(to_replace=2,value=1,inplace=True)
+df.grav.value_counts()
+
 # ## Fixing incoherency of 'secu' Variable
 # Safety equipment until 2018 was in 2 variables: existence and use.
+#
+# ###Must Split secu into 2 columns , the first is the type of security used 1 - Belt 2 - Helmet 3 - Children device 4 - Reflective equipment 9 - Other and the second is if it was used(1) or not(2) or Not determinable(3)
 #
 # From 2019, it is the use with up to 3 possible equipments for the same user
 # (especially for motorcyclists whose helmet and gloves are mandatory).
@@ -318,12 +383,44 @@ sns.heatmap(cm, annot=False);
 # ### secu2
 # The character information indicates the presence and use of the safety equipment
 #
+# #SECU 2 more than 90% as -1 or 0 as in not registered so the data is useless and the entire column should be dropped
 # ### secu3
 # The character information indicates the presence and use of safety equipment
 #
+# #SECU 3 more than 90% as -1 as in not registered so the data is useless and the entire column should be dropped
+#
 
-df['secu'] = df[df['year']==2007]['secu'].astype(int)
-df[df['year']==2007]['secu'].value_counts()
+# Must Split secu into 2 columns , the first is the type of security used
+# 1 - Belt 2 - Helmet 3 - Children device 4 - Reflective equipment 9 - Other
+# and the second is if it was used(1) or not(2) or Not determinable(3)
+temp = df 
+temp = df[df['year']==2005]
+temp = temp.iloc[:,37:38]
+temp['sec_val1'] = temp.secu//10
+temp['sec_val2'] = temp.secu - (temp.secu//10)*10
+temp.sec_val1 = temp.sec_val1.astype(int)
+temp.sec_val2 = temp.sec_val2.astype(int)
+temp.sec_val2.value_counts()
+
+
+
+
+# +
+#df.secu.value_counts()
+#df[list("ABCD")] = df[list("ABCD")].astype(int)
+#df['secu'] = df['secu'].astype(int)
+
+#2019 2020 2021
+
+print(df[df.year==2019].secu1.value_counts())
+print(df[df.year==2019].secu2.value_counts())
+
+print(df[df.year==2015].secu.value_counts())
+
+
+
+
+# -
 
 # # Visualizations
 
@@ -411,9 +508,8 @@ plt.show()
 sns.countplot(data=users, x='sexe');
 plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);
 
-sns.countplot(data=users, x='grav');  
-plt.xticks(ticks=[0,1,2,3,4], labels=['Missing data','1\nUnscathed', '2\nKilled',
-    '3\nHospitalized\nwounded','4\nLight injury'])
+sns.countplot(data=df, x='grav');  
+plt.xticks(ticks=[0,1], labels=['0\nUnkilled', '1\nKilled'])
 plt.xlabel('gravity');
 
 fig, S = plt.subplots(figsize=(18,18));
@@ -425,6 +521,46 @@ sns.countplot( y = places.Rd_Cat);
 plt.title('Road Categories with most Accidents');
 print('Most accidents happened in town.')
 plt.yticks(ticks=list(range(0,9)),labels=['1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = ?' , '8 = ?', '9 = other']);
+<<<<<<< Updated upstream
+
+# Most accidents happened in town.
+
+g = sns.FacetGrid(places, col = 'Traf_Direct')
+g.map(plt.hist, 'Rd_Cat')
+g.fig.subplots_adjust(top=0.8)
+g.fig.suptitle('Accidents according to traffic direction and road category')
+print('Rd.Cats: 1 = Highway ; 2 = National Road ; 3 = Departmental Road ; 4 = Communal Way ; 5 = Off puplic Network  ; 6 = Parking Lot (puplic) ; 7 = ? ; 8 = ? ; 9 = other')
+print()
+print('Traff.Direct: -1 = False ; 0 = False ; 1 = One Way ; 2 = Bidirectional ; 3 = Separated Carriageways ; 4 = With variable assignment Channels')
+
+
+# Higher accident risk with oncoming traffic, do we have a lot of frontal collisions?
+
+# road width against road condition
+placess = places.loc[places['Rd_Cond'] == 1]
+g = sns.FacetGrid(placess, col = 'Rd_Cond')
+g.map(plt.hist, 'Rd_Width');
+g.fig.subplots_adjust(top=0.8)
+g.fig.suptitle('Accidents on  road condition vs. road width')
+print('Legend : -1 = False ; 0 = False ; 1 = normal ; 2 = wet ; 3 = puddles ; 4 = flopded ; 5 = snow ; 6 = mud ; 7 = icy ; 8 = fat - oil ; 9 = other')
+
+# I like to show that the weather conditions are not a big factor for accidents. Most accidents happened under normal condition on a lower road width.
+
+# +
+
+places_4 = places.loc[places['Rd_Cond'] == 1]
+places_5 = places.loc[places['Pos_Acc'] == 1]
+places_6 = places.loc[places['Rd_Prof'] == 1]
+plt.hist([places_5.Pos_Acc, places_6.Rd_Prof, places_4.Rd_Cond], color=['blue','lightgrey','red'], label= ['On the Road', 'Dish', 'Normal']);
+plt.xlabel('Normal - On the Road - Dish');
+plt.ylabel('Count');
+plt.title('the most common accidents');
+plt.legend();
+# -
+
+#
+# I assume that most accidents happen on a dry and flat road.
+=======
 
 # Most accidents happened in town.
 
@@ -464,7 +600,71 @@ plt.legend();
 #
 # I assume that most accidents happen on a dry and flat road.
 
-# # Export DataFrame to csv
-# This step is necessary to be able to work with the data in another notebook.
 
-df.to_csv('../Data/df.csv')
+
+# # Using a KNN model and analyzing different scores
+
+DF_KNN = df
+#DF_KNN.drop(columns=['id_vehicule','motor','num_veh'] ,axis=1,inplace=True)
+DF_KNN = DF_KNN.select_dtypes(include=np.number)
+
+temp = DF_KNN.dropna(axis=1)
+temp = temp.iloc[0:50000,:]
+
+temp
+
+na_percentage(temp)
+
+data = temp.drop(columns='grav',axis=1)
+target = temp.grav
+
+
+print(temp.grav.value_counts())
+
+from sklearn.model_selection import train_test_split
+X_train  , X_test, y_train ,y_test  = train_test_split(data, target, test_size = 0.2 ,random_state =23)
+
+# # trying 3 different models and checking the scores
+
+from sklearn import neighbors
+knn = neighbors.KNeighborsClassifier(n_neighbors=3,metric='manhattan')
+knn.fit(X_train, y_train)
+knn.score(X_test, y_test)
+>>>>>>> Stashed changes
+
+
+# from sklearn import neighbors
+#
+# score_minko = []
+# score_man = []
+# score_cheb = []
+#
+# for k in range(1, 6):
+#  knn = neighbors.KNeighborsClassifier(n_neighbors=k)
+#  knn.fit(X_train, y_train)
+#  score_minko.append(knn.score(X_test, y_test))
+#     
+# for k in range(1, 6):
+#     knn = neighbors.KNeighborsClassifier(n_neighbors=k, metric='manhattan')
+#     knn.fit(X_train, y_train)
+#     score_man.append(knn.score(X_test, y_test))
+#     
+# #for k in range(1, 6):
+#     knn = neighbors.KNeighborsClassifier(n_neighbors=k, metric='chebyshev')
+#     knn.fit(X_train, y_train)
+#     score_cheb.append(knn.score(X_test, y_test))
+
+# import matplotlib.pyplot as plt
+# # %matplotlib inline
+# plt.plot(range(1,41),score_minko,label='Minko')
+# plt.plot(range(1,41),score_man,label='man')
+# plt.plot(range(1,41),score_cheb,label='cheb')
+# plt.legend();
+
+
+y_pred = knn.predict(X_test)
+
+y_pred
+
+
+pd.crosstab(y_test, y_pred, rownames=['Classe réelle'], colnames=['Classe prédite'])
