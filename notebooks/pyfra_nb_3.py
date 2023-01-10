@@ -48,3 +48,37 @@ var_selector.n_features_in_
 
 svc = svm.SVC(tol=1e-2, cache_size=4000)
 svc.fit(X_train_scaled_selection, y_train)
+
+# # Model Random Forest
+
+# +
+from sklearn.model_selection import GridSearchCV, RepeatedKFold
+from sklearn.ensemble import RandomForestClassifier
+
+RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = {
+    'criterion': ['gini','entropy','log_loss'],
+    'max_depth': [3,4,10,15,20],
+    'min_samples_leaf':[1,3,5,10,15]
+}, cv = RepeatedKFold())
+
+RFCLF.fit(X_train_scaled,y_train))
+
+print(RFCLF.best_params_)
+print(RFCLF.best_score_)
+
+# +
+RFCLFbest = GridSearchCV(DecisionTreeClassifier(),param_grid = {
+    'criterion': [],
+    'max_depth': [],
+    'min_samples_leaf':[]
+    }, cv = RepeatedKFold())
+
+
+
+RFCLFbest.fit(X_train_scaled,y_train))
+y_pred = RFCLFbest.predict(X_test_scaled)
+cm= pd.crosstab(y_test,y_pred, rownames=['Real'], colnames=['Prediction'])
+print(cm)
+# -
+
+print('DT Score is:',RFCLFbest.score(X_test_scaled,y_test))
