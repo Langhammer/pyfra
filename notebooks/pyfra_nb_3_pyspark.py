@@ -8,7 +8,7 @@
 #       format_version: '1.5'
 #       jupytext_version: 1.14.4
 #   kernelspec:
-#     display_name: Python 3 (ipykernel)
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -17,22 +17,17 @@
 # ==============
 # Modelling
 
-# +
 import pandas as pd
 import numpy as np
 #uploaded = files.upload()
 from matplotlib import pyplot as plt
-import seaborn as sns
-from sklearn.model_selection import train_test_split
-from sklearn.feature_selection import SelectKBest
-
-
-# -
+# %matplotlib inline
 
 # Import Dataset
 df = pd.read_csv('../data/df.csv')
 
-df = df.drop.select_dtypes(include=np.number).dropna(axis=1)
+df = df.select_dtypes(include=np.number).dropna(axis=1)
+
 
 # # SVM
 
@@ -57,8 +52,8 @@ spark
 # -
 
 # Create PySpark DataFrame from pandas DataFrame 
-df = df.reset_index(drop=True)
-sdf = spark.createDataFrame(df)
+data = data.reset_index(drop=True)
+sdf = spark.createDataFrame(data)
 sdf_sample = sdf.sample(False, 0.01, seed=23)
 train_sample, test_sample = sdf_sample.randomSplit([.7,.3], seed=23)
 
