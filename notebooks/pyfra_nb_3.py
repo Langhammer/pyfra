@@ -29,6 +29,7 @@ from sklearn.model_selection import train_test_split, GridSearchCV, RepeatedKFol
 from sklearn.feature_selection import SelectKBest
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
+from sklearn.tree import DecisionTreeClassifier
 from sklearn import preprocessing
 from time import sleep
 from tqdm.notebook import tqdm
@@ -93,7 +94,7 @@ RFCLFbest = GridSearchCV(DecisionTreeClassifier(),param_grid = {
     'min_samples_leaf':[]
     }, cv = RepeatedKFold())
 
-RFCLFbest.fit(X_train_scaled,y_train))
+RFCLFbest.fit(X_train_scaled,y_train)
 y_pred = RFCLFbest.predict(X_test_scaled)
 cm= pd.crosstab(y_test,y_pred, rownames=['Real'], colnames=['Prediction'])
 print(cm)
