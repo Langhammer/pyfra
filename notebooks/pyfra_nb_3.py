@@ -55,13 +55,22 @@ svc.fit(X_train_scaled_selection, y_train)
 from sklearn.model_selection import GridSearchCV, RepeatedKFold
 from sklearn.ensemble import RandomForestClassifier
 
-RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = {
-    'criterion': ['gini','entropy','log_loss'],
-    'max_depth': [3,4,10,15,20],
-    'min_samples_leaf':[1,3,5,10,15]
-}, cv = RepeatedKFold())
+from time import sleep
+from tqdm.notebook import tqdm
 
-RFCLF.fit(X_train_scaled,y_train))
+params = {
+    'criterion': ['gini','entropy','log_loss'],
+    'max_depth': [3,4,10],
+    'min_samples_leaf':[1,3,5]
+    }
+
+params_n_estimators = [100,200,300]
+
+
+for i in tqdm(params_n_estimators):   
+    RFCLF = GridSearchCV(RandomForestClassifier(n_estimators=i),param_grid = params, cv = RepeatedKFold())
+    RFCLF.fit(X_train_scaled,y_train)
+
 
 print(RFCLF.best_params_)
 print(RFCLF.best_score_)
