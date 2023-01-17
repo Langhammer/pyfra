@@ -47,7 +47,7 @@ df_sample = df.sample(frac=relative_sample_size, random_state=23)
 print(f'We are working on {len(df_sample)} data points, which represent {relative_sample_size*100}% of the original data,')
 
 # + vscode={"languageId": "python"}
-data = df_sample.drop(columns='grav').select_dtypes(include=np.number).dropna(axis=1)
+data = df_sample.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
 target = df_sample.grav
 X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2 ,random_state=23)
 # -
@@ -87,16 +87,14 @@ print(f'f1 score for the svm classifier: {svc_score:.04f}')
 
 # + vscode={"languageId": "python"}
 params = {
-    'criterion': ['gini','entropy','log_loss'],
-    'max_depth': [3,4,10],
-    'min_samples_leaf':[1,3,5]
+    'criterion': ['gini'],
+    'max_depth': [3,10],
+    'min_samples_leaf':[1,3,5],
+    'n_estimators': [100,200,300]
     }
 
-params_n_estimators = [100,200,300]
-
-for i in tqdm(params_n_estimators):   
-    RFCLF = GridSearchCV(RandomForestClassifier(n_estimators=i),param_grid = params, cv = RepeatedKFold())
-    RFCLF.fit(X_train_scaled,y_train)
+RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = RepeatedKFold(n_splits=4, n_repeats=1, random_state=23))
+RFCLF.fit(X_train_scaled,y_train)
 
 print(RFCLF.best_params_)
 print(RFCLF.best_score_)
