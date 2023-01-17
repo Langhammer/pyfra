@@ -60,10 +60,12 @@ X_train_scaled = std_scaler.transform(X_train)
 X_test_scaled = std_scaler.transform(X_test)
 
 # + vscode={"languageId": "python"}
-kbest_selector = SelectKBest(k=6)
+k_features = 25
+kbest_selector = SelectKBest(k=k_features)
 kbest_selector.fit(X_train_scaled,y_train);
 X_train_scaled_selection = kbest_selector.transform(X_train_scaled)
 X_test_scaled_selection = kbest_selector.transform(X_test_scaled)
+print(f'We use {k_features} of the original {df.shape[1]} features')
 # -
 
 # # Applying Machine Learning Models
