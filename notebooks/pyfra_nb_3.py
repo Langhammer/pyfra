@@ -31,6 +31,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import preprocessing
+from sklearn.metrics import f1_score
 from time import sleep
 from tqdm.notebook import tqdm
 
