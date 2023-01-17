@@ -40,8 +40,14 @@ from tqdm.notebook import tqdm
 df = pd.read_csv('../data/df.csv')
 
 # + vscode={"languageId": "python"}
-data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df.grav
+# Create a sample of the data, because the whole dataset is too big for us to work with
+relative_sample_size = 0.001
+df_sample = df.sample(frac=relative_sample_size, random_state=23)
+print(f'We are working on {len(df_sample)} data points, which represent {relative_sample_size*100}% of the original data,')
+
+# + vscode={"languageId": "python"}
+data = df_sample.drop(columns='grav').select_dtypes(include=np.number).dropna(axis=1)
+target = df_sample.grav
 X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2 ,random_state=23)
 # -
 
