@@ -75,6 +75,11 @@ print(f'We use {k_features} of the original {df.shape[1]} features')
 # + vscode={"languageId": "python"}
 svc = svm.SVC(tol=1e-2, cache_size=4000)
 svc.fit(X_train_scaled_selection, y_train)
+
+# + vscode={"languageId": "python"}
+y_svc = svc.predict(X_test_scaled_selection)
+svc_score = f1_score(y_true=y_test, y_pred=y_svc, average='macro')
+print(f'f1 score for the svm classifier: {svc_score:.04f}')
 # -
 
 # ## Random Forest
