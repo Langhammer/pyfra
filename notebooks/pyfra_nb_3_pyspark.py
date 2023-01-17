@@ -60,4 +60,4 @@ train_sample, test_sample = sdf_sample.randomSplit([.7,.3], seed=23)
 from pyspark.ml.classification import LinearSVC
 svm = LinearSVC(featuresCol='features', labelCol='label',maxIter=5,predictionCol='svm_prediction')
 svm_model = svm.fit(train_sample)
-result = svm_model.transfrom(test)
+result = svm_model.transform(test)
