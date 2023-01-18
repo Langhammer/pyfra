@@ -17,14 +17,11 @@
 # ==============
 # Data Cleaning and Feature Engineering
 
-# +
 import pandas as pd
 import numpy as np
-#uploaded = files.upload()
 from matplotlib import pyplot as plt
-
+import pyfra 
 import seaborn as sns
-# -
 
 # # Import Data
 
@@ -329,7 +326,12 @@ sns.heatmap(cm, annot=False);
 df['secu'] = df[df['year']==2007]['secu'].astype(int)
 df[df['year']==2007]['secu'].value_counts()
 
-# # Export DataFrame to csv
+# # Export DataFrame to Pickle 
 # This step is necessary to be able to work with the data in another notebook.
 
-df.to_csv('../Data/df.csv')
+df.to_pickle('../data/df.p')
+
+# The pickle file is too big to track on github, we will therefore create a second file which contains the output of the describe-method as well as the number of nans for each column and the dtypes of the DataFrame.
+
+df_check_info = pyfra.df_testing_info(df)
+df_check_info.to_csv('../data/df_check_info.csv')

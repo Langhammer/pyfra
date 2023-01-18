@@ -19,7 +19,7 @@
 
 # # Importing Packages and Data
 
-# + vscode={"languageId": "python"}
+import pyfra
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
@@ -36,11 +36,13 @@ from time import sleep
 from tqdm.notebook import tqdm
 
 
-# + vscode={"languageId": "python"}
-# Import Dataset
-df = pd.read_csv('../data/df.csv')
+df = pd.read_pickle('../data/df.p')
 
-# + vscode={"languageId": "python"}
+# Check whether or not the data is up-to-date (file can't be tracked on github because of it's file size)
+pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
+                         right=pyfra.df_testing_info(df),\
+                         check_dtype=False, check_exact=False)
+
 # Create a sample of the data, because the whole dataset is too big for us to work with
 relative_sample_size = 0.001
 df_sample = df.sample(frac=relative_sample_size, random_state=23)
