@@ -32,29 +32,35 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import preprocessing
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, balanced_accuracy_score, recall_score
+from imblearn.under_sampling import RandomUnderSampler
 from time import sleep
 from tqdm.notebook import tqdm
 
 
 df = pd.read_pickle('../data/df.p')
+n_rows_complete = len(df)
 
 # Check whether or not the data is up-to-date (file can't be tracked on github because of it's file size)
 pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
                          right=pyfra.df_testing_info(df),\
                          check_dtype=False, check_exact=False)
 
+rus = RandomUnderSampler(random_state=23)
+
 # Create a sample of the data, because the whole dataset is too big for us to work with
-relative_sample_size = 0.001
-df_sample = df.sample(frac=relative_sample_size, random_state=23)
-print(f'We are working on {len(df_sample)} data points, which represent {relative_sample_size*100}% of the original data,')
+relative_sample_size = 0.1
+df = df.sample(frac=relative_sample_size, random_state=23)
 
-# + vscode={"languageId": "python"}
-data = df_sample.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df_sample.grav
+data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df.grav
+data, target = rus.fit_resample(X=data, y=target)
+
+
+
+print(f'We are working on {len(target)} data points, which represent {len(target)/n_rows_complete*100:.04f}% of the original data,')
+
 X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2 ,random_state=23)
-# -
-
 
 # # Scaling the Data and Selecting Features
 
@@ -95,17 +101,24 @@ print(f'We use {k_features} of the original {df.shape[1]} features')
 
 # # Applying Machine Learning Models
 
+# Creating a matrix to store the results
+
+result_metrics = pd.DataFrame(columns=['model', 'f1', 'balanced_accuracy', 'recall'], index=['lr', 'svm', 'rf', 'dt'])
+result_metrics
+
+
 # ## Support Vector Machine (SVM)
 
 # + vscode={"languageId": "python"}
 svc = svm.SVC(tol=1e-2, cache_size=4000)
 svc.fit(X_train_scaled_selection, y_train)
 
-# + vscode={"languageId": "python"}
 y_svc = svc.predict(X_test_scaled_selection)
-svc_score = f1_score(y_true=y_test, y_pred=y_svc, average='macro')
-print(f'f1 score for the svm classifier: {svc_score:.04f}')
-# -
+result_metrics.loc['svm', 'model'] = svc
+result_metrics.loc['svm', 'f1'] = f1_score(y_true=y_test, y_pred=y_svc, average='macro')
+result_metrics.loc['svm', 'balanced_accuracy'] = balanced_accuracy_score(y_true=y_test, y_pred=y_svc)
+result_metrics.loc['svm', 'recall'] = recall_score(y_true=y_test, y_pred=y_svc, average='macro')
+result_metrics
 
 # ## Random Forest
 
