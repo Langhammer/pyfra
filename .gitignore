@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 data/df.csv
 *.ipynb
-data/df.pickle
+data/df.p
