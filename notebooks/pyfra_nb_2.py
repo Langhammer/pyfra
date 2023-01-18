@@ -94,6 +94,8 @@ for this_category, df in dict_of_category_dfs.items():
 
 users = users.drop(columns=['num_veh','id_vehicule']) #Not needed
 
+users = users[users['grav'] != -1]
+
 # ## Places Dataset
 
 # +
