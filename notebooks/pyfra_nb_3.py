@@ -88,15 +88,59 @@ result_metrics
 
 # ## Support Vector Machine (SVM)
 
-# + vscode={"languageId": "python"}
-svc = svm.SVC(tol=1e-2, cache_size=4000)
-svc.fit(X_train_scaled_selection, y_train)
+# A support vector machine classifier will be used with parameter optimization via grid search.
 
-y_svc = svc.predict(X_test_scaled_selection)
-result_metrics.loc['svm', 'model'] = svc
-result_metrics.loc['svm', 'f1'] = f1_score(y_true=y_test, y_pred=y_svc, average='macro')
-result_metrics.loc['svm', 'balanced_accuracy'] = balanced_accuracy_score(y_true=y_test, y_pred=y_svc)
-result_metrics.loc['svm', 'recall'] = recall_score(y_true=y_test, y_pred=y_svc, average='macro')
+# ### Setup of the SVM and the Grid Search
+
+# +
+# Instantiation of the SVM Classifier
+# We set the cache size to 1600 MB (default: 200 MB) to reduce the computing time.
+# The other parameters will be set via grid search.
+svc = svm.SVC(cache_size=1600)
+
+# Choosing the parameters for the grid search
+svc_params = {
+    'kernel': ['poly', 'rbf', 'sigmoid'],
+    'gamma': [0.1, 0.5, 'auto'],
+    'C': [0.1, 0.5, 1, 2]
+}
+
+# Setup of the scoring. 
+# We have to define the parameter 'average', because we are not dealing with a binary classification.
+# Our sample is balanced, hence we can use a simple approach, using 'micro', which uses the global values of 
+# true positives, false negatives and false positives.
+f1_scoring = make_scorer(score_func=f1_score, average='micro')
+
+# Instantiation of the GridSearchCv
+# n_jobs is set to -1 to use all available threads for computation.
+svc_grid = GridSearchCV(svc, param_grid=svc_params, scoring=f1_scoring, n_jobs=-1)
+# -
+
+# ### SVM Parameter Optimization, Training and Prediction
+
+# +
+# Fitting the grid search to find the best parameter combination
+svc_grid.fit(X_train_scaled_selection, y_train)
+
+# Print result of parameter optimization
+print('Best parameter combination: ',svc_grid.best_params_)
+
+# Predict target variable for the test set
+y_svc = svc_grid.best_estimator_.predict(X_test_scaled_selection)
+
+# -
+
+# ### Metrics of SVM
+
+# +
+# Calculate the metrics for the optimal svm model and store them in the result_metrics DataFrame 
+# The model will be stored as well in the DataFrame
+result_metrics.loc['svm', 'model'] = svc_grid
+result_metrics.loc['svm', 'f1'] = f1_score(y_true=y_test, y_pred=y_svc, average='micro')
+result_metrics.loc['svm', 'accuracy'] = accuracy_score(y_true=y_test, y_pred=y_svc)
+result_metrics.loc['svm', 'recall'] = recall_score(y_true=y_test, y_pred=y_svc, average='micro')
+
+# Show the interim result
 result_metrics
 
 # ## Random Forest
