@@ -18,14 +18,11 @@
 # ==============
 # Exploring Data and Visualization
 
-# +
 import pandas as pd
 import numpy as np
-#uploaded = files.upload()
 from matplotlib import pyplot as plt
-
 import seaborn as sns
-# -
+# %matplotlib inline
 
 # # Import Data
 
