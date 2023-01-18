@@ -17,6 +17,7 @@
 # ==============
 # Modelling
 
+<<<<<<< Updated upstream
 # # Importing Packages and Data
 
 import pyfra
@@ -58,10 +59,31 @@ X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2
 # # Scaling the Data and Selecting Features
 
 # + vscode={"languageId": "python"}
+=======
+import pandas as pd
+import numpy as np
+#uploaded = files.upload()
+from matplotlib import pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import SelectKBest
+from sklearn import svm
+from sklearn import preprocessing
+
+# Import Dataset
+df = pd.read_csv('../data/df.csv')
+
+data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df.grav
+X_train  , X_test, y_train ,y_test  = train_test_split(data, target, test_size = 0.2 ,random_state =23)
+
+
+>>>>>>> Stashed changes
 std_scaler = preprocessing.StandardScaler().fit(X_train)
 X_train_scaled = std_scaler.transform(X_train)
 X_test_scaled = std_scaler.transform(X_test)
 
+<<<<<<< Updated upstream
 # + vscode={"languageId": "python"}
 k_features = 25
 kbest_selector = SelectKBest(k=k_features)
@@ -114,4 +136,47 @@ cm= pd.crosstab(y_test,y_pred, rownames=['Real'], colnames=['Prediction'])
 print(cm)
 
 # + vscode={"languageId": "python"}
+=======
+kbest_selector = SelectKBest(k=6)
+kbest_selector.fit(X_train_scaled,y_train);
+X_train_scaled_selection = kbest_selector.transform(X_train_scaled)
+X_test_scaled_selection = kbest_selector.transform(X_test_scaled)
+
+var_selector.n_features_in_
+
+svc = svm.SVC(tol=1e-2, cache_size=4000)
+svc.fit(X_train_scaled_selection, y_train)
+
+# # Model Random Forest
+
+# +
+from sklearn.model_selection import GridSearchCV, RepeatedKFold
+from sklearn.ensemble import RandomForestClassifier
+
+from time import sleep
+from tqdm.notebook import tqdm
+
+params = {
+    'criterion': ['gini','entropy','log_loss'],
+    'max_depth': [3,4,10],
+    'min_samples_leaf':[1,3,5]
+    }
+   
+RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = RepeatedKFold())
+RFCLF.fit(X_train_scaled,y_train)
+
+
+print(RFCLF.best_params_)
+print(RFCLF.best_score_)
+
+# +
+RFCLFbest = RandomForestClassifier(criterion=?,max_depth=?,min_samples_leaf=?)
+  
+RFCLFbest.fit(X_train_scaled,y_train))
+y_pred = RFCLFbest.predict(X_test_scaled)
+cm= pd.crosstab(y_test,y_pred, rownames=['Real'], colnames=['Prediction'])
+print(cm)
+# -
+
+>>>>>>> Stashed changes
 print('DT Score is:',RFCLFbest.score(X_test_scaled,y_test))
