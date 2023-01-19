@@ -111,7 +111,7 @@ svc = svm.SVC(cache_size=1600)
 # Choosing the parameters for the grid search
 svc_params = {
     'kernel': ['poly', 'rbf', 'sigmoid'],
-    'gamma': [0.1, 0.5, 'auto'],
+    'gamma': [0.1, 0.5, 'scale'],
     'C': [0.1, 0.5, 1, 2]
 }
 
