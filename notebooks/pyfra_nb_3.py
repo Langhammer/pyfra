@@ -78,9 +78,18 @@ print(f'We use {k_features} of the original {df.shape[1]} features')
 # ## Setup of Metrics Table
 
 # Creating a matrix to store the results
-
-result_metrics = pd.DataFrame(columns=['model', 'f1', 'accuracy', 'recall'], index=['lr', 'svm', 'rf', 'dt'])
+result_metrics = pd.DataFrame(columns=['model', 'f1', 'accuracy', 'recall'], index=['lr', 'svc', 'rf', 'dt'])
 result_metrics
+
+
+# Creating a function to compute and store the results for the respective model
+def store_metrics(model_name, model, y_test, y_pred, result_df):
+    result_df.loc[model_name, 'model'] = model 
+    result_df.loc[model_name, 'f1'] = f1_score(y_true=y_test, y_pred=y_pred, average='micro')
+    result_df.loc[model_name, 'accuracy'] = accuracy_score(y_true=y_test, y_pred=y_pred)
+    result_df.loc[model_name, 'recall'] = recall_score(y_true=y_test, y_pred=y_pred, average='micro')
+    return result_df
+
 
 # ## Setup of the Cross-Validator
 # We will use a repeated stratified cross-validataion to make sure to pick the best parameters.
@@ -135,15 +144,12 @@ y_svc = svc_grid.best_estimator_.predict(X_test_scaled_selection)
 
 # ### Metrics of SVM
 
-# +
 # Calculate the metrics for the optimal svm model and store them in the result_metrics DataFrame 
 # The model will be stored as well in the DataFrame
-result_metrics.loc['svm', 'model'] = svc_grid
-result_metrics.loc['svm', 'f1'] = f1_score(y_true=y_test, y_pred=y_svc, average='micro')
-result_metrics.loc['svm', 'accuracy'] = accuracy_score(y_true=y_test, y_pred=y_svc)
-result_metrics.loc['svm', 'recall'] = recall_score(y_true=y_test, y_pred=y_svc, average='micro')
-
-# Show the interim result
+result_metrics = store_metrics(model=svc_grid, model_name='svc',
+                               y_test=y_test, y_pred=y_svc,
+                               result_df=result_metrics)
+# Show the interim result                               
 result_metrics
 
 # ## Random Forest
