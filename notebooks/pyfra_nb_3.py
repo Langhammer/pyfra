@@ -65,7 +65,6 @@ std_scaler = preprocessing.StandardScaler().fit(X_train)
 X_train_scaled = std_scaler.transform(X_train)
 X_test_scaled = std_scaler.transform(X_test)
 
-# +
 k_features = 25
 kbest_selector = SelectKBest(k=k_features)
 kbest_selector.fit(X_train_scaled,y_train);
@@ -74,7 +73,6 @@ X_test_scaled_selection = kbest_selector.transform(X_test_scaled)
 print(f'We use {k_features} of the original {df.shape[1]} features')
 
 # # Application of Machine Learning Models
-
 # ## Setup of Metrics Table
 
 # Creating a matrix to store the results
@@ -99,9 +97,9 @@ def store_metrics(model_name, model, y_test, y_pred, result_df):
 cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=23)
 
 # ## Support Vector Machine (SVM)
-
+#
 # A support vector machine classifier will be used with parameter optimization via grid search.
-
+#
 # ### Setup of the SVM and the Grid Search
 
 # +
@@ -179,10 +177,12 @@ RFCLFbest.fit(X_train_scaled,y_train)
 y_pred = RFCLFbest.predict(X_test_scaled)
 cm= pd.crosstab(y_test,y_pred, rownames=['Real'], colnames=['Prediction'])
 print(cm)
+# -
 
-# +
 print('DT Score is:',RFCLFbest.score(X_test_scaled,y_test))
+
 
 # # Application of Advanced Models
 
+#
 # # Results and Conclusion
