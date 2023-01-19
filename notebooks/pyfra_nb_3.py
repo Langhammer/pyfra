@@ -23,7 +23,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 # %matplotlib inline
 import seaborn as sns
-from sklearn.model_selection import train_test_split, GridSearchCV, RepeatedKFold
+from sklearn.model_selection import train_test_split, GridSearchCV, RepeatedStratifiedKFold
 from sklearn.feature_selection import SelectKBest
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
@@ -82,6 +82,12 @@ print(f'We use {k_features} of the original {df.shape[1]} features')
 result_metrics = pd.DataFrame(columns=['model', 'f1', 'accuracy', 'recall'], index=['lr', 'svm', 'rf', 'dt'])
 result_metrics
 
+# ## Setup of the Cross-Validator
+# We will use a repeated stratified cross-validataion to make sure to pick the best parameters.
+# The stratification will be used to ensure an equal distribution of the different categories in every bin.
+# The repetition will be used in order ensure that the result is not an outlier. We will set a lower the number of repetitions, however, to save execution time (default would be 10 repetitions).
+
+cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=23)
 
 # ## Support Vector Machine (SVM)
 
@@ -110,7 +116,7 @@ f1_scoring = make_scorer(score_func=f1_score, average='micro')
 
 # Instantiation of the GridSearchCv
 # n_jobs is set to -1 to use all available threads for computation.
-svc_grid = GridSearchCV(svc, param_grid=svc_params, scoring=f1_scoring, n_jobs=-1)
+svc_grid = GridSearchCV(svc, param_grid=svc_params, scoring=f1_scoring, cv=cv, n_jobs=-1)
 # -
 
 # ### SVM Parameter Optimization, Training and Prediction
