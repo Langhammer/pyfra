@@ -136,7 +136,8 @@ svc_grid.fit(X_train_scaled_selection, y_train)
 print('Best parameter combination: ',svc_grid.best_params_)
 
 # Predict target variable for the test set
-y_svc = svc_grid.best_estimator_.predict(X_test_scaled_selection)
+svc = svc_grid.best_estimator_
+y_svc = svc.predict(X_test_scaled_selection)
 
 # -
 
@@ -144,7 +145,7 @@ y_svc = svc_grid.best_estimator_.predict(X_test_scaled_selection)
 
 # Calculate the metrics for the optimal svm model and store them in the result_metrics DataFrame 
 # The model will be stored as well in the DataFrame
-result_metrics = store_metrics(model=svc_grid, model_name='svc',
+result_metrics = store_metrics(model=svc, model_name='svc',
                                y_test=y_test, y_pred=y_svc,
                                result_df=result_metrics)
 # Show the interim result                               
