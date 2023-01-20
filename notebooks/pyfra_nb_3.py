@@ -83,9 +83,9 @@ result_metrics
 # Creating a function to compute and store the results for the respective model
 def store_metrics(model_name, model, y_test, y_pred, result_df):
     result_df.loc[model_name, 'model'] = model 
-    result_df.loc[model_name, 'f1'] = f1_score(y_true=y_test, y_pred=y_pred, average='micro')
+    result_df.loc[model_name, 'f1'] = f1_score(y_true=y_test, y_pred=y_pred, average='weighted')
     result_df.loc[model_name, 'accuracy'] = accuracy_score(y_true=y_test, y_pred=y_pred)
-    result_df.loc[model_name, 'recall'] = recall_score(y_true=y_test, y_pred=y_pred, average='micro')
+    result_df.loc[model_name, 'recall'] = recall_score(y_true=y_test, y_pred=y_pred, average='weighted')
     return result_df
 
 
