@@ -25,6 +25,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split, GridSearchCV, RepeatedStratifiedKFold
 from sklearn.feature_selection import SelectKBest
+from sklearn.model_selection import RepeatedKFold
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier
@@ -52,8 +53,6 @@ df = df.sample(frac=relative_sample_size, random_state=23)
 data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
 target = df.grav
 data, target = rus.fit_resample(X=data, y=target)
-
-
 
 print(f'We are working on {len(target)} data points, which represent {len(target)/n_rows_complete*100:.04f}% of the original data,')
 
@@ -152,36 +151,38 @@ result_metrics = store_metrics(model=svc, model_name='svc',
 result_metrics
 
 # ## Random Forest
+# ### Setup and GridSearch
 
 # +
 params = {
-    'criterion': ['gini'],
-    'max_depth': [3,10],
-    'min_samples_leaf':[1,3,5],
-    'n_estimators': [100,200,300]
+    'criterion': ['gini', 'entropy'],
+    'max_depth': [15,35],
+    'min_samples_leaf':[7,15],
+    'n_estimators': [400,800]
     }
 
 RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = RepeatedKFold(n_splits=4, n_repeats=1, random_state=23))
-RFCLF.fit(X_train_scaled,y_train)
+RFCLF.fit(X_train_scaled_selection,y_train)
 
-print(RFCLF.best_params_)
-print(RFCLF.best_score_)
-
-# +
-RFCLFbest = GridSearchCV(DecisionTreeClassifier(),param_grid = {
-    'criterion': [],
-    'max_depth': [],
-    'min_samples_leaf':[]
-    }, cv = RepeatedKFold())
-
-RFCLFbest.fit(X_train_scaled,y_train)
-y_pred = RFCLFbest.predict(X_test_scaled)
-cm= pd.crosstab(y_test,y_pred, rownames=['Real'], colnames=['Prediction'])
-print(cm)
+print('Best Params are:',RFCLF.best_params_)
+print('Best Score is:',RFCLF.best_score_)
 # -
 
-print('DT Score is:',RFCLFbest.score(X_test_scaled,y_test))
+# ### Optimized Model and Metrics
 
+# +
+rf = RFCLF.best_estimator_
+y_rf = rf.predict(X_test_scaled_selection)
+
+cm = pd.crosstab(y_test,y_rf, rownames=['Real'], colnames=['Prediction'])
+print(cm)
+
+result_metrics = store_metrics(model=rf, model_name='rf',
+                               y_test=y_test, y_pred=y_rf,
+                               result_df=result_metrics)
+                              
+result_metrics
+# -
 
 # # Application of Advanced Models
 
