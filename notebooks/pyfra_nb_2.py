@@ -236,15 +236,13 @@ characteristics['day_of_week'] = dict_of_category_dfs['characteristics']['date']
 
 # New binary variable: is_weekend, 0 for monday to friday and 1 for saturday and sunday
 characteristics['is_weekend'] = (dict_of_category_dfs['characteristics']['day_of_week'] > 4).astype('int')
+
+
 # -
 
 # ### Remove trailing zeroes from Department variable
 # The Department codes are followed by a zero for the years 2005--2018, which has no practical use for us. We will therefore eliminate these trailing zeroes.
 # Also, since 2019 all the data is saved as strings. We will convert everything to strings, as this is nominal data, we will not make any calculations with it.
-
-dc = 750
-str(dc).rstrip('0')
-#.lstrip
 
 # +
 def department_converter(dep):
