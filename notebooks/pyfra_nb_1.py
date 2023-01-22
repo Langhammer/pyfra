@@ -491,8 +491,3 @@ plt.title('The Most Common Accidents');
 
 # ### Conclusion for the most common accidents:
 # I'm not saying that all of these accidents are related, but I think one can deduce thatfrom the total number of accidents (1.121.571 accidents) a high number of accidents occur with "good" parameters. At least as far as the place of the accident is concerned.
-
-# # Export DataFrame to csv
-# This step is necessary to be able to work with the data in another notebook.
-
-df.to_csv('../Data/df.csv')
