@@ -189,9 +189,6 @@ result_metrics = store_metrics(model=rf, model_name='rf',
 result_metrics
 # -
 
-print('DT Score is:',RFCLFbest.score(X_test_scaled,y_test))
-
-
 # # Logistic Regression
 
 # +
