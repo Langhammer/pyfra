@@ -18,7 +18,7 @@
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
-import pyfra 
+import pyfra
 import seaborn as sns
 
 # # Import Data
@@ -93,6 +93,95 @@ for this_category, df in dict_of_category_dfs.items():
 users = users.drop(columns=['num_veh','id_vehicule']) #Not needed
 
 users = users[users['grav'] != -1]
+
+# +
+#Place
+
+users.place.value_counts()
+users.place.fillna(1,inplace=True) #replace is with mode
+users.place.replace(to_replace=-1,value=0,inplace=True) #-1 is unassigned , will put 0 unknown #Same result
+
+
+# +
+#Trajet
+
+users.trajet.replace(to_replace=-1,value=0,inplace=True) #-1 is unassigned , will put 0 unknown #Same result
+users.trajet.fillna(5,inplace=True) #replace is with mode
+
+# +
+#locp
+
+users.locp.replace(to_replace=-1,value=0,inplace=True) #-1 is unassigned , will put 0 unknown #Same result
+users.locp.value_counts()
+users.locp.fillna(0,inplace=True) #replace is with mode
+
+# +
+#actp
+
+users.actp.replace(to_replace=['B'],value=0,inplace=True)#-1,B is unassigned , will put 0 unknown #Same result
+users.actp.replace(to_replace=' -1',value=0,inplace=True)
+users.actp.replace(to_replace=['A'],value=8,inplace=True) #A is coming in/out of vehicule , will put 8 instead (int)
+users.actp.fillna(0,inplace=True) #replace is with mode
+
+users.actp.replace(to_replace='0',value=0,inplace=True)
+users.actp.replace(to_replace='1',value=1,inplace=True)
+users.actp.replace(to_replace='2',value=2,inplace=True)
+users.actp.replace(to_replace='3',value=3,inplace=True)
+users.actp.replace(to_replace='4',value=4,inplace=True)
+users.actp.replace(to_replace='5',value=5,inplace=True)
+users.actp.replace(to_replace='6',value=6,inplace=True)
+users.actp.replace(to_replace='7',value=7,inplace=True)
+users.actp.replace(to_replace='8',value=8,inplace=True)
+users.actp.replace(to_replace='9',value=9,inplace=True)
+
+# +
+#etatp
+
+users.etatp.replace(to_replace=-1,value=0,inplace=True) #-1, is unassigned , will put 0 unknown #Same result
+users.etatp.isna().sum() #119291
+users.etatp.value_counts() 
+users.etatp.fillna(0,inplace=True) #replace is with mode
+
+# +
+#an_nais
+
+users.an_nais.isna().sum() #10080
+users.an_nais.value_counts() 
+users.an_nais.fillna(1986.0,inplace=True)
+#replace is with mode #the first 5 values of value_counts are close to each other
+
+# -
+
+users.drop(columns='secu3',inplace=True)
+
+# # Fixing incoherency of 'secu' Variable
+# Safety equipment until 2018 was in 2 variables: existence and use.
+#
+# From 2019, it is the use with up to 3 possible equipments for the same user
+# (especially for motorcyclists whose helmet and gloves are mandatory).
+#
+# # secu1
+# The character information indicates the presence and use of the safety equipment:
+# -1 - No information
+# 0 - No equipment
+# 1 - Belt
+# 2 - Helmet
+# 3 - Children device
+# 4 - Reflective vest
+# 5 - Airbag (2WD/3WD)
+# 6 - Gloves (2WD/3WD)
+# 7 - Gloves + Airbag (2WD/3WD)
+# 8 - Non-determinable
+# 9 - Other
+#
+# # secu2
+# The character information indicates the presence and use of the safety equipment
+#
+# # secu3
+# The character information indicates the presence and use of safety equipment
+#
+
+na_percentage(users)
 
 # ## Places Dataset
 
@@ -295,36 +384,6 @@ cm["grav"].sort_values(ascending=False)[1:]
 
 plt.figure(figsize=(14,14));
 sns.heatmap(cm, annot=False);
-
-# ## Fixing incoherency of 'secu' Variable
-# Safety equipment until 2018 was in 2 variables: existence and use.
-#
-# From 2019, it is the use with up to 3 possible equipments for the same user
-# (especially for motorcyclists whose helmet and gloves are mandatory).
-#
-# ### secu1
-# The character information indicates the presence and use of the safety equipment:
-# -1 - No information
-# 0 - No equipment
-# 1 - Belt
-# 2 - Helmet
-# 3 - Children device
-# 4 - Reflective vest
-# 5 - Airbag (2WD/3WD)
-# 6 - Gloves (2WD/3WD)
-# 7 - Gloves + Airbag (2WD/3WD)
-# 8 - Non-determinable
-# 9 - Other
-#
-# ### secu2
-# The character information indicates the presence and use of the safety equipment
-#
-# ### secu3
-# The character information indicates the presence and use of safety equipment
-#
-
-df['secu'] = df[df['year']==2007]['secu'].astype(int)
-df[df['year']==2007]['secu'].value_counts()
 
 # # Export DataFrame to Pickle 
 # This step is necessary to be able to work with the data in another notebook.
