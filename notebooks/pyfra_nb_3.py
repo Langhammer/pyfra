@@ -193,7 +193,7 @@ result_metrics
 
 # +
 #We use and define logistic Regression with n_jobs=-1 to use all cores
-LR = LogisticRegression(n_jobs=-1)
+LR = LogisticRegression()
 #for parameters we use 3 type of solver and 6 for C
 LR_params = {
     'solver': ['liblinear', 'lbfgs', 'saga'], 
@@ -236,7 +236,7 @@ result_metrics
 # # ADA Boosting
 
 #Trying ADA boosting on LogisticRegresiion
-ADA_Boost = AdaBoostClassifier(base_estimator = LR , n_estimators = 1000)
+ADA_Boost = AdaBoostClassifier(estimator = LR , n_estimators = 1000)
 ADA_Boost.fit(X_train_scaled_selection, y_train)
 y_ada = ADA_Boost.predict(X_test_scaled_selection)
 
