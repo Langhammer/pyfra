@@ -29,7 +29,7 @@ from sklearn.model_selection import RepeatedKFold
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, StackingClassifier 
 from sklearn import svm
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn import preprocessing
 from sklearn.metrics import f1_score, accuracy_score, recall_score, make_scorer
 from imblearn import under_sampling
@@ -75,6 +75,8 @@ kbest_selector.fit(X_train_scaled,y_train);
 X_train_scaled_selection = kbest_selector.transform(X_train_scaled)
 X_test_scaled_selection = kbest_selector.transform(X_test_scaled)
 print(f'We use {k_features} of the original {df.shape[1]} features')
+
+k_best_feature_names = data.columns[kbest_selector.get_support(indices=True)]
 
 # # Application of Machine Learning Models
 # ## Setup of Metrics Table
@@ -245,6 +247,15 @@ result_metrics = store_metrics(model=dt, model_name='dt',
 # Show the interim result                               
 result_metrics
 
+# ## Interpretation of the Decision Tree
+# Decision trees are known to have a high interpretability compared to other machine learning models. The performance of the applied model is worse than the ones of the other models, but we can easily plot the tree and gain insights.
+
+from sklearn.tree import plot_tree
+fig = plt.figure(figsize=(12,6));
+plot_tree(classifier,max_depth=2, fontsize=8, feature_names=k_best_feature_names);
+
+# The plot shows that the most important feature (according to the decision tree) is built-up_area. This binary variable cointains the information, whether the accident happened in a built-up area. We already showed in the first notebook that there seems to be a positive relation between the density of an area and it's **number** of accident. The decision tree here suggests that the **severity** is also affected by a dense population.
+
 # # Application of Advanced Models
 
 
@@ -276,19 +287,3 @@ result_metrics
 
 #
 # # Results and Conclusion
-
-# # Decision Tree
-
-from sklearn.tree import DecisionTreeClassifier
-classifier = DecisionTreeClassifier(criterion = "entropy", random_state=0)
-classifier.fit(X_train, y_train)
-y_pred = classifier.predict(X_test)
-from sklearn import metrics
-cm = metrics.confusion_matrix(y_test, y_pred) 
-print(cm)
-accuracy = metrics.accuracy_score(y_test, y_pred) 
-print("Accuracy score:",accuracy)
-precision = metrics.precision_score(y_test, y_pred) 
-print("Precision score:",precision)
-recall = metrics.recall_score(y_test, y_pred) 
-print("Recall score:",recall)
