@@ -268,6 +268,15 @@ result_metrics = store_metrics(model=dt, model_name='dt',
                                result_df=result_metrics)
                               
 result_metrics
+
+# +
+# ## Interpretation of the Decision Tree
+# Decision trees are known to have a high interpretability compared to other machine learning models. The performance of the applied model is worse than the ones of the other models, but we can easily plot the tree and gain insights.
+from sklearn.tree import plot_tree
+fig = plt.figure(figsize=(12,6));
+plot_tree(dt,max_depth=2, fontsize=8, feature_names=k_best_feature_names);
+
+# The plot shows that the most important feature (according to the decision tree) is built-up_area. This binary variable cointains the information, whether the accident happened in a built-up area. We already showed in the first notebook that there seems to be a positive relation between the density of an area and it's **number** of accident. The decision tree here suggests that the **severity** is also affected by a dense population.
 # -
 
 # # Application of Advanced Models
