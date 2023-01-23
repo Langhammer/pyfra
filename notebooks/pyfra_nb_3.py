@@ -310,3 +310,33 @@ result_metrics
 
 #
 # # Results and Conclusion
+
+# ## Comparison of the Performances
+
+plt.barh(y=result_metrics.index.values, width=result_metrics['f1']);
+plt.title('$F_1$ Score of different ML models');
+
+# The results show a comparable performance for all machine learning models, with the advanced stacking classifier giving the best score (f_1) and the decision tree giving the worst score. 
+#
+# There are a few things to consider when analyzing these results.
+# 1. We worked on a very small partition of the dataset in order to achieve acceptable execution times. We expect to reach higher performances when working with more data.
+# 2. The classifiers based on logistic regression and decision trees have low scores, are not necessarily unfit for the dataset, as they offer more interpretability than the advanced models. This interpretability could help e.g. policy makers to take measures in order to reduce the severity of road accidents.
+# 3. A strong correlation between severity and safety measurements (e.g. safety belt) is expected. Unfortunately, this feature could not be used because useful is only available for the last years (2018--).
+
+# ## Analysis of the Correlation Matrix
+
+cm = pd.crosstab(y_test, y_stacking, rownames=['observations'], colnames=['predictions']);
+severity_categories = ("Unscathed","Killed", "Hospitalized\nwounded", "Light injury")
+plt.figure(figsize=(4,4))
+plt.title('Correlation Matrix of the Stacking Classifier');
+sns.heatmap(cm, annot=True);
+plt.xticks(np.array(range(4))+0.5, labels=severity_categories, rotation=45);
+plt.yticks(np.array(range(4))+0.5, labels=severity_categories, rotation=0);
+
+# The correlation matrix of the stacking classifier shows that some categories are more difficult to predict than others. The category "Hospitalized wounded" seems to be the most difficult to predict, as the predictions seem to be quite evenly distributed between the different classes. We can quantify these difficulties by looking at the scores for accuracy and recall for each category.
+
+from sklearn.metrics import classification_report
+severity_categories = ("Unscathed","Killed", "Hospitalized wounded", "Light injury")
+print(classification_report(y_true=y_test, y_pred=y_stacking, target_names=severity_categories))
+
+# The classification report reflects our observations from the correlation matrix. It is satisfying that the categorie "Killed" is predicted with the highest accuracy; we consider this category as particularly important.
