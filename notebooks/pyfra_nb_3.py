@@ -82,7 +82,7 @@ k_best_feature_names = data.columns[kbest_selector.get_support(indices=True)]
 # ## Setup of Metrics Table
 
 # Creating a matrix to store the results
-result_metrics = pd.DataFrame(columns=['model', 'f1', 'accuracy', 'recall'], index=['LR', 'svc', 'rf', 'dt','ADA_Boost'])
+result_metrics = pd.DataFrame(columns=['model', 'f1', 'accuracy', 'recall'])
 result_metrics
 
 
@@ -151,7 +151,7 @@ y_svc = svc.predict(X_test_scaled_selection)
 
 # Calculate the metrics for the optimal svm model and store them in the result_metrics DataFrame 
 # The model will be stored as well in the DataFrame
-result_metrics = store_metrics(model=svc, model_name='svc',
+result_metrics = store_metrics(model=svc, model_name='Support Vector Machine',
                                y_test=y_test, y_pred=y_svc,
                                result_df=result_metrics)
 # Show the interim result                               
@@ -184,7 +184,7 @@ y_rf = rf.predict(X_test_scaled_selection)
 cm = pd.crosstab(y_test,y_rf, rownames=['Real'], colnames=['Prediction'])
 print(cm)
 
-result_metrics = store_metrics(model=rf, model_name='rf',
+result_metrics = store_metrics(model=rf, model_name='Random Forest',
                                y_test=y_test, y_pred=y_rf,
                                result_df=result_metrics)
                               
@@ -227,7 +227,7 @@ y_LR = LR.predict(X_test_scaled_selection)
 
 # Calculate the metrics for the optimal LR model and store them in the result_metrics DataFrame 
 # The model will be stored as well in the DataFrame
-result_metrics = store_metrics(model=LR, model_name='LR',
+result_metrics = store_metrics(model=LR, model_name='Logistic Regression',
                                y_test=y_test, y_pred=y_LR,
                                result_df=result_metrics)
 # Show the interim result                               
@@ -263,7 +263,7 @@ dt = DT.best_estimator_
 y_dt = dt.predict(X_test_scaled_selection)
 cm = pd.crosstab(y_test,y_dt, rownames=['Real'], colnames=['Prediction'])
 print(cm)
-result_metrics = store_metrics(model=dt, model_name='dt',
+result_metrics = store_metrics(model=dt, model_name='Decision Tree',
                                y_test=y_test, y_pred=y_dt,
                                result_df=result_metrics)
                               
@@ -290,7 +290,7 @@ stacking_clf = StackingClassifier(estimators=estimators, final_estimator=svc, cv
 
 stacking_clf.fit(X_train_scaled_selection, y_train)
 y_stacking = stacking_clf.predict(X_test_scaled_selection)
-result_metrics = store_metrics(model=stacking_clf, model_name='stacking_clf',
+result_metrics = store_metrics(model=stacking_clf, model_name='Stacking',
                                y_test=y_test, y_pred=y_stacking,
                                result_df=result_metrics)
 result_metrics
@@ -302,7 +302,7 @@ ADA_Boost = AdaBoostClassifier(estimator = LR , n_estimators = 1000)
 ADA_Boost.fit(X_train_scaled_selection, y_train)
 y_ada = ADA_Boost.predict(X_test_scaled_selection)
 
-result_metrics = store_metrics(model=ADA_Boost, model_name='ADA_Boost',
+result_metrics = store_metrics(model=ADA_Boost, model_name='ADA Boost',
                                y_test=y_test, y_pred=y_ada,
                                result_df=result_metrics)
 # Show the interim result                               
