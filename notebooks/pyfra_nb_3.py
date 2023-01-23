@@ -96,7 +96,7 @@ def store_metrics(model_name, model, y_test, y_pred, result_df):
 
 
 # ## Setup of the Cross-Validator
-# We will use a repeated stratified cross-validataion to make sure to pick the best parameters.
+# We will use a repeated stratified cross-validation to make sure to pick the best parameters.
 # The stratification will be used to ensure an equal distribution of the different categories in every bin.
 # The repetition will be used in order ensure that the result is not an outlier. We will set a lower the number of repetitions, however, to save execution time (default would be 10 repetitions).
 
@@ -235,26 +235,40 @@ result_metrics
 
 # # Decision Tree
 
-dt = DecisionTreeClassifier(criterion = "entropy", random_state=0)
-dt.fit(X_train_scaled_selection, y_train)
+# ## Setup of the DT and the Grid Search
+
+# +
+from sklearn import tree
+from sklearn.pipeline import Pipeline
+
+# Grid
+criterion = ['gini', 'entropy']
+max_depth = [2,4,6,8,10,12]
+parameters = dict(criterion=criterion, max_depth=max_depth)
+
+DT = GridSearchCV(DecisionTreeClassifier(),param_grid = parameters, cv = RepeatedKFold(n_splits=4, n_repeats=1, random_state=23))
+# 
+DT.fit(X_train_scaled_selection,y_train)
+
+# 
+print('Best Criterion:', DT.best_estimator_.get_params())
+print('Best max_depth:', DT.best_estimator_.get_params())
+print(); print(DT.best_estimator_.get_params())
+# -
+
+# ## Metrics of Decision Tree
+
+# +
+dt = DT.best_estimator_
 y_dt = dt.predict(X_test_scaled_selection)
-from sklearn import metrics
-cm = metrics.confusion_matrix(y_test, y_dt) 
+cm = pd.crosstab(y_test,y_dt, rownames=['Real'], colnames=['Prediction'])
 print(cm)
 result_metrics = store_metrics(model=dt, model_name='dt',
                                y_test=y_test, y_pred=y_dt,
                                result_df=result_metrics)
-# Show the interim result                               
+                              
 result_metrics
-
-# ## Interpretation of the Decision Tree
-# Decision trees are known to have a high interpretability compared to other machine learning models. The performance of the applied model is worse than the ones of the other models, but we can easily plot the tree and gain insights.
-
-from sklearn.tree import plot_tree
-fig = plt.figure(figsize=(12,6));
-plot_tree(dt,max_depth=2, fontsize=8, feature_names=k_best_feature_names);
-
-# The plot shows that the most important feature (according to the decision tree) is built-up_area. This binary variable cointains the information, whether the accident happened in a built-up area. We already showed in the first notebook that there seems to be a positive relation between the density of an area and it's **number** of accident. The decision tree here suggests that the **severity** is also affected by a dense population.
+# -
 
 # # Application of Advanced Models
 
