@@ -231,6 +231,20 @@ result_metrics = store_metrics(model=LR, model_name='LR',
 # Show the interim result                               
 result_metrics
 
+# # Decision Tree
+
+dt = DecisionTreeClassifier(criterion = "entropy", random_state=0)
+dt.fit(X_train_scaled_selection, y_train)
+y_dt = dt.predict(X_test_scaled_selection)
+from sklearn import metrics
+cm = metrics.confusion_matrix(y_test, y_dt) 
+print(cm)
+result_metrics = store_metrics(model=dt, model_name='dt',
+                               y_test=y_test, y_pred=y_dt,
+                               result_df=result_metrics)
+# Show the interim result                               
+result_metrics
+
 # # Application of Advanced Models
 
 
