@@ -25,7 +25,9 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split, GridSearchCV, RepeatedStratifiedKFold
 from sklearn.feature_selection import SelectKBest
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RepeatedKFold
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, StackingClassifier 
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import preprocessing
@@ -184,5 +186,19 @@ print('DT Score is:',RFCLFbest.score(X_test_scaled,y_test))
 
 # # Application of Advanced Models
 
+
+# ## Stacking Classifier
+
+# +
+estimators = [('lr', LR), ('svc', svc), ('rf', rf)]
+stacking_clf = StackingClassifier(estimators=estimators, final_estimator=svc, cv='prefit', n_jobs=-1)
+
+stacking_clf.fit(X_train_scaled_selection, y_train)
+y_stacking = stacking_clf.predict(X_test_scaled_selection)
+result_metrics = store_metrics(model=stacking_clf, model_name='stacking_clf',
+                               y_test=y_test, y_pred=y_stacking,
+                               result_df=result_metrics)
+result_metrics
+# -
 #
 # # Results and Conclusion
