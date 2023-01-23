@@ -268,6 +268,12 @@ characteristics.loc[(np.less(characteristics['year'],2019)),'department'] = \
 
 characteristics['department'] = characteristics['department'].apply(lambda code: code.lstrip('0'))
 
+# # Vehicles dataset
+
+# +
+#hello
+# -
+
 # # Merge all datasets
 
 # ## Compute the percentage of missing data
