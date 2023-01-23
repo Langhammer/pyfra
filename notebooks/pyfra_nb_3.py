@@ -94,7 +94,7 @@ def store_metrics(model_name, model, y_test, y_pred, result_df):
 
 
 # ## Setup of the Cross-Validator
-# We will use a repeated stratified cross-validataion to make sure to pick the best parameters.
+# We will use a repeated stratified cross-validation to make sure to pick the best parameters.
 # The stratification will be used to ensure an equal distribution of the different categories in every bin.
 # The repetition will be used in order ensure that the result is not an outlier. We will set a lower the number of repetitions, however, to save execution time (default would be 10 repetitions).
 
@@ -231,6 +231,43 @@ result_metrics = store_metrics(model=LR, model_name='LR',
 # Show the interim result                               
 result_metrics
 
+# # Decision Tree
+
+# ## Setup of the DT and the Grid Search
+
+# +
+from sklearn import tree
+from sklearn.pipeline import Pipeline
+
+# Grid
+criterion = ['gini', 'entropy']
+max_depth = [2,4,6,8,10,12]
+parameters = dict(criterion=criterion, max_depth=max_depth)
+
+DT = GridSearchCV(DecisionTreeClassifier(),param_grid = parameters, cv = RepeatedKFold(n_splits=4, n_repeats=1, random_state=23))
+# 
+DT.fit(X_train_scaled_selection,y_train)
+
+# 
+print('Best Criterion:', DT.best_estimator_.get_params())
+print('Best max_depth:', DT.best_estimator_.get_params())
+print(); print(DT.best_estimator_.get_params())
+# -
+
+# ## Metrics of Decision Tree
+
+# +
+dt = DT.best_estimator_
+y_dt = dt.predict(X_test_scaled_selection)
+cm = pd.crosstab(y_test,y_dt, rownames=['Real'], colnames=['Prediction'])
+print(cm)
+result_metrics = store_metrics(model=dt, model_name='dt',
+                               y_test=y_test, y_pred=y_dt,
+                               result_df=result_metrics)
+                              
+result_metrics
+# -
+
 # # Application of Advanced Models
 
 # # ADA Boosting
@@ -248,19 +285,3 @@ result_metrics
 
 #
 # # Results and Conclusion
-
-# # Decision Tree
-
-from sklearn.tree import DecisionTreeClassifier
-classifier = DecisionTreeClassifier(criterion = "entropy", random_state=0)
-classifier.fit(X_train, y_train)
-y_pred = classifier.predict(X_test)
-from sklearn import metrics
-cm = metrics.confusion_matrix(y_test, y_pred) 
-print(cm)
-accuracy = metrics.accuracy_score(y_test, y_pred) 
-print("Accuracy score:",accuracy)
-precision = metrics.precision_score(y_test, y_pred) 
-print("Precision score:",precision)
-recall = metrics.recall_score(y_test, y_pred) 
-print("Recall score:",recall)
