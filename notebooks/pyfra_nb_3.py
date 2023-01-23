@@ -248,3 +248,19 @@ result_metrics
 
 #
 # # Results and Conclusion
+
+# # Decision Tree
+
+from sklearn.tree import DecisionTreeClassifier
+classifier = DecisionTreeClassifier(criterion = "entropy", random_state=0)
+classifier.fit(X_train, y_train)
+y_pred = classifier.predict(X_test)
+from sklearn import metrics
+cm = metrics.confusion_matrix(y_test, y_pred) 
+print(cm)
+accuracy = metrics.accuracy_score(y_test, y_pred) 
+print("Accuracy score:",accuracy)
+precision = metrics.precision_score(y_test, y_pred) 
+print("Precision score:",precision)
+recall = metrics.recall_score(y_test, y_pred) 
+print("Recall score:",recall)
