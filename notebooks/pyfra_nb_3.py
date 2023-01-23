@@ -27,9 +27,9 @@ from sklearn.model_selection import train_test_split, GridSearchCV, RepeatedStra
 from sklearn.feature_selection import SelectKBest
 from sklearn.model_selection import RepeatedKFold
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, StackingClassifier 
 from sklearn import svm
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn import preprocessing
 from sklearn.metrics import f1_score, accuracy_score, recall_score, make_scorer
 from imblearn import under_sampling
@@ -75,6 +75,8 @@ kbest_selector.fit(X_train_scaled,y_train);
 X_train_scaled_selection = kbest_selector.transform(X_train_scaled)
 X_test_scaled_selection = kbest_selector.transform(X_test_scaled)
 print(f'We use {k_features} of the original {df.shape[1]} features')
+
+k_best_feature_names = data.columns[kbest_selector.get_support(indices=True)]
 
 # # Application of Machine Learning Models
 # ## Setup of Metrics Table
@@ -250,7 +252,8 @@ DT.fit(X_train_scaled_selection,y_train)
 
 # 
 print('Best Criterion:', DT.best_estimator_.get_params())
-
+print('Best max_depth:', DT.best_estimator_.get_params())
+print(); print(DT.best_estimator_.get_params())
 # -
 
 # ## Metrics of Decision Tree
@@ -269,6 +272,20 @@ result_metrics
 
 # # Application of Advanced Models
 
+
+# ## Stacking Classifier
+
+# +
+estimators = [('lr', LR), ('svc', svc), ('rf', rf)]
+stacking_clf = StackingClassifier(estimators=estimators, final_estimator=svc, cv='prefit', n_jobs=-1)
+
+stacking_clf.fit(X_train_scaled_selection, y_train)
+y_stacking = stacking_clf.predict(X_test_scaled_selection)
+result_metrics = store_metrics(model=stacking_clf, model_name='stacking_clf',
+                               y_test=y_test, y_pred=y_stacking,
+                               result_df=result_metrics)
+result_metrics
+# -
 # # ADA Boosting
 
 #Trying ADA boosting on LogisticRegresiion
