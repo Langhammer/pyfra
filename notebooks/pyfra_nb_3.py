@@ -252,7 +252,7 @@ result_metrics
 
 from sklearn.tree import plot_tree
 fig = plt.figure(figsize=(12,6));
-plot_tree(classifier,max_depth=2, fontsize=8, feature_names=k_best_feature_names);
+plot_tree(dt,max_depth=2, fontsize=8, feature_names=k_best_feature_names);
 
 # The plot shows that the most important feature (according to the decision tree) is built-up_area. This binary variable cointains the information, whether the accident happened in a built-up area. We already showed in the first notebook that there seems to be a positive relation between the density of an area and it's **number** of accident. The decision tree here suggests that the **severity** is also affected by a dense population.
 
