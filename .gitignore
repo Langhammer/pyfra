@@ -128,6 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 data/df.csv
-*.ipynb
+*pyspark.ipynb
 data/df.p
 notebooks/pyfra.py
