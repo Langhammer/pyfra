@@ -156,12 +156,12 @@ result_metrics
 # +
 params = {
     'criterion': ['gini', 'entropy'],
-    'max_depth': [15,35],
-    'min_samples_leaf':[7,15],
-    'n_estimators': [400,800]
+    'max_depth': [5,10,20,40],
+    'min_samples_leaf':[3,7,15,25],
+    'n_estimators': [50,100,200,400]
     }
 
-RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = RepeatedKFold(n_splits=4, n_repeats=1, random_state=23))
+RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = cv)
 RFCLF.fit(X_train_scaled_selection,y_train)
 
 print('Best Params are:',RFCLF.best_params_)
