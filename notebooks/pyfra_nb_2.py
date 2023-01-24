@@ -356,6 +356,35 @@ characteristics.loc[(np.less(characteristics['year'],2019)),'department'] = \
 
 characteristics['department'] = characteristics['department'].apply(lambda code: code.lstrip('0'))
 
+# # Vehicles dataset
+
+# ### Translate variable names from French to English
+
+# We will translate the variable names from French to English for better interpretability and name them more clear (using small letters).
+
+vehicles = vehicles.rename(columns = {'Num_Acc' : 'num_acc','id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
+                           'senc' : 'direction' , 'catv' : 'cat_veh', 'obs' : 'obstacle', 'obsm' : 'obstacle_movable' ,
+                          'choc' : 'initial_point' , 'manv' : 'principal_maneuver' , 'motor' : 'motor_veh', 'occutc' : 'num_occupants'})
+vehicles.columns
+
+# ### Check of the variables with the most missing values
+
+# Variable num_occupants is representing amount of passangers being victims of an accident when they used public transport system. Missing values are caused by not recording value 0 and keeping the cell empty. For this reason we decided to replace the missing values by 0.
+
+vehicles["num_occupants"] = vehicles["num_occupants"].fillna(0)
+vehicles['num_occupants'].isna().sum()
+
+vehicles['num_occupants'].value_counts()
+
+# Variables motor_veh and id_veh represents type of the motorisation of the vehicle. There are 85% missing values in this column. Some of the values of this variable dont specificate exact type but are tracked as unspecified, unknown, other. We have decided to drop this variable as it doesnt have any significant influence on the target variable. 
+
+vehicles = vehicles.drop(columns=['motor_veh','id_veh'])
+
+# 8 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
+
+vehicles[['num_acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']] = vehicles[['num_acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']].fillna(0)
+vehicles.isna().sum()
+
 # # Merge all datasets
 
 # ## Compute the percentage of missing data
