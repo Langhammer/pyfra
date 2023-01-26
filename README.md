@@ -8,10 +8,10 @@ pyfra
 
 # Credits
 ## Project members
-Kay Langhammer [GitHub](https://github.com/Langhammer) / [LinkedIn](https://www.linkedin.com/in/kay-langhammer/)
-Robert Leisring
-Saleh Saleh
-Michal Turak
+Kay Langhammer [GitHub](https://github.com/Langhammer) / [LinkedIn](https://www.linkedin.com/in/kay-langhammer/)  
+Robert Leisring  
+Saleh Saleh  
+Michal Turak  
 
 ## Project Mentors
 Laurene Bouskila [GitHub](https://github.com/laureneb26)  
