@@ -270,9 +270,31 @@ characteristics['department'] = characteristics['department'].apply(lambda code:
 
 # # Vehicles dataset
 
-# +
-#hello
-# -
+# ### Translate variable names from French to English
+
+# We will translate the variable names from French to English for better interpretability and name them more clear (using small letters).
+
+vehicles = vehicles.rename(columns = {'Num_Acc' : 'num_acc','id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
+                           'senc' : 'direction' , 'catv' : 'cat_veh', 'obs' : 'obstacle', 'obsm' : 'obstacle_movable' ,
+                          'choc' : 'initial_point' , 'manv' : 'principal_maneuver' , 'motor' : 'motor_veh', 'occutc' : 'num_occupants'})
+vehicles.columns
+
+# ### Check of the variables with the most missing values
+
+# Variable num_occupants is representing amount of passangers being victims of an accident when they used public transport system. Missing values are caused by not recording value 0 and keeping the cell empty. For this reason we decided to replace the missing values by 0.
+
+vehicles["num_occupants"] = vehicles["num_occupants"].fillna(0)
+vehicles['num_occupants'].isna().sum()
+vehicles['num_occupants'].value_counts()
+
+# Variables motor_veh and id_veh represents type of the motorisation of the vehicle. There are 85% missing values in this column. Some of the values of this variable dont specificate exact type but are tracked as unspecified, unknown, other. We have decided to drop this variable as it doesnt have any significant influence on the target variable. 
+
+vehicles = vehicles.drop(columns=['motor_veh','id_veh'])
+
+# 8 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
+
+vehicles[['num_acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']] = vehicles[['num_acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']].fillna(0)
+vehicles.isna().sum()
 
 # # Merge all datasets
 
@@ -411,7 +433,8 @@ sns.countplot(y = "year" , data = characteristics);
 sns.heatmap(vehicles.corr(), cmap ='RdYlGn', linewidths = 0.30, annot = True);
 
 # showing frequency of each manevuer before car accident
-plt.hist(vehicles["manv"])
+plt.hist(vehicles["sns.countplot(data=users, x='sexe');
+plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);"])
 plt.show()
 
 sns.countplot(data=users, x='sexe');
@@ -435,13 +458,10 @@ plt.yticks(ticks=list(range(0,9)),labels=['0=Nans','1 = Highway', '2 = National 
 # ### Conclusion for road categories with most accidents: 
 # Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
 
-# +
-
 g = sns.FacetGrid(places, col = 'Traf_Direct');
 g.map(plt.hist, 'Rd_Cat');
 g.fig.subplots_adjust(top=0.8);
 g.fig.suptitle('Accidents according to traffic direction and road category');
-# -
 
 
 # Legend:
@@ -469,10 +489,48 @@ plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '
 plt.figure(figsize = (10,9));
 sns.countplot( y = places.Pos_Acc);
 plt.title('Accident Location');
-plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', '2 = On Emergancy Lane', '3 = On Hard Shoulder', '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']);
+plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', '2 = On Emergancy Lane', '3 = On Hard Shoulder', '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']
 
 # ### Conclusion for accident location:
 # By far the most accidents happend on the carriage way.
+
+# ## Vehicles dataset visualisations
+
+plt.figure(figsize = (5,5));
+sns.countplot( y = vehicles.obstacle_movable);
+plt.title('Crashed obstacle');
+plt.yticks(ticks=list(range(0,8)),labels=['-1=Nans','0=Nothing','1 = Pedestrian', '2 = Vehicle', '3 = Rail vehicle', '4 = Pet' ,'5 = Wild animal','6 = Other']);
+
+# ### Conclusion for obstacle crashed during accident:
+# Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
+
+# ### Heat map of Vehicles dataset to target variable
+
+corr_matrix = vehicles.corr()
+mask = []
+for i in range(len(corr_matrix.columns)):
+    mask_i = []
+    for j in range(len(corr_matrix.columns)):
+        if i>j:
+            mask_i.append(True)
+        else: 
+            mask_i.append(False)
+    mask.append(mask_i)
+# Display Correlations
+plt.figure(figsize=(10, 10), facecolor='w', edgecolor='k')
+sns.set(font_scale=1.2)
+sns.heatmap(corr_matrix,cmap='coolwarm',
+            center = 0, 
+            annot=True,
+            fmt='.1g',
+            mask=mask)
+
+# ### Visualisation of most important features
+
+fig, ax = plt.subplots(figsize=(12,12))
+sns.heatmap(vehicles.corr()[['secu']].sort_values('secu').tail(10),
+ vmax=1, vmin=-1, annot=True, ax=ax);
+ax.invert_yaxis()
 
 # ### Summary of the most important variables of the data set places.
 # Many changes have been made to this data set over time. Unfortunately, no new columns were created for this but existing columns were used for other inputs, so that one column can have several meanings. Unfortunately, some very interesting data cannot be used very well. In general, there is hardly any meaningful connection between the variables. It's not clear which place-descriptive variables give clear clues, but I'll try to come to a conclusion anyway.
