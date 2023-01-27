@@ -345,10 +345,11 @@ day_time_tick_labels = ('0:00', '03:00','06:00','09:00','12:00','15:00',
 plot_data = pd.DataFrame({'weekdays': (dict_of_category_dfs['characteristics'][dict_of_category_dfs['characteristics']['is_weekend'] != 1 ])['hhmm'],
                  'weekends': (dict_of_category_dfs['characteristics'][dict_of_category_dfs['characteristics']['is_weekend'] == 1 ])['hhmm']})
 fig= plt.figure();
-sns.histplot(data=plot_data, stat='proportion', bins=24, common_norm=False);
+sns.histplot(data=plot_data, stat='proportion', bins=24, binrange=(0,2400), common_norm=False);
 plt.xticks(ticks=day_time_ticks, 
            labels=day_time_tick_labels);
 plt.xlabel('Time of Day')
+plt.xlim((0,2400))
 plt.title('Distribution of Accidents by Daytime')
 
 # The plot shows, that the temporal distribution is different on the weekends: On weekends, there are far more accidents between 19:00 and 07:00, while there are more accidents on weekday around 09:00 and 18:00. These differences align very well with our hypothesis. We did not expect the peak on weekends around 18:00, though. 
