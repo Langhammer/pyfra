@@ -43,7 +43,7 @@ def read_csv_of_year(start_year, end_year, separators, name_separator='_'):
         for this_category, this_sep in zip(data_categories, separators):
             # We need the French name of the category for the filename
             this_french_category = french_categories[this_category]
-            this_file_path_and_name = '../Data/'+this_year_str+'/' + this_french_category+name_separator+this_year_str+'.csv'
+            this_file_path_and_name = '../data/'+this_year_str+'/' + this_french_category+name_separator+this_year_str+'.csv'
             this_df_dict[this_category] = pd.read_csv(this_file_path_and_name, encoding='latin-1', sep=this_sep, low_memory=False)
         df_dict[year] = this_df_dict
     return df_dict
