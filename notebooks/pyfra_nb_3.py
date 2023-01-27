@@ -35,7 +35,6 @@ from sklearn.metrics import f1_score, accuracy_score, recall_score, make_scorer
 from imblearn import under_sampling
 from imblearn.under_sampling import RandomUnderSampler
 from time import sleep
-from tqdm.notebook import tqdm
 from sklearn.ensemble import AdaBoostClassifier
 
 
