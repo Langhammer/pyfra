@@ -372,7 +372,7 @@ characteristics['collision_category'] = characteristics['collision_category'].fi
 
 # We will translate the variable names from French to English for better interpretability and name them more clear (using small letters).
 
-vehicles = vehicles.rename(columns = {'Num_Acc' : 'num_acc','id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
+vehicles = vehicles.rename(columns = {'id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
                            'senc' : 'direction' , 'catv' : 'cat_veh', 'obs' : 'obstacle', 'obsm' : 'obstacle_movable' ,
                           'choc' : 'initial_point' , 'manv' : 'principal_maneuver' , 'motor' : 'motor_veh', 'occutc' : 'num_occupants'})
 vehicles.columns
