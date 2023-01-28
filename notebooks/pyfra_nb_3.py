@@ -339,3 +339,16 @@ severity_categories = ("Unscathed","Killed", "Hospitalized wounded", "Light inju
 print(classification_report(y_true=y_test, y_pred=y_stacking, target_names=severity_categories))
 
 # The classification report reflects our observations from the correlation matrix. It is satisfying that the categorie "Killed" is predicted with the highest accuracy; we consider this category as particularly important.
+
+# +
+# Saving the models for further use and investigation
+from joblib import dump, load
+froam
+
+
+dump(stacking_clf, '../models/stacking_clf.joblib')
+# -
+
+loaded_model = load('../models/stacking_clf.joblib')
+y_test_loaded = loaded_model.predict(X_test_scaled_selection)
+
