@@ -356,6 +356,16 @@ characteristics.loc[(np.less(characteristics['year'],2019)),'department'] = \
 
 characteristics['department'] = characteristics['department'].apply(lambda code: code.lstrip('0'))
 
+# ### Fill missing values in atmospheric conditions variable
+
+characteristics['atmospheric_conditions'] = characteristics['atmospheric_conditions'].fillna(
+    characteristics['atmospheric_conditions'].mode()[0])
+
+# ### Fill missing values in collision category variable
+
+characteristics['collision_category'] = characteristics['collision_category'].fillna(
+    characteristics['collision_category'].mode()[0])
+
 # # Vehicles dataset
 
 # ### Translate variable names from French to English
