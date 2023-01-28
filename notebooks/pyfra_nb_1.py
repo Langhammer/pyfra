@@ -402,9 +402,26 @@ plt.ylabel('Number of Accidents in the Department');
 # ### Conclusion
 # The differences between the departments are generally higher than expected. Other than the departments without data (which have been dropped before plotting), there are no outliers. The relation between habitants and accidents does not seem to be linear, a quadratic function could be used for fitting here.  
 
-sns.countplot(y = "month" , data = characteristics);
+# # Checking Accidents per month and per year
 
-sns.countplot(y = "year" , data = characteristics);
+# Hypothesis: In general accidents should be uniform accross all months of the year, and generally accidents should be decreasing across the years especially in covid area since we had a lower volume of car movement across the world
+
+sns.countplot(y = "month" , data = characteristics)
+plt.xlabel('Total Number of Accidents');
+plt.ylabel('Month');
+plt.title('Distribution of Accidents by Month');
+
+
+sns.countplot(y = "year" , data = characteristics)
+plt.xlabel('Total Number of Accidents');
+plt.ylabel('Year');
+plt.title('Distribution of Accidents by Year');
+
+# # Conclusion, We can see that the number of accidents per month is almost uniform.
+# For the years we see a decline in the number of accidents per year, maybe for increased security measures or improved laws and roads.
+# We can also see that there is a sharp decrease in the number in the year 2020 probably due to Covid and lockdown in France, and a relative increase after that in 2021.
+
+# ### WE HAVE SEVERAL HEATMAPS MUST CHOOSE ONLY ONE 
 
 # Displaying dataframe correlations as a heatmap 
 # with diverging colourmap as RdYlGn
@@ -414,18 +431,36 @@ sns.heatmap(vehicles.corr(), cmap ='RdYlGn', linewidths = 0.30, annot = True);
 plt.hist(vehicles["manv"])
 plt.show()
 
+users.sexe.replace(to_replace=-1,value=1,inplace=True)
+users.sexe.value_counts()
+
+# Hypothesis: The number of accidents across genders should be equal across males and females.
+
 sns.countplot(data=users, x='sexe');
-plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);
+plt.xticks(ticks=[0,1],labels=['Male', 'Female'])
+plt.xlabel('Sex');
+plt.ylabel('Total Number of Accidents');
+plt.title('Distribution of Accidents by Gender');
+
+# We see that the amount of Males doing accidents is almost double that of females, probably because the amount of males who generally drive are higher than females, or because males are reckless drivers.
+
+users.grav.replace(to_replace=-1,value=1,inplace=True)
+users.grav.value_counts()
+
+# We nee to check the severity (gravity) of accidents and its effects on the dirvers, which is our target variable.
+# Hypothesis: Only a low number of accidents should result in serious injury or death due to the advanced security systems and road designs.
 
 sns.countplot(data=users, x='grav');  
-plt.xticks(ticks=[0,1,2,3,4], labels=['Missing data','1\nUnscathed', '2\nKilled',
+plt.xticks(ticks=[0,1,2,3], labels=['1\nUnscathed', '2\nKilled',
     '3\nHospitalized\nwounded','4\nLight injury'])
 plt.xlabel('gravity');
+plt.ylabel('Total Number of Accidents');
+plt.title('Number of Accidents according to their gravity');
+
+# Conclusion: We can see that almost 20% of people are Hospitalized and only a very small amount is killed,and hence we can deduce that the target variable is unbalanced.
 
 fig, S = plt.subplots(figsize=(18,18));
 sns.heatmap(users.corr() , annot = True );
-
-sns.countplot(data=users, y='grav');  #•	1 - Unscathed•	2 - Killed•	3 - Hospitalized wounded•	4 - Light injury
 
 plt.figure(figsize = (10,9));
 sns.countplot( y = places.Rd_Cat);
