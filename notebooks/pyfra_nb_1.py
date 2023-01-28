@@ -316,7 +316,7 @@ print(na_percentage(df))
 # ## Correlation of the feature variables with the target
 
 cm=df.corr()
-cm["grav"].sort_values(ascending=False)[1:]
+cm['grav'].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
 
@@ -428,10 +428,6 @@ sns.countplot(y = "month" , data = characteristics);
 
 sns.countplot(y = "year" , data = characteristics);
 
-# Displaying dataframe correlations as a heatmap 
-# with diverging colourmap as RdYlGn
-sns.heatmap(vehicles.corr(), cmap ='RdYlGn', linewidths = 0.30, annot = True);
-
 # showing frequency of each manevuer before car accident
 plt.hist(vehicles["sns.countplot(data=users, x='sexe');
 plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);"])
@@ -504,26 +500,14 @@ plt.yticks(ticks=list(range(0,8)),labels=['-1=Nans','0=Nothing','1 = Pedestrian'
 # ### Conclusion for obstacle crashed during accident:
 # Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
 
-# ### Heat map of Vehicles dataset to target variable
+# ### Heat map of Vehicles dataset
 
-corr_matrix = vehicles.corr()
-mask = []
-for i in range(len(corr_matrix.columns)):
-    mask_i = []
-    for j in range(len(corr_matrix.columns)):
-        if i>j:
-            mask_i.append(True)
-        else: 
-            mask_i.append(False)
-    mask.append(mask_i)
-# Display Correlations
-plt.figure(figsize=(10, 10), facecolor='w', edgecolor='k')
-sns.set(font_scale=1.2)
-sns.heatmap(corr_matrix,cmap='coolwarm',
-            center = 0, 
-            annot=True,
-            fmt='.1g',
-            mask=mask)
+# Displaying dataframe correlations as a heatmap 
+# with diverging colourmap as RdYlGn
+sns.heatmap(vehicles.corr(), cmap ='RdYlGn', linewidths = 0.30, annot = True);
+
+# ### Conclusion for a heat map of vehicles
+# We do not observe any strong correlation between the variables in the dataframe Vehicles itself. Negatively correlated are the variables obstacle and obstacle_movable, whereas num_acc and direction are strongly positive correlated - it has no importance on our data as num_acc is only unique identificator of an accident.
 
 # ### Visualisation of most important features
 
