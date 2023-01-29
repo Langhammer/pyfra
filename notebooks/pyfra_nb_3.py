@@ -35,7 +35,6 @@ from sklearn.metrics import f1_score, accuracy_score, recall_score, make_scorer
 from imblearn import under_sampling
 from imblearn.under_sampling import RandomUnderSampler
 from time import sleep
-from tqdm.notebook import tqdm
 from sklearn.ensemble import AdaBoostClassifier
 
 
@@ -53,8 +52,8 @@ rus = RandomUnderSampler(random_state=23)
 relative_sample_size = 0.01
 df = df.sample(frac=relative_sample_size, random_state=23)
 
-data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df.grav
+data = df.drop(columns='Gravity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df.Gravity
 data, target = rus.fit_resample(X=data, y=target)
 
 target.value_counts()

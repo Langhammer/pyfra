@@ -87,12 +87,14 @@ for this_category, df in dict_of_category_dfs.items():
 
 # ## Users Dataset
 
-# Dropping unwanted columns , which are num_veh , and id_vehicule
-#
+# Dropping unwanted columns , which are num_veh , id_vehicule, and Num_Acc
 
-users = users.drop(columns=['num_veh','id_vehicule']) #Not needed
+users = users.drop(columns=['num_veh','id_vehicule']) #Not needed #2509620 
 
-users = users[users['grav'] != -1]
+users.isna().sum()
+
+#Grav
+users.grav.replace(to_replace=-1,value=1,inplace=True)
 
 # +
 #Place
@@ -152,7 +154,8 @@ users.an_nais.fillna(1986.0,inplace=True)
 
 # -
 
-users.drop(columns='secu3',inplace=True)
+#Sex 
+users.sexe.replace(to_replace=-1,value=1,inplace=True)
 
 # # Fixing incoherency of 'secu' Variable
 # Safety equipment until 2018 was in 2 variables: existence and use.
@@ -160,7 +163,7 @@ users.drop(columns='secu3',inplace=True)
 # From 2019, it is the use with up to 3 possible equipments for the same user
 # (especially for motorcyclists whose helmet and gloves are mandatory).
 #
-# # secu1
+# #secu1
 # The character information indicates the presence and use of the safety equipment:
 # -1 - No information
 # 0 - No equipment
@@ -174,14 +177,77 @@ users.drop(columns='secu3',inplace=True)
 # 8 - Non-determinable
 # 9 - Other
 #
-# # secu2
+# #secu2
 # The character information indicates the presence and use of the safety equipment
 #
-# # secu3
+# #secu3
 # The character information indicates the presence and use of safety equipment
-#
+
+#Security 
+users.drop(columns='secu3',inplace=True)
+
+#secu has some missing values for older years , must fill with mode before continuing
+users.secu[:2142195].fillna(value=1,inplace=True)
+
+# +
+users['SecuA'] = ((users.secu - users.secu%10)/10) #Type of security Used
+users['SecuB']=   users.secu%10  # Was the security used or No
+
+#SecuA is not very important we will focus on secuB if the item was used or not to facilitate study
+# -
+
+# 0 is unknown change to others 9 
+users.SecuA.replace(to_replace=0,value=9,inplace=True)
+users.SecuA.value_counts()
+
+# 2-No 3-UnDeterminable 0-Unknown , change all to 0 not used
+users.SecuB.replace(to_replace=3,value=0,inplace=True)
+users.SecuB.replace(to_replace=2,value=0,inplace=True)
+users.SecuB.value_counts()
+
+# For Secu1-secu2 
+# We will gather all usage for security variable with 1 value {1} , and if there is no safety we will use {0} , No need to take multiple security parameters (secu2) we will noly take into consideration 1 security variable for comparibility with earlier years.
+
+users.secu1.replace(to_replace=[2,3,4,5,6,7,8,9],value=1,inplace=True)
+users.secu1.replace(to_replace=[-1],value=0,inplace=True)
+
+users.secu1.value_counts() 
+
+users.SecuB.value_counts()
+
+# Now both secu1 and secuB are same format we need to merge them into 1 column (for all years)
+
+users['Security']=0
+users['Security'][:2142195] = users.SecuB[:2142195]
+users['Security'][2142196:] = users.secu1[2142196:]
+
+#To drop unneeded columns
+users = users.drop(columns=['secu','secu1','secu2','SecuA','SecuB'])
 
 na_percentage(users)
+
+# ### French to English variables
+
+# +
+users = users.rename(columns = {'catu' : 'User_category',
+                                'grav' : 'Gravity' , #Gravity of accident
+                                'sexe' : 'Sex' , #Sex of Driver
+                                'trajet' : 'Trajectory' , 
+                                'locp' : 'LOCP' , #localisation of pedestrian
+                                'actp' : 'ACTP' , #action of pedestrian
+                                'etatp' : 'StateP' , #State of pedestrian during accident
+                                'an_nais' : 'YoB' , #Year of Birth
+                               })
+users.columns
+
+#change type to int
+users.place = users.place.astype(int)
+users.Trajectory = users.Trajectory.astype(int)
+users.LOCP = users.LOCP.astype(int)
+users.ACTP = users.ACTP.astype(int)
+users.StateP = users.StateP.astype(int)
+users.YoB = users.YoB.astype(int)
+# -
 
 # ## Places Dataset
 
@@ -356,6 +422,45 @@ characteristics.loc[(np.less(characteristics['year'],2019)),'department'] = \
 
 characteristics['department'] = characteristics['department'].apply(lambda code: code.lstrip('0'))
 
+# ### Fill missing values in atmospheric conditions variable
+
+characteristics['atmospheric_conditions'] = characteristics['atmospheric_conditions'].fillna(
+    characteristics['atmospheric_conditions'].mode()[0])
+
+# ### Fill missing values in collision category variable
+
+characteristics['collision_category'] = characteristics['collision_category'].fillna(
+    characteristics['collision_category'].mode()[0])
+
+# # Vehicles dataset
+
+# ### Translate variable names from French to English
+
+# We will translate the variable names from French to English for better interpretability and name them more clear (using small letters).
+
+vehicles = vehicles.rename(columns = {'id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
+                           'senc' : 'direction' , 'catv' : 'cat_veh', 'obs' : 'obstacle', 'obsm' : 'obstacle_movable' ,
+                          'choc' : 'initial_point' , 'manv' : 'principal_maneuver' , 'motor' : 'motor_veh', 'occutc' : 'num_occupants'})
+vehicles.columns
+
+# ### Check of the variables with the most missing values
+
+# Variable num_occupants is representing amount of passangers being victims of an accident when they used public transport system. Missing values are caused by not recording value 0 and keeping the cell empty. For this reason we decided to replace the missing values by 0.
+
+vehicles["num_occupants"] = vehicles["num_occupants"].fillna(0)
+vehicles['num_occupants'].isna().sum()
+
+vehicles['num_occupants'].value_counts()
+
+# Variables motor_veh and id_veh represents type of the motorisation of the vehicle. There are 85% missing values in this column. Some of the values of this variable dont specificate exact type but are tracked as unspecified, unknown, other. We have decided to drop this variable as it doesnt have any significant influence on the target variable. 
+
+vehicles = vehicles.drop(columns=['motor_veh','id_veh'])
+
+# 8 Variables have <= 1% missing information, so for those it should be fine to set the missing information just to zero.
+
+vehicles[['Num_Acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']] = vehicles[['Num_Acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']].fillna(0)
+vehicles.isna().sum()
+
 # # Merge all datasets
 
 # ## Compute the percentage of missing data
@@ -376,7 +481,7 @@ print(na_percentage(df))
 # ## Correlation of the feature variables with the target
 
 cm=df.corr()
-cm["grav"].sort_values(ascending=False)[1:]
+cm["Gravity"].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
 

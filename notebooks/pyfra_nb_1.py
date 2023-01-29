@@ -299,9 +299,31 @@ characteristics['department'] = characteristics['department'].apply(lambda code:
 
 # ## Vehicles dataset
 
-# +
-#hello
-# -
+# ### Translate variable names from French to English
+
+# We will translate the variable names from French to English for better interpretability and name them more clear (using small letters).
+
+vehicles = vehicles.rename(columns = {'Num_Acc' : 'num_acc','id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
+                           'senc' : 'direction' , 'catv' : 'cat_veh', 'obs' : 'obstacle', 'obsm' : 'obstacle_movable' ,
+                          'choc' : 'initial_point' , 'manv' : 'principal_maneuver' , 'motor' : 'motor_veh', 'occutc' : 'num_occupants'})
+vehicles.columns
+
+# ### Check of the variables with the most missing values
+
+# Variable num_occupants is representing amount of passangers being victims of an accident when they used public transport system. Missing values are caused by not recording value 0 and keeping the cell empty. For this reason we decided to replace the missing values by 0.
+
+vehicles["num_occupants"] = vehicles["num_occupants"].fillna(0)
+vehicles['num_occupants'].isna().sum()
+vehicles['num_occupants'].value_counts()
+
+# Variables motor_veh and id_veh represents type of the motorisation of the vehicle. There are 85% missing values in this column. Some of the values of this variable dont specificate exact type but are tracked as unspecified, unknown, other. We have decided to drop this variable as it doesnt have any significant influence on the target variable. 
+
+vehicles = vehicles.drop(columns=['motor_veh','id_veh'])
+
+# 8 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
+
+vehicles[['num_acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']] = vehicles[['num_acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']].fillna(0)
+vehicles.isna().sum()
 
 # # Merge all datasets
 
@@ -325,7 +347,7 @@ print(na_percentage(df))
 # ## Correlation of the feature variables with the target
 
 cm=df.corr()
-cm["grav"].sort_values(ascending=False)[1:]
+cm['grav'].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
 
@@ -402,30 +424,62 @@ plt.ylabel('Number of Accidents in the Department');
 # ### Conclusion
 # The differences between the departments are generally higher than expected. Other than the departments without data (which have been dropped before plotting), there are no outliers. The relation between habitants and accidents does not seem to be linear, a quadratic function could be used for fitting here.  
 
-sns.countplot(y = "month" , data = characteristics);
+# # Checking Accidents per month and per year
 
-sns.countplot(y = "year" , data = characteristics);
+# Hypothesis: In general accidents should be uniform accross all months of the year, and generally accidents should be decreasing across the years especially in covid area since we had a lower volume of car movement across the world
 
-# Displaying dataframe correlations as a heatmap 
-# with diverging colourmap as RdYlGn
-sns.heatmap(vehicles.corr(), cmap ='RdYlGn', linewidths = 0.30, annot = True);
+sns.countplot(y = "month" , data = characteristics)
+plt.xlabel('Total Number of Accidents');
+plt.ylabel('Month');
+plt.title('Distribution of Accidents by Month');
+
+
+sns.countplot(y = "year" , data = characteristics)
+plt.xlabel('Total Number of Accidents');
+plt.ylabel('Year');
+plt.title('Distribution of Accidents by Year');
+
+# # Conclusion, We can see that the number of accidents per month is almost uniform.
+# For the years we see a decline in the number of accidents per year, maybe for increased security measures or improved laws and roads.
+# We can also see that there is a sharp decrease in the number in the year 2020 probably due to Covid and lockdown in France, and a relative increase after that in 2021.
+
+# ### WE HAVE SEVERAL HEATMAPS MUST CHOOSE ONLY ONE 
 
 # showing frequency of each manevuer before car accident
-plt.hist(vehicles["manv"])
+plt.hist(vehicles["sns.countplot(data=users, x='sexe');
+plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);"])
 plt.show()
 
+users.sexe.replace(to_replace=-1,value=1,inplace=True)
+users.sexe.value_counts()
+
+# Hypothesis: The number of accidents across genders should be equal across males and females.
+
 sns.countplot(data=users, x='sexe');
-plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);
+plt.xticks(ticks=[0,1],labels=['Male', 'Female'])
+plt.xlabel('Sex');
+plt.ylabel('Total Number of Accidents');
+plt.title('Distribution of Accidents by Gender');
+
+# We see that the amount of Males doing accidents is almost double that of females, probably because the amount of males who generally drive are higher than females, or because males are reckless drivers.
+
+users.grav.replace(to_replace=-1,value=1,inplace=True)
+users.grav.value_counts()
+
+# We nee to check the severity (gravity) of accidents and its effects on the dirvers, which is our target variable.
+# Hypothesis: Only a low number of accidents should result in serious injury or death due to the advanced security systems and road designs.
 
 sns.countplot(data=users, x='grav');  
-plt.xticks(ticks=[0,1,2,3,4], labels=['Missing data','1\nUnscathed', '2\nKilled',
+plt.xticks(ticks=[0,1,2,3], labels=['1\nUnscathed', '2\nKilled',
     '3\nHospitalized\nwounded','4\nLight injury'])
 plt.xlabel('gravity');
+plt.ylabel('Total Number of Accidents');
+plt.title('Number of Accidents according to their gravity');
+
+# Conclusion: We can see that almost 20% of people are Hospitalized and only a very small amount is killed,and hence we can deduce that the target variable is unbalanced.
 
 fig, S = plt.subplots(figsize=(18,18));
 sns.heatmap(users.corr() , annot = True );
-
-sns.countplot(data=users, y='grav');  #•	1 - Unscathed•	2 - Killed•	3 - Hospitalized wounded•	4 - Light injury
 
 plt.figure(figsize = (10,9));
 sns.countplot( y = places.Rd_Cat);
@@ -435,13 +489,10 @@ plt.yticks(ticks=list(range(0,9)),labels=['0=Nans','1 = Highway', '2 = National 
 # ### Conclusion for road categories with most accidents: 
 # Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
 
-# +
-
 g = sns.FacetGrid(places, col = 'Traf_Direct');
 g.map(plt.hist, 'Rd_Cat');
 g.fig.subplots_adjust(top=0.8);
 g.fig.suptitle('Accidents according to traffic direction and road category');
-# -
 
 
 # Legend:
@@ -469,10 +520,36 @@ plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '
 plt.figure(figsize = (10,9));
 sns.countplot( y = places.Pos_Acc);
 plt.title('Accident Location');
-plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', '2 = On Emergancy Lane', '3 = On Hard Shoulder', '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']);
+plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', '2 = On Emergancy Lane', '3 = On Hard Shoulder', '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']
 
 # ### Conclusion for accident location:
 # By far the most accidents happend on the carriage way.
+
+# ## Vehicles dataset visualisations
+
+plt.figure(figsize = (5,5));
+sns.countplot( y = vehicles.obstacle_movable);
+plt.title('Crashed obstacle');
+plt.yticks(ticks=list(range(0,8)),labels=['-1=Nans','0=Nothing','1 = Pedestrian', '2 = Vehicle', '3 = Rail vehicle', '4 = Pet' ,'5 = Wild animal','6 = Other']);
+
+# ### Conclusion for obstacle crashed during accident:
+# Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
+
+# ### Heat map of Vehicles dataset
+
+# Displaying dataframe correlations as a heatmap 
+# with diverging colourmap as RdYlGn
+sns.heatmap(vehicles.corr(), cmap ='RdYlGn', linewidths = 0.30, annot = True);
+
+# ### Conclusion for a heat map of vehicles
+# We do not observe any strong correlation between the variables in the dataframe Vehicles itself. Negatively correlated are the variables obstacle and obstacle_movable, whereas num_acc and direction are strongly positive correlated - it has no importance on our data as num_acc is only unique identificator of an accident.
+
+# ### Visualisation of most important features
+
+fig, ax = plt.subplots(figsize=(12,12))
+sns.heatmap(vehicles.corr()[['secu']].sort_values('secu').tail(10),
+ vmax=1, vmin=-1, annot=True, ax=ax);
+ax.invert_yaxis()
 
 # ### Summary of the most important variables of the data set places.
 # Many changes have been made to this data set over time. Unfortunately, no new columns were created for this but existing columns were used for other inputs, so that one column can have several meanings. Unfortunately, some very interesting data cannot be used very well. In general, there is hardly any meaningful connection between the variables. It's not clear which place-descriptive variables give clear clues, but I'll try to come to a conclusion anyway.
