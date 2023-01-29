@@ -16,13 +16,15 @@
 # ==============
 # Exploring Data and Visualization
 
+# # Importing Packages 
+
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 # %matplotlib inline
 
-# # Import Data
+# # Importing Data
 
 french_categories = {'characteristics': 'caracteristiques', 'places':'lieux', 'users':'usagers', 'vehicles':'vehicules'}
 data_categories = french_categories.keys()
@@ -58,7 +60,7 @@ df_dict.update(read_csv_of_year(2019, 2021, separators=';', name_separator='-'))
 
 # -
 
-# ## Put all the data in one dataframe for each category
+# ## Merge all the Data in one Data Frame for each Category
 
 # +
 dict_of_category_dfs = {}
@@ -69,15 +71,14 @@ characteristics = dict_of_category_dfs['characteristics']
 places = dict_of_category_dfs['places']
 users = dict_of_category_dfs['users']
 vehicles = dict_of_category_dfs['vehicles']
+
+
 # -
 
 # # Data Cleaning
 # We will perform some of the cleaning of the data on the individual datasets. Not all cleaning is possible before merging the datasets, so there will be a second round of cleaning.
 
-places.columns
-
-
-# ## Calculate the percentage of missing values for each dataframe
+# ### Function for calculating the percentage of missing values for each data frame
 
 def na_percentage(df):
   return df.isna().sum() *100 / len(df)
@@ -92,6 +93,34 @@ for this_category, df in dict_of_category_dfs.items():
 #
 
 users = users.drop(columns=['num_veh','id_vehicule']) #Not needed
+
+# ### Fixing incoherency of 'secu' Variable
+# Safety equipment until 2018 was in 2 variables: existence and use.
+#
+# From 2019, it is the use with up to 3 possible equipments for the same user (especially for motorcyclists whose helmet and gloves are mandatory).
+#
+# #### secu1
+# The character information indicates the presence and use of the safety equipment:
+# -1 - No information 
+# 0 - No equipment 
+# 1 - Belt 
+# 2 - Helmet 
+# 3 - Children device 
+# 4 - Reflective vest 
+# 5 - Airbag (2WD/3WD) 
+# 6 - Gloves (2WD/3WD) 
+# 7 - Gloves + Airbag (2WD/3WD) 
+# 8 - Non-determinable 
+# 9 - Other
+#
+# #### secu2
+# The character information indicates the presence and use of the safety equipment
+#
+# #### secu3
+# The character information indicates the presence and use of safety equipment
+
+df['secu'] = df[df['year']==2007]['secu'].astype(int)
+df[df['year']==2007]['secu'].value_counts()
 
 # ## Places Dataset
 
@@ -211,7 +240,7 @@ characteristics['year'].value_counts()
 characteristics['year'].replace({5:2005, 6:2006, 7:2007, 8:2008, 9:2009, 10:2010, 11:2011,
                                                          12:2012, 13:2013, 14:2014, 15:2015, 16:2016, 17:2017, 18:2018}, inplace=True)
 
-# #### Check
+# ### Check
 
 characteristics['year'].value_counts()
 
@@ -268,7 +297,7 @@ characteristics.loc[(np.less(characteristics['year'],2019)),'department'] = \
 
 characteristics['department'] = characteristics['department'].apply(lambda code: code.lstrip('0'))
 
-# # Vehicles dataset
+# ## Vehicles dataset
 
 # +
 #hello
@@ -291,6 +320,8 @@ df = characteristics.merge(right=places, how='left').merge(users, how='left').me
 print(df.info())
 print(na_percentage(df))
 
+# # Visualizations
+
 # ## Correlation of the feature variables with the target
 
 cm=df.corr()
@@ -298,40 +329,9 @@ cm["grav"].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
 
-plt.figure(figsize=(14,14));
-sns.heatmap(cm, annot=False);
-
-# ## Fixing incoherency of 'secu' Variable
-# Safety equipment until 2018 was in 2 variables: existence and use.
-#
-# From 2019, it is the use with up to 3 possible equipments for the same user
-# (especially for motorcyclists whose helmet and gloves are mandatory).
-#
-# ### secu1
-# The character information indicates the presence and use of the safety equipment:
-# -1 - No information
-# 0 - No equipment
-# 1 - Belt
-# 2 - Helmet
-# 3 - Children device
-# 4 - Reflective vest
-# 5 - Airbag (2WD/3WD)
-# 6 - Gloves (2WD/3WD)
-# 7 - Gloves + Airbag (2WD/3WD)
-# 8 - Non-determinable
-# 9 - Other
-#
-# ### secu2
-# The character information indicates the presence and use of the safety equipment
-#
-# ### secu3
-# The character information indicates the presence and use of safety equipment
-#
-
-df['secu'] = df[df['year']==2007]['secu'].astype(int)
-df[df['year']==2007]['secu'].value_counts()
-
-# # Visualizations
+fig, ax = plt.subplots(figsize=(35,35));
+sns.heatmap(cm, annot = True, ax = ax, cmap='Blues');
+plt.title('Correlation of Variables from DF Road Accidents');
 
 # ## Datetime
 
