@@ -14,9 +14,9 @@
 #
 # Notebook 1
 # ==============
-# Exploring Data and Visualization
+# Data Visualization
 
-# # Importing Packages 
+# # Importing Packages and Data
 
 import pyfra
 import pandas as pd
@@ -25,12 +25,14 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 # %matplotlib inline
 
-df = pd.read_pickle('../data/df.p')
-n_rows_complete = len(df)
+# +
+#df = pd.read_pickle('../data/df.p')
+#n_rows_complete = len(df)
+# -
 
-pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
-                         right=pyfra.df_testing_info(df),\
-                         check_dtype=False, check_exact=False)
+#pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
+                         #right=pyfra.df_testing_info(df),\
+                         #check_dtype=False, check_exact=False)
 
 # # Importing Data
 
@@ -101,36 +103,6 @@ for this_category, df in dict_of_category_dfs.items():
 #
 
 users = users.drop(columns=['num_veh','id_vehicule']) #Not needed
-
-# ### Fixing incoherency of 'secu' Variable
-# Safety equipment until 2018 was in 2 variables: existence and use.
-#
-# From 2019, it is the use with up to 3 possible equipments for the same user (especially for motorcyclists whose helmet and gloves are mandatory).
-#
-# #### secu1
-# The character information indicates the presence and use of the safety equipment:
-# -1 - No information 
-# 0 - No equipment 
-# 1 - Belt 
-# 2 - Helmet 
-# 3 - Children device 
-# 4 - Reflective vest 
-# 5 - Airbag (2WD/3WD) 
-# 6 - Gloves (2WD/3WD) 
-# 7 - Gloves + Airbag (2WD/3WD) 
-# 8 - Non-determinable 
-# 9 - Other
-#
-# #### secu2
-# The character information indicates the presence and use of the safety equipment
-#
-# #### secu3
-# The character information indicates the presence and use of safety equipment
-
-# +
-#df['secu'] = df[df['year']==2007]['secu'].astype(int)
-#df[df['year']==2007]['secu'].value_counts()
-# -
 
 # ## Places Dataset
 
@@ -337,30 +309,57 @@ vehicles.isna().sum()
 
 # # Merge all datasets
 
-df['secu'] = df[df['year']==2007]['secu'].astype(int)
-df[df['year']==2007]['secu'].value_counts()
-
 # ## Compute the percentage of missing data
 
 outer_df = characteristics.merge(right=places, how='outer').merge(users, how='outer').merge(vehicles, how='outer')
 
-print(f'number of rows:........{outer_df.shape[0]}')
-print(f'number of variables:...{outer_df.shape[1]}')
-na_percentage(outer_df)
+# +
+#print(f'number of rows:........{outer_df.shape[0]}')
+#print(f'number of variables:...{outer_df.shape[1]}')
+#na_percentage(outer_df)
+# -
 
 # ## Left Join for further investigations
 # We will continue working with the left join of the data, as the missing lines miss the most important variables anyway.
 
 df = characteristics.merge(right=places, how='left').merge(users, how='left').merge(vehicles, how='left')
-print(df.info())
-print(na_percentage(df))
+#print(df.info())
+#print(na_percentage(df))
+
+# ### Fixing incoherency of 'secu' Variable
+# Safety equipment until 2018 was in 2 variables: existence and use.
+#
+# From 2019, it is the use with up to 3 possible equipments for the same user (especially for motorcyclists whose helmet and gloves are mandatory).
+#
+# #### secu1
+# The character information indicates the presence and use of the safety equipment:
+# -1 - No information 
+# 0 - No equipment 
+# 1 - Belt 
+# 2 - Helmet 
+# 3 - Children device 
+# 4 - Reflective vest 
+# 5 - Airbag (2WD/3WD) 
+# 6 - Gloves (2WD/3WD) 
+# 7 - Gloves + Airbag (2WD/3WD) 
+# 8 - Non-determinable 
+# 9 - Other
+#
+# #### secu2
+# The character information indicates the presence and use of the safety equipment
+#
+# #### secu3
+# The character information indicates the presence and use of safety equipment
+
+df['secu'] = df[df['year']==2007]['secu'].astype(int)
+df[df['year']==2007]['secu'].value_counts()
 
 # # Visualizations
 
 # ## Correlation of the feature variables with the target
 
 cm=df.corr()
-cm['Gravity'].sort_values(ascending=False)[1:]
+cm['grav'].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
 
@@ -388,7 +387,7 @@ plt.xticks(ticks=day_time_ticks,
            labels=day_time_tick_labels);
 plt.xlabel('Time of Day')
 plt.xlim((0,2400))
-plt.title('Distribution of Accidents by Daytime')
+plt.title('Distribution of Accidents by Daytime', pad = 10);
 
 # The plot shows, that the temporal distribution is different on the weekends: On weekends, there are far more accidents between 19:00 and 07:00, while there are more accidents on weekday around 09:00 and 18:00. These differences align very well with our hypothesis. We did not expect the peak on weekends around 18:00, though. 
 #
@@ -462,10 +461,12 @@ plt.title('Distribution of Accidents by Year');
 
 # ### WE HAVE SEVERAL HEATMAPS MUST CHOOSE ONLY ONE 
 
+# +
 # showing frequency of each manevuer before car accident
-plt.hist(vehicles["sns.countplot(data=users, x='sexe');
-plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);"])
-plt.show()
+#plt.hist(vehicles["sns.countplot(data=users, x='sexe');
+#plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);"])
+#plt.show()
+# -
 
 users.sexe.replace(to_replace=-1,value=1,inplace=True)
 users.sexe.value_counts()
@@ -495,18 +496,18 @@ plt.title('Number of Accidents according to their gravity');
 
 # Conclusion: We can see that almost 20% of people are Hospitalized and only a very small amount is killed,and hence we can deduce that the target variable is unbalanced.
 
-fig, S = plt.subplots(figsize=(18,18));
-sns.heatmap(users.corr() , annot = True );
+fig, S = plt.subplots(figsize=(10,8));
+sns.heatmap(users.corr() , annot = True, cmap='Blues' );
 
 plt.figure(figsize = (10,9));
-sns.countplot( y = places.Rd_Cat);
+sns.countplot( y = df.Rd_Cat);
 plt.title('Road Categories with most Accidents');
 plt.yticks(ticks=list(range(0,9)),labels=['0=Nans','1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = Urban Metropolis Roads' , '9 = other']);
 
 # ### Conclusion for road categories with most accidents: 
 # Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
 
-g = sns.FacetGrid(places, col = 'Traf_Direct');
+g = sns.FacetGrid(df, col = 'Traf_Direct');
 g.map(plt.hist, 'Rd_Cat');
 g.fig.subplots_adjust(top=0.8);
 g.fig.suptitle('Accidents according to traffic direction and road category');
@@ -527,7 +528,7 @@ g.fig.suptitle('Accidents according to traffic direction and road category');
 # We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic.
 
 plt.figure(figsize = (10,9));
-sns.countplot( y = places.Rd_Cond);
+sns.countplot( y = df.Rd_Cond);
 plt.title('Road Conditions with most Accidents');
 plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '2 = Wet', '3 = Puddles', '4 = Flooded' ,'5 = Snow-Convered','6 = Mud' , '7 = Icy' , '8=Greasy (Oil)', '9 = other']);
 
@@ -535,11 +536,11 @@ plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '
 # By far the most accidents happend during normal weather conditions.
 
 plt.figure(figsize = (10,9));
-sns.countplot( y = places.Pos_Acc);
+sns.countplot( y = df.Pos_Acc);
 plt.title('Accident Location');
 plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', 
                                           '2 = On Emergancy Lane', '3 = On Hard Shoulder', 
-                                          '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other'])
+                                          '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']);
 
 # ### Conclusion for accident location:
 # By far the most accidents happend on the carriage way.
@@ -567,7 +568,7 @@ sns.heatmap(vehicles.corr(), cmap ='RdYlGn', linewidths = 0.30, annot = True);
 
 fig, ax = plt.subplots(figsize=(12,12))
 sns.heatmap(vehicles.corr()[['secu']].sort_values('secu').tail(10),
- vmax=1, vmin=-1, annot=True, ax=ax);
+vmax=1, vmin=-1, annot=True, ax=ax);
 ax.invert_yaxis()
 
 # ### Summary of the most important variables of the data set places.
@@ -593,3 +594,5 @@ plt.title('The Most Common Accidents');
 
 # ### Conclusion for the most common accidents:
 # I'm not saying that all of these accidents are related, but I think one can deduce thatfrom the total number of accidents (1.121.571 accidents) a high number of accidents occur with "good" parameters. At least as far as the place of the accident is concerned.
+
+
