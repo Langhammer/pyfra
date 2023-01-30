@@ -45,7 +45,7 @@ def read_csv_of_year(start_year, end_year, separators, name_separator='_'):
         for this_category, this_sep in zip(data_categories, separators):
             # We need the French name of the category for the filename
             this_french_category = french_categories[this_category]
-            this_file_path_and_name = '../Data/'+this_year_str+'/' + this_french_category+name_separator+this_year_str+'.csv'
+            this_file_path_and_name = '../data/'+this_year_str+'/' + this_french_category+name_separator+this_year_str+'.csv'
             this_df_dict[this_category] = pd.read_csv(this_file_path_and_name, encoding='latin-1', sep=this_sep, low_memory=False)
         df_dict[year] = this_df_dict
     return df_dict
@@ -367,10 +367,11 @@ day_time_tick_labels = ('0:00', '03:00','06:00','09:00','12:00','15:00',
 plot_data = pd.DataFrame({'weekdays': (dict_of_category_dfs['characteristics'][dict_of_category_dfs['characteristics']['is_weekend'] != 1 ])['hhmm'],
                  'weekends': (dict_of_category_dfs['characteristics'][dict_of_category_dfs['characteristics']['is_weekend'] == 1 ])['hhmm']})
 fig= plt.figure();
-sns.histplot(data=plot_data, stat='proportion', bins=24, common_norm=False);
+sns.histplot(data=plot_data, stat='proportion', bins=24, binrange=(0,2400), common_norm=False);
 plt.xticks(ticks=day_time_ticks, 
            labels=day_time_tick_labels);
 plt.xlabel('Time of Day')
+plt.xlim((0,2400))
 plt.title('Distribution of Accidents by Daytime')
 
 # The plot shows, that the temporal distribution is different on the weekends: On weekends, there are far more accidents between 19:00 and 07:00, while there are more accidents on weekday around 09:00 and 18:00. These differences align very well with our hypothesis. We did not expect the peak on weekends around 18:00, though. 
