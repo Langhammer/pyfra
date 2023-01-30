@@ -11,9 +11,9 @@ pyfra
 | Notebook  | Content | 
 | --- | --- | 
 | [pyfra_nb_1.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_1.py) | Visualitation |
-| [pyfra_nb_1.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_2.py) | Data Cleaning & Feature Engineering |
-| [pyfra_nb_1.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_3.py) | Modelling, Training and Scoring |
-| [pyfra_nb_1.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_5.py) | Further Performance Analysis |
+| [pyfra_nb_2.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_2.py) | Data Cleaning & Feature Engineering |
+| [pyfra_nb_3.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_3.py) | Modelling, Training and Scoring |
+| [pyfra_nb_5.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_5.py) | Further Performance Analysis |
 
 # Credits
 ## Project members
