@@ -119,8 +119,10 @@ users = users.drop(columns=['num_veh','id_vehicule']) #Not needed
 # #### secu3
 # The character information indicates the presence and use of safety equipment
 
-df['secu'] = df[df['year']==2007]['secu'].astype(int)
-df[df['year']==2007]['secu'].value_counts()
+# +
+#df['secu'] = df[df['year']==2007]['secu'].astype(int)
+#df[df['year']==2007]['secu'].value_counts()
+# -
 
 # ## Places Dataset
 
@@ -326,6 +328,9 @@ vehicles[['num_acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'in
 vehicles.isna().sum()
 
 # # Merge all datasets
+
+df['secu'] = df[df['year']==2007]['secu'].astype(int)
+df[df['year']==2007]['secu'].value_counts()
 
 # ## Compute the percentage of missing data
 
