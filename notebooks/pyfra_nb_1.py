@@ -611,7 +611,7 @@ sns.heatmap(vehicles.corr()[['secu']].sort_values('secu').tail(10),
 vmax=1, vmin=-1, annot=True, ax=ax);
 ax.invert_yaxis()
 
-# ## Conclusion for Visualisation
+# ## Conclusion for Visualizations
 #
 # In fact, accidents often do not seem to have been brought about by any particular external influence. Rather, physical conditions such as tiredness, stress or lack of concentration are the cause. This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
 
