@@ -360,7 +360,7 @@ print(na_percentage(df))
 # ## Correlation of the feature variables with the target
 
 cm=df.corr()
-cm['grav'].sort_values(ascending=False)[1:]
+cm['Gravity'].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
 
