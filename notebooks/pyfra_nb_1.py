@@ -366,7 +366,10 @@ cm['Gravity'].sort_values(ascending=False)[1:]
 
 fig, ax = plt.subplots(figsize=(35,35));
 sns.heatmap(cm, annot = True, ax = ax, cmap='Blues');
-plt.title('Correlation of Variables from DF Road Accidents');
+fontsize = 40
+plt.title("Heatmap of Correlation for all Variables with the Target", fontdict={'fontsize': fontsize}, pad=40);
+
+# This heat map is intended to provide an overall view of where strong correlations occur .
 
 # ## Datetime
 
