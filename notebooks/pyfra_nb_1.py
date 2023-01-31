@@ -313,18 +313,16 @@ vehicles.isna().sum()
 
 outer_df = characteristics.merge(right=places, how='outer').merge(users, how='outer').merge(vehicles, how='outer')
 
-# +
-#print(f'number of rows:........{outer_df.shape[0]}')
-#print(f'number of variables:...{outer_df.shape[1]}')
-#na_percentage(outer_df)
-# -
+print(f'number of rows:........{outer_df.shape[0]}')
+print(f'number of variables:...{outer_df.shape[1]}')
+na_percentage(outer_df)
 
 # ## Left Join for further investigations
 # We will continue working with the left join of the data, as the missing lines miss the most important variables anyway.
 
 df = characteristics.merge(right=places, how='left').merge(users, how='left').merge(vehicles, how='left')
-#print(df.info())
-#print(na_percentage(df))
+print(df.info())
+print(na_percentage(df))
 
 # ### Fixing incoherency of 'secu' Variable
 # Safety equipment until 2018 was in 2 variables: existence and use.
@@ -364,7 +362,7 @@ cm['grav'].sort_values(ascending=False)[1:]
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
 
 fig, ax = plt.subplots(figsize=(33,20));
-sns.heatmap(cm, annot = True, ax = ax, cmap='Blues', linewidths = 0.40);
+sns.heatmap(cm, annot = True, ax = ax, cmap='coolwarm', linewidths = 0.40);
 fontsize = 40
 plt.title("Heatmap of Correlation for all Variables with the Target", fontdict={'fontsize': fontsize}, pad=40);
 
@@ -457,6 +455,7 @@ plt.plot(departments_2019_df['PTOT'], departments_2019_df['n_accidents'], 'x');
 plt.title('Accidents in a Department in Function of its Population 2009', pad=10);
 plt.xlabel('Total Population of the Department');
 plt.ylabel('Number of Accidents in the Department');
+plt.ticklabel_format(style='plain', axis='x');
 
 
 #
@@ -481,15 +480,6 @@ plt.title('Distribution of Accidents by Year', pad=10);
 #
 # For the years we see a decline in the number of accidents per year, maybe for increased security measures or improved laws and roads.
 # We can also see that there is a sharp decrease in the number in the year 2020 probably due to Covid and lockdown in France, and a relative increase after that in 2021.
-
-# ## ?
-
-# +
-# showing frequency of each manevuer before car accident
-#plt.hist(vehicles["sns.countplot(data=users, x='sexe');
-#plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);"])
-#plt.show()
-# -
 
 # ## Accidents by Gender
 
@@ -591,15 +581,16 @@ plt.ticklabel_format(style='plain', axis='x');
 #
 # By far the most accidents just happend directly on the carriage way.
 
-# ## Chrash Obstacle
+# ## Chrashed Obstacle
 #
 # Can traffic obstacles be a special index for accidents? It is to be expected that most accidents involving other road users occur in the form of vehicles.
 
 plt.figure(figsize = (6,4));
 sns.countplot( y = vehicles.obstacle_movable);
-plt.title('Crashed obstacle', pad=10);
+plt.title('Crashed Obstacle', pad=10);
 plt.yticks(ticks=list(range(0,8)),labels=['-1=Nans','0=Nothing','1 = Pedestrian', '2 = Vehicle', '3 = Rail vehicle', '4 = Pet' ,'5 = Wild animal','6 = Other']);
 plt.ticklabel_format(style='plain', axis='x');
+plt.ylabel('Type of movable Obstacle');
 
 #
 # Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
