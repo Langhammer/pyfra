@@ -1,5 +1,6 @@
 pyfra
 ==============
+![Pylint](https://github.com/DataScientest-Studio/pyfra/actions/workflows/pylint.yml/badge.svg)  
 <img src="images/stable_diffusion.jpeg" alt="drawing" width="300"/>
 <br>
 <small>
