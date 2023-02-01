@@ -506,7 +506,7 @@ plt.title('Distribution of Accidents by Gender', pad=10);
 
 # We see that the amount of Males doing accidents is almost double that of females, probably because the amount of males who generally drive are higher than females, or because males are reckless drivers.
 
-# ## Accidents by Gravity
+# ## Accidents by Severity
 
 users.grav.replace(to_replace=-1,value=1,inplace=True)
 users.grav.value_counts()
@@ -551,11 +551,11 @@ xlim(left=0);
 #
 # In which direction of travel do most accidents occur and does the type of road plays a role here. Can oncoming traffic be a factor?
 
-indexNames = places[ places['Traf_Direct'] < 1 ].index
-places.drop(indexNames , inplace=True)
+indexNames = df[ df['Traf_Direct'] < 1 ].index
+df.drop(indexNames , inplace=True)
 
-g = sns.FacetGrid(places, col = 'Traf_Direct', col_wrap=4, height=3.5, aspect=1.2,hue="Rd_Cat");
-chart = g.map_dataframe(sns.histplot, x="Rd_Cat", binwidth=.5, binrange=(1, 9))
+g = sns.FacetGrid(df, col = 'Traf_Direct', col_wrap=4, height=3.5, aspect=1.2,hue='Rd_Cat');
+chart = g.map_dataframe(sns.histplot, x='Rd_Cat', binwidth=.5, binrange=(1, 9));
 g.add_legend()
 g.fig.subplots_adjust(top=0.8);
 g.fig.suptitle('Accidents according to Traffic Direction and Road Category (Accident Count in Millions )');
@@ -577,7 +577,7 @@ xlim(left=0.6);
 # - 9=Other                                            
 
 #
-# We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic.
+# We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic. A suspicion that arose from this, that frontal or side collisions of vehicles on narrow streets with traffic on both sides are the most common, has not been confirmed. In fact, the most common type of collision is the side collision (1.4 million times), but this in turn is distributed fairly evenly across the type of road and traffic direction.
 
 # ## Road Conditions
 #
@@ -646,5 +646,3 @@ ax.invert_yaxis()
 # ## Conclusion for Visualizations
 #
 # In fact, accidents often do not seem to have been brought about by any particular external influence. Rather, physical conditions of road users such as tiredness, stress, the influence of alcohol and drugs or poor concentration could be the cause. This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
-
-
