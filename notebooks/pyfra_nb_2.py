@@ -265,7 +265,7 @@ places.head()
 
 # ### Change Nans against zeros
 
-# Set most empty varibles to Zero / Null, because its for all vaiables not in use and can be defined as not applicable.
+# Set most empty variables to Zero / Null, because its for all variables not in use and can be defined as not applicable.
 #
 # 9 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
 # In addition, the recorded data are not suitable for filling the NaNs with, for example, the mean value, since this is almost exclusively about describing states.
@@ -275,7 +275,7 @@ places.head()
 # Nr_n_Width = places[['Rd_Nr','Rd_Width','Gre_Verge']]#comparsion Rd_Nr vs. Rd_Width. Same for Gre_Verge.
 # Nr_n_Width.head()
 #
-# Landmark and Dist_to_Landmark are information to localize an accident. Nearly 50% of the Data are missing but I will keep the Data. Maybe it will be usefull to complete some location data.
+# Landmark and Dist_to_Landmark are information to localis an accident. Nearly 50% of the Data are missing but I will keep the Data. Maybe it will be usefull to complete some location data.
 #
 # Missing information of Rd_Nr, biggest problem is that later in the Datasets they changed input of numbers against names. So I need a list which says which street is which number. I will drop the variable, it turns out useless.
 #
@@ -284,8 +284,6 @@ places.head()
 # In 2019 they droped this column and start with speed limits. Its a importent information but I cant use it in this format. I will drop it for the moment.
 # Code
 # sns.countplot( x = places.School)
-
-# +
 
 places['Rd_Cat'] = places['Rd_Cat'].fillna(0.0)
 places['Traf_Direct'] = places['Traf_Direct'].fillna(0.0)
@@ -366,10 +364,6 @@ characteristics['year'].value_counts()
 
 characteristics['year'].replace({5:2005, 6:2006, 7:2007, 8:2008, 9:2009, 10:2010, 11:2011,
                                                          12:2012, 13:2013, 14:2014, 15:2015, 16:2016, 17:2017, 18:2018}, inplace=True)
-
-# #### Check
-
-characteristics['year'].value_counts()
 
 # ### Fix inconsistent time format
 
@@ -477,16 +471,6 @@ na_percentage(outer_df)
 df = characteristics.merge(right=places, how='left').merge(users, how='left').merge(vehicles, how='left')
 print(df.info())
 print(na_percentage(df))
-
-# ## Correlation of the feature variables with the target
-
-cm=df.corr()
-cm["Gravity"].sort_values(ascending=False)[1:]
-
-# The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
-
-plt.figure(figsize=(14,14));
-sns.heatmap(cm, annot=False);
 
 # # Export DataFrame to Pickle 
 # This step is necessary to be able to work with the data in another notebook.
