@@ -27,7 +27,7 @@ jobs:
 
     - name: Sync Jupytext
       run: |
-        jupytext .notebooks/pyfra_nb_*.py --to ipynb 
+        jupytext ./notebooks/pyfra_nb_*.py --to ipynb 
         git config user.name Langhammer
         git config user.email kaylanghammer@outlook.de
         git commit -a -m "Auto-Sync w/ Jupytext"
