@@ -223,7 +223,7 @@ users = users.drop(columns=['secu','secu1','secu2','SecuA','SecuB'])
 
 na_percentage(users)
 
-# ### Renaming the french names for the variables to the english one
+# ### Translating the variable names from French to English
 
 # +
 users = users.rename(columns = {'catu' : 'User_category',
@@ -248,7 +248,7 @@ users.YoB = users.YoB.astype(int)
 
 # ## Places Dataset
 
-# ### Renaming the french names for the variables to the english one
+# ### Translating the variable names from French to English
 
 # +
 # Change french names against english names (Teamdecision)
@@ -328,7 +328,7 @@ print(places.shape)#it appears that there is a problem with the shape of the df 
 
 # ## Characteristics Dataset
 
-# ### Renaming the french names for the variables to the english one
+# ### Translating the variable names from French to English
 
 # +
 # Translation of the variable nacmes from French to English, also improving the names so that it becomes clearer, what they are about
@@ -414,7 +414,7 @@ characteristics['collision_category'] = characteristics['collision_category'].fi
 
 # ## Vehicles dataset
 
-# ### Renaming the french names for the variables to the english one
+# ### Translating the variable names from French to English
 
 vehicles = vehicles.rename(columns = {'id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
                            'senc' : 'direction' , 'catv' : 'cat_veh', 'obs' : 'obstacle', 'obsm' : 'obstacle_movable' ,
