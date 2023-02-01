@@ -71,9 +71,10 @@ vehicles = dict_of_category_dfs['vehicles']
 
 # -
 
-# # Missing values description and engineering
-#
-# In this part we have run codes to detect missing values firstly for whole dataframe, followed by missing values detection in particular dataframes.
+# # Data Cleaning
+# We will perform some of the cleaning of the data on the individual datasets. Not all cleaning is possible before merging the datasets, so there will be a second round of cleaning.
+
+# ## Calculate the percentage of missing values for each dataframe
 
 def na_percentage(df):
   return df.isna().sum() *100 / len(df)
@@ -87,8 +88,6 @@ for this_category, df in dict_of_category_dfs.items():
 # Dropping unwanted columns: which are num_veh , id_vehicule, and Num_Acc
 
 users = users.drop(columns=['num_veh','id_vehicule']) #Not needed #2509620 
-
-users.isna().sum()
 
 #Grav
 users.grav.replace(to_replace=-1,value=1,inplace=True)
@@ -183,7 +182,11 @@ users.sexe.replace(to_replace=-1,value=1,inplace=True)
 #Security 
 users.drop(columns='secu3',inplace=True)
 
+users
+
+# +
 #secu has some missing values for older years , must fill with mode before continuing
+
 users.secu[:2142195].fillna(value=1,inplace=True)
 
 # +
@@ -195,12 +198,10 @@ users['SecuB']=   users.secu%10  # Was the security used or No
 
 # 0 is unknown change to others 9 
 users.SecuA.replace(to_replace=0,value=9,inplace=True)
-users.SecuA.value_counts()
 
 # 2-No 3-UnDeterminable 0-Unknown , change all to 0 not used
 users.SecuB.replace(to_replace=3,value=0,inplace=True)
 users.SecuB.replace(to_replace=2,value=0,inplace=True)
-users.SecuB.value_counts()
 
 # For Secu1-secu2 
 # We will gather all usage for security variable with 1 value {1} , and if there is no safety we will use {0} , No need to take multiple security parameters (secu2) we will noly take into consideration 1 security variable for comparibility with earlier years.
@@ -214,6 +215,7 @@ users.SecuB.value_counts()
 
 # Now both secu1 and secuB are same format we need to merge them into 1 column (for all years)
 
+#must add iloc
 users['Security']=0
 users['Security'][:2142195] = users.SecuB[:2142195]
 users['Security'][2142196:] = users.secu1[2142196:]
@@ -227,7 +229,7 @@ na_percentage(users)
 
 # +
 users = users.rename(columns = {'catu' : 'User_category',
-                                'grav' : 'Gravity' , #Gravity of accident
+                                'grav' : 'Severity' , #Severity of accident
                                 'sexe' : 'Sex' , #Sex of Driver
                                 'trajet' : 'Trajectory' , 
                                 'locp' : 'LOCP' , #localisation of pedestrian
@@ -455,6 +457,13 @@ na_percentage(outer_df)
 df = characteristics.merge(right=places, how='left').merge(users, how='left').merge(vehicles, how='left')
 print(df.info())
 print(na_percentage(df))
+
+# ## Correlation of the feature variables with the target
+
+cm=df.corr()
+cm["Severity"].sort_values(ascending=False)[1:]
+
+# The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
 
 # # Export DataFrame to Pickle 
 # This step is necessary to be able to work with the data in another notebook.
