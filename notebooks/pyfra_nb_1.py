@@ -222,10 +222,6 @@ characteristics['year'].value_counts()
 characteristics['year'].replace({5:2005, 6:2006, 7:2007, 8:2008, 9:2009, 10:2010, 11:2011,
                                                          12:2012, 13:2013, 14:2014, 15:2015, 16:2016, 17:2017, 18:2018}, inplace=True)
 
-# ### Check
-
-characteristics['year'].value_counts()
-
 # ### Fix inconsistent time format
 
 # The time format inconsistent, sometimes it is hhmm, and sometimes hh:mm. We will therefore remove any ":" from the column 
@@ -323,34 +319,6 @@ na_percentage(outer_df)
 df = characteristics.merge(right=places, how='left').merge(users, how='left').merge(vehicles, how='left')
 print(df.info())
 print(na_percentage(df))
-
-# ### Fixing incoherency of 'secu' Variable
-# Safety equipment until 2018 was in 2 variables: existence and use.
-#
-# From 2019, it is the use with up to 3 possible equipments for the same user (especially for motorcyclists whose helmet and gloves are mandatory).
-#
-# #### secu1
-# The character information indicates the presence and use of the safety equipment:
-# -1 - No information 
-# 0 - No equipment 
-# 1 - Belt 
-# 2 - Helmet 
-# 3 - Children device 
-# 4 - Reflective vest 
-# 5 - Airbag (2WD/3WD) 
-# 6 - Gloves (2WD/3WD) 
-# 7 - Gloves + Airbag (2WD/3WD) 
-# 8 - Non-determinable 
-# 9 - Other
-#
-# #### secu2
-# The character information indicates the presence and use of the safety equipment
-#
-# #### secu3
-# The character information indicates the presence and use of safety equipment
-
-df['secu'] = df[df['year']==2007]['secu'].astype(int)
-df[df['year']==2007]['secu'].value_counts()
 
 # # Visualizations
 
@@ -486,7 +454,7 @@ plt.title('Distribution of Accidents by Year', pad=10);
 # The number of accidents across genders should be equal across males and females.
 
 users.sexe.replace(to_replace=-1,value=1,inplace=True)
-users.sexe.value_counts()
+
 
 ax = sns.countplot(data=users, x='sexe');
 plt.xticks(ticks=[0,1],labels=['Male', 'Female'])
@@ -497,13 +465,51 @@ plt.ticklabel_format(style='plain', axis='y');
 
 # We see that the amount of Males doing accidents is almost double that of females, probably because the amount of males who generally drive are higher than females, or because males are reckless drivers.
 
+# Accidents by Age
+
+#users.an_nais.value_counts()
+users['Age']=df['year']-df['an_nais']
+
+users.Age.fillna(21,inplace=True) #Mode
+users.Age = users.Age.astype(int)
+
+# We want to check the amount of accidents by Age and we suspect that the majority is of young age
+
+#ENTIRE AGE LIMIT (Include babies in cars)
+ax = sns.countplot(data=users, x='Age');
+plt.xlabel('Age');
+plt.locator_params(axis='x', nbins=11)
+plt.ylabel('Total Number of Drivers');
+plt.title('Distribution of Accidents by Age', pad=10);
+plt.ticklabel_format(style='plain', axis='y')
+
+#Limit the accidents to minimum of 18 years of Age
+ax = sns.countplot(data=users, x='Age');
+plt.xlabel('Age');
+plt.locator_params(axis='x', nbins=11)
+plt.xlim(17,100)
+plt.ylabel('Total Number of Drivers');
+plt.title('Distribution of Accidents by Age', pad=10);
+plt.ticklabel_format(style='plain', axis='y')
+
+# We confirm our theory that the number of accident victims generally decrease with age
+
 # ## Accidents by Gravity
 
 users.grav.replace(to_replace=-1,value=1,inplace=True)
-users.grav.value_counts()
 
-# We nee to check the severity (gravity) of accidents and its effects on the dirvers, which is our target variable.
+# We nee to check the severity (gravity) of accidents and its effects on the drivers, which is our target variable.
 # Only a low number of accidents should result in serious injury or death due to the advanced security systems and road designs.
+
+#Pie Chart
+plt.figure(figsize = (10,8))
+plt.pie(x=users.grav.value_counts(),
+        explode = [0,0,0,0.15],
+        autopct = lambda x: str(round(x, 2)) + '%',
+        labeldistance = 1.1 , pctdistance = 0.8);
+plt.title("Pie Chart for Severity of accidents");
+plt.legend(['Unharmed', 'Slightly Injured',
+        'Hospitalized','Killed']);
 
 sns.countplot(data=users, x='grav');  
 plt.xticks(ticks=[0,1,2,3], labels=['1\nUnscathed', '2\nKilled',
@@ -514,6 +520,16 @@ plt.title('Number of Accidents according to their gravity', pad=10);
 plt.ticklabel_format(style='plain', axis='y')
 
 # Conclusion: We can see that almost 20% of people are Hospitalized and only a very small amount is killed,and hence we can deduce that the target variable is unbalanced.
+
+# # Violen plot
+
+sns.catplot(x='sexe' , y='Age' , kind = 'violin' , data = users);
+
+# Violen plot to see Grav in terms of Age split by Sex
+
+sns.catplot(x='grav' , y='Age' ,hue = "sexe" , kind = 'violin' , split = True , data = users);
+
+# We can observe that the Age range is quite unifrom across all grav types for both sexes
 
 # ## Accidents per Road Categories
 #
@@ -595,15 +611,8 @@ plt.ylabel('Type of movable Obstacle');
 #
 # Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
 
-# ## ?
-
-fig, ax = plt.subplots(figsize=(12,12))
-sns.heatmap(vehicles.corr()[['secu']].sort_values('secu').tail(10),
-vmax=1, vmin=-1, annot=True, ax=ax);
-ax.invert_yaxis()
-
 # ## Conclusion for Visualizations
 #
-# In fact, accidents often do not seem to have been brought about by any particular external influence. Rather, physical conditions such as tiredness, stress or lack of concentration are the cause. This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
+# In fact, accidents often do not seem to have been brought about by any particular external influence. Although there are some missing factors (alcohol/drug tests of drivers for example) which may give a clearer picture. Rather, physical conditions such as tiredness, stress or lack of concentration maybe the general cause of these accidents.This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
 
 
