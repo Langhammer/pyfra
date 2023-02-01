@@ -130,5 +130,4 @@ dmypy.json
 data/df.csv
 *pyspark.ipynb
 data/df.p
-notebooks/pyfra.py
 notebooks/pyfra_nb_3_pyspark.py
