@@ -21,7 +21,9 @@ from matplotlib import pyplot as plt
 import pyfra
 import seaborn as sns
 
-# # Import Data
+# # Data import & pulling
+#
+# We have imported the data and separated them into four different categories: characteristics,places,users,vehicles.
 
 french_categories = {'characteristics': 'caracteristiques', 'places':'lieux', 'users':'usagers', 'vehicles':'vehicules'}
 data_categories = french_categories.keys()
@@ -55,9 +57,6 @@ df_dict.update(read_csv_of_year(2010, 2016, separators=','))
 df_dict.update(read_csv_of_year(2017, 2018, separators=',', name_separator='-'))
 df_dict.update(read_csv_of_year(2019, 2021, separators=';', name_separator='-'))
 
-# -
-
-# ## Put all the data in one dataframe for each category
 
 # +
 dict_of_category_dfs = {}
@@ -68,15 +67,13 @@ characteristics = dict_of_category_dfs['characteristics']
 places = dict_of_category_dfs['places']
 users = dict_of_category_dfs['users']
 vehicles = dict_of_category_dfs['vehicles']
+
+
 # -
 
-# # Data Cleaning
-# We will perform some of the cleaning of the data on the individual datasets. Not all cleaning is possible before merging the datasets, so there will be a second round of cleaning.
-
-places.columns
-
-
-# ## Calculate the percentage of missing values for each dataframe
+# # Missing values description and engineering
+#
+# In this part we have run codes to detect missing values firstly for whole dataframe, followed by missing values detection in particular dataframes.
 
 def na_percentage(df):
   return df.isna().sum() *100 / len(df)
@@ -86,8 +83,8 @@ for this_category, df in dict_of_category_dfs.items():
     print(this_category+'\n', na_percentage(df),'\n')
 
 # ## Users Dataset
-
-# Dropping unwanted columns , which are num_veh , id_vehicule, and Num_Acc
+#
+# Dropping unwanted columns: which are num_veh , id_vehicule, and Num_Acc
 
 users = users.drop(columns=['num_veh','id_vehicule']) #Not needed #2509620 
 
@@ -157,7 +154,7 @@ users.an_nais.fillna(1986.0,inplace=True)
 #Sex 
 users.sexe.replace(to_replace=-1,value=1,inplace=True)
 
-# # Fixing incoherency of 'secu' Variable
+# ### Fixing incoherency of 'secu' Variable
 # Safety equipment until 2018 was in 2 variables: existence and use.
 #
 # From 2019, it is the use with up to 3 possible equipments for the same user
@@ -226,7 +223,7 @@ users = users.drop(columns=['secu','secu1','secu2','SecuA','SecuB'])
 
 na_percentage(users)
 
-# ### French to English variables
+# ### Renaming the french names for the variables to the english one
 
 # +
 users = users.rename(columns = {'catu' : 'User_category',
@@ -251,6 +248,8 @@ users.YoB = users.YoB.astype(int)
 
 # ## Places Dataset
 
+# ### Renaming the french names for the variables to the english one
+
 # +
 # Change french names against english names (Teamdecision)
 # Droped 'Unnamed: 0','v1','v2','vma', because they contained no information.
@@ -269,21 +268,8 @@ places.head()
 #
 # 9 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
 # In addition, the recorded data are not suitable for filling the NaNs with, for example, the mean value, since this is almost exclusively about describing states.
-#
-# Hoped to fill up the missing information for Rd_Width with a comparsion Rd_Nr vs. Rd_Width, but it turns out that the same street has different widths.
-#
-# Nr_n_Width = places[['Rd_Nr','Rd_Width','Gre_Verge']]#comparsion Rd_Nr vs. Rd_Width. Same for Gre_Verge.
-# Nr_n_Width.head()
-#
-# Landmark and Dist_to_Landmark are information to localis an accident. Nearly 50% of the Data are missing but I will keep the Data. Maybe it will be usefull to complete some location data.
-#
-# Missing information of Rd_Nr, biggest problem is that later in the Datasets they changed input of numbers against names. So I need a list which says which street is which number. I will drop the variable, it turns out useless.
-#
-# For column school there are 3 Types of information 99.0 / 0.0 and 3.0, according to the description the variable schools should only contain 1 or 2 so if it is or not near by a school.
-# I can't find a logical and reliable way to replace the data. So I will drop them
-# In 2019 they droped this column and start with speed limits. Its a importent information but I cant use it in this format. I will drop it for the moment.
-# Code
-# sns.countplot( x = places.School)
+
+# +
 
 places['Rd_Cat'] = places['Rd_Cat'].fillna(0.0)
 places['Traf_Direct'] = places['Traf_Direct'].fillna(0.0)
@@ -342,7 +328,7 @@ print(places.shape)#it appears that there is a problem with the shape of the df 
 
 # ## Characteristics Dataset
 
-# ### Translate variable names from French to English
+# ### Renaming the french names for the variables to the english one
 
 # +
 # Translation of the variable nacmes from French to English, also improving the names so that it becomes clearer, what they are about
@@ -426,11 +412,9 @@ characteristics['atmospheric_conditions'] = characteristics['atmospheric_conditi
 characteristics['collision_category'] = characteristics['collision_category'].fillna(
     characteristics['collision_category'].mode()[0])
 
-# # Vehicles dataset
+# ## Vehicles dataset
 
-# ### Translate variable names from French to English
-
-# We will translate the variable names from French to English for better interpretability and name them more clear (using small letters).
+# ### Renaming the french names for the variables to the english one
 
 vehicles = vehicles.rename(columns = {'id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
                            'senc' : 'direction' , 'catv' : 'cat_veh', 'obs' : 'obstacle', 'obsm' : 'obstacle_movable' ,
