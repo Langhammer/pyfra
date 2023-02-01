@@ -21,7 +21,9 @@ from matplotlib import pyplot as plt
 import pyfra
 import seaborn as sns
 
-# # Import Data
+# # Data import & pulling
+#
+# We have imported the data and separated them into four different categories: characteristics,places,users,vehicles.
 
 french_categories = {'characteristics': 'caracteristiques', 'places':'lieux', 'users':'usagers', 'vehicles':'vehicules'}
 data_categories = french_categories.keys()
@@ -55,9 +57,6 @@ df_dict.update(read_csv_of_year(2010, 2016, separators=','))
 df_dict.update(read_csv_of_year(2017, 2018, separators=',', name_separator='-'))
 df_dict.update(read_csv_of_year(2019, 2021, separators=';', name_separator='-'))
 
-# -
-
-# ## Put all the data in one dataframe for each category
 
 # +
 dict_of_category_dfs = {}
@@ -68,13 +67,12 @@ characteristics = dict_of_category_dfs['characteristics']
 places = dict_of_category_dfs['places']
 users = dict_of_category_dfs['users']
 vehicles = dict_of_category_dfs['vehicles']
+
+
 # -
 
 # # Data Cleaning
 # We will perform some of the cleaning of the data on the individual datasets. Not all cleaning is possible before merging the datasets, so there will be a second round of cleaning.
-
-places.columns
-
 
 # ## Calculate the percentage of missing values for each dataframe
 
@@ -86,12 +84,10 @@ for this_category, df in dict_of_category_dfs.items():
     print(this_category+'\n', na_percentage(df),'\n')
 
 # ## Users Dataset
-
-# Dropping unwanted columns , which are num_veh , id_vehicule, and Num_Acc
+#
+# Dropping unwanted columns: which are num_veh , id_vehicule, and Num_Acc
 
 users = users.drop(columns=['num_veh','id_vehicule']) #Not needed #2509620 
-
-users.isna().sum()
 
 #Grav
 users.grav.replace(to_replace=-1,value=1,inplace=True)
@@ -157,7 +153,7 @@ users.an_nais.fillna(1986.0,inplace=True)
 #Sex 
 users.sexe.replace(to_replace=-1,value=1,inplace=True)
 
-# # Fixing incoherency of 'secu' Variable
+# ### Fixing incoherency of 'secu' Variable
 # Safety equipment until 2018 was in 2 variables: existence and use.
 #
 # From 2019, it is the use with up to 3 possible equipments for the same user
@@ -186,7 +182,11 @@ users.sexe.replace(to_replace=-1,value=1,inplace=True)
 #Security 
 users.drop(columns='secu3',inplace=True)
 
+users
+
+# +
 #secu has some missing values for older years , must fill with mode before continuing
+
 users.secu[:2142195].fillna(value=1,inplace=True)
 
 # +
@@ -198,12 +198,10 @@ users['SecuB']=   users.secu%10  # Was the security used or No
 
 # 0 is unknown change to others 9 
 users.SecuA.replace(to_replace=0,value=9,inplace=True)
-users.SecuA.value_counts()
 
 # 2-No 3-UnDeterminable 0-Unknown , change all to 0 not used
 users.SecuB.replace(to_replace=3,value=0,inplace=True)
 users.SecuB.replace(to_replace=2,value=0,inplace=True)
-users.SecuB.value_counts()
 
 # For Secu1-secu2 
 # We will gather all usage for security variable with 1 value {1} , and if there is no safety we will use {0} , No need to take multiple security parameters (secu2) we will noly take into consideration 1 security variable for comparibility with earlier years.
@@ -217,6 +215,7 @@ users.SecuB.value_counts()
 
 # Now both secu1 and secuB are same format we need to merge them into 1 column (for all years)
 
+#must add iloc
 users['Security']=0
 users['Security'][:2142195] = users.SecuB[:2142195]
 users['Security'][2142196:] = users.secu1[2142196:]
@@ -226,11 +225,11 @@ users = users.drop(columns=['secu','secu1','secu2','SecuA','SecuB'])
 
 na_percentage(users)
 
-# ### French to English variables
+# ### Translating the variable names from French to English
 
 # +
 users = users.rename(columns = {'catu' : 'User_category',
-                                'grav' : 'Gravity' , #Gravity of accident
+                                'grav' : 'Severity' , #Severity of accident
                                 'sexe' : 'Sex' , #Sex of Driver
                                 'trajet' : 'Trajectory' , 
                                 'locp' : 'LOCP' , #localisation of pedestrian
@@ -251,6 +250,8 @@ users.YoB = users.YoB.astype(int)
 
 # ## Places Dataset
 
+# ### Translating the variable names from French to English
+
 # +
 # Change french names against english names (Teamdecision)
 # Droped 'Unnamed: 0','v1','v2','vma', because they contained no information.
@@ -265,25 +266,10 @@ places.head()
 
 # ### Change Nans against zeros
 
-# Set most empty varibles to Zero / Null, because its for all vaiables not in use and can be defined as not applicable.
+# Set most empty variables to Zero / Null, because its for all variables not in use and can be defined as not applicable.
 #
 # 9 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
 # In addition, the recorded data are not suitable for filling the NaNs with, for example, the mean value, since this is almost exclusively about describing states.
-#
-# Hoped to fill up the missing information for Rd_Width with a comparsion Rd_Nr vs. Rd_Width, but it turns out that the same street has different widths.
-#
-# Nr_n_Width = places[['Rd_Nr','Rd_Width','Gre_Verge']]#comparsion Rd_Nr vs. Rd_Width. Same for Gre_Verge.
-# Nr_n_Width.head()
-#
-# Landmark and Dist_to_Landmark are information to localize an accident. Nearly 50% of the Data are missing but I will keep the Data. Maybe it will be usefull to complete some location data.
-#
-# Missing information of Rd_Nr, biggest problem is that later in the Datasets they changed input of numbers against names. So I need a list which says which street is which number. I will drop the variable, it turns out useless.
-#
-# For column school there are 3 Types of information 99.0 / 0.0 and 3.0, according to the description the variable schools should only contain 1 or 2 so if it is or not near by a school.
-# I can't find a logical and reliable way to replace the data. So I will drop them
-# In 2019 they droped this column and start with speed limits. Its a importent information but I cant use it in this format. I will drop it for the moment.
-# Code
-# sns.countplot( x = places.School)
 
 # +
 
@@ -344,7 +330,7 @@ print(places.shape)#it appears that there is a problem with the shape of the df 
 
 # ## Characteristics Dataset
 
-# ### Translate variable names from French to English
+# ### Translating the variable names from French to English
 
 # +
 # Translation of the variable nacmes from French to English, also improving the names so that it becomes clearer, what they are about
@@ -366,10 +352,6 @@ characteristics['year'].value_counts()
 
 characteristics['year'].replace({5:2005, 6:2006, 7:2007, 8:2008, 9:2009, 10:2010, 11:2011,
                                                          12:2012, 13:2013, 14:2014, 15:2015, 16:2016, 17:2017, 18:2018}, inplace=True)
-
-# #### Check
-
-characteristics['year'].value_counts()
 
 # ### Fix inconsistent time format
 
@@ -432,11 +414,9 @@ characteristics['atmospheric_conditions'] = characteristics['atmospheric_conditi
 characteristics['collision_category'] = characteristics['collision_category'].fillna(
     characteristics['collision_category'].mode()[0])
 
-# # Vehicles dataset
+# ## Vehicles dataset
 
-# ### Translate variable names from French to English
-
-# We will translate the variable names from French to English for better interpretability and name them more clear (using small letters).
+# ### Translating the variable names from French to English
 
 vehicles = vehicles.rename(columns = {'id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
                            'senc' : 'direction' , 'catv' : 'cat_veh', 'obs' : 'obstacle', 'obsm' : 'obstacle_movable' ,
@@ -481,12 +461,9 @@ print(na_percentage(df))
 # ## Correlation of the feature variables with the target
 
 cm=df.corr()
-cm["Gravity"].sort_values(ascending=False)[1:]
+cm["Severity"].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
-
-plt.figure(figsize=(14,14));
-sns.heatmap(cm, annot=False);
 
 # # Export DataFrame to Pickle 
 # This step is necessary to be able to work with the data in another notebook.
