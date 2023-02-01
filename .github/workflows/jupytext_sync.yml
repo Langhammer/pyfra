@@ -25,6 +25,7 @@ jobs:
         pip install -r requirements.txt
         pip install jupytext
         pip install papermill
+        pip install ipykernel
 
     - name: Sync Jupytext
       run: |
