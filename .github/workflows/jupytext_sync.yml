@@ -1,0 +1,19 @@
+# Automatically create an .ipynb file at every push. 
+
+name: Jupytext Sync
+
+on: 
+  commit:
+    branches:
+      - Output
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  reqs:
+    runs-on: ubuntu-latest
+    run: pip install requirements.txt
+  sync:
+    runs-on: ubuntu-latest
+    needs: reqs  
+    run: jupytext --sync ./notebooks/pyfra_nb_*.py
+    
