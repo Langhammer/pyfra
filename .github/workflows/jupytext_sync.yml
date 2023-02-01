@@ -31,4 +31,4 @@ jobs:
         git config user.name Langhammer
         git config user.email kaylanghammer@outlook.de
         git commit -a -m "Auto-Sync w/ Jupytext"
-
+        git push
