@@ -1,5 +1,6 @@
 pyfra
 ==============
+![Pylint](https://github.com/DataScientest-Studio/pyfra/actions/workflows/pylint.yml/badge.svg)  
 <img src="images/stable_diffusion.jpeg" alt="drawing" width="300"/>
 <br>
 <small>
@@ -20,7 +21,7 @@ pyfra
 Kay Langhammer [GitHub](https://github.com/Langhammer) / [LinkedIn](https://www.linkedin.com/in/kay-langhammer/)  
 Robert Leisring  
 Saleh Saleh  
-Michal Turak  
+Michal Turák  
 
 ## Project Mentors
 Laurene Bouskila [GitHub](https://github.com/laureneb26)  
