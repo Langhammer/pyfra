@@ -23,6 +23,7 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
+from pylab import *
 # %matplotlib inline
 
 # +
@@ -222,6 +223,10 @@ characteristics['year'].value_counts()
 characteristics['year'].replace({5:2005, 6:2006, 7:2007, 8:2008, 9:2009, 10:2010, 11:2011,
                                                          12:2012, 13:2013, 14:2014, 15:2015, 16:2016, 17:2017, 18:2018}, inplace=True)
 
+# ### Check
+
+characteristics['year'].value_counts()
+
 # ### Fix inconsistent time format
 
 # The time format inconsistent, sometimes it is hhmm, and sometimes hh:mm. We will therefore remove any ":" from the column 
@@ -320,6 +325,34 @@ df = characteristics.merge(right=places, how='left').merge(users, how='left').me
 print(df.info())
 print(na_percentage(df))
 
+# ### Fixing incoherency of 'secu' Variable
+# Safety equipment until 2018 was in 2 variables: existence and use.
+#
+# From 2019, it is the use with up to 3 possible equipments for the same user (especially for motorcyclists whose helmet and gloves are mandatory).
+#
+# #### secu1
+# The character information indicates the presence and use of the safety equipment:
+# -1 - No information 
+# 0 - No equipment 
+# 1 - Belt 
+# 2 - Helmet 
+# 3 - Children device 
+# 4 - Reflective vest 
+# 5 - Airbag (2WD/3WD) 
+# 6 - Gloves (2WD/3WD) 
+# 7 - Gloves + Airbag (2WD/3WD) 
+# 8 - Non-determinable 
+# 9 - Other
+#
+# #### secu2
+# The character information indicates the presence and use of the safety equipment
+#
+# #### secu3
+# The character information indicates the presence and use of safety equipment
+
+df['secu'] = df[df['year']==2007]['secu'].astype(int)
+df[df['year']==2007]['secu'].value_counts()
+
 # # Visualizations
 
 # ## Correlation of the feature variables with the target
@@ -340,19 +373,19 @@ plt.title("Heatmap of Correlation for all Variables with the Target", fontdict={
 
 # +
 fig, S = plt.subplots(figsize=(12,5));
-sns.heatmap(users.corr() , annot = True, cmap='Blues',linewidths = 0.40);
+sns.heatmap(users.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Users', pad=10);
 
 fig, S = plt.subplots(figsize=(12,5));
-sns.heatmap(places.corr() , annot = True, cmap='Blues',linewidths = 0.40);
+sns.heatmap(places.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Places', pad=10);
 
 fig, S = plt.subplots(figsize=(12,5));
-sns.heatmap(vehicles.corr() , annot = True, cmap='Blues',linewidths = 0.40);
+sns.heatmap(vehicles.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Vehicles', pad=10);
 
 fig, S = plt.subplots(figsize=(12,5));
-sns.heatmap(characteristics.corr() , annot = True, cmap='Blues',linewidths = 0.40);
+sns.heatmap(characteristics.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Characteristics', pad=10);
 # -
 
@@ -419,11 +452,14 @@ departments_2019_df.sort_values(by='n_accidents_per_10k').head(10).plot.barh(x='
 plt.title('Number of Accidents per 10,000 habitants (2019)',pad = 10);
 # -
 
+plt.figure(figsize=(5,5));
 plt.plot(departments_2019_df['PTOT'], departments_2019_df['n_accidents'], 'x');
 plt.title('Accidents in a Department in Function of its Population 2009', pad=10);
-plt.xlabel('Total Population of the Department');
+plt.xlabel('Total Population of the Department ( in Millions )');
+locs,labels = xticks();
+xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+xlim(left=0);
 plt.ylabel('Number of Accidents in the Department');
-plt.ticklabel_format(style='plain', axis='x');
 
 
 #
@@ -433,12 +469,14 @@ plt.ticklabel_format(style='plain', axis='x');
 
 # In general accidents should be uniform accross all months of the year, and generally accidents should be decreasing across the years especially in covid area since we had a lower volume of car movement across the world
 
+plt.figure(figsize=(5,5));
 sns.countplot(y = "month" , data = characteristics)
 plt.xlabel('Total Number of Accidents');
 plt.ylabel('Month');
 plt.title('Distribution of Accidents by Month', pad=10);
 
 
+plt.figure(figsize=(5,5));
 sns.countplot(y = "year" , data = characteristics)
 plt.xlabel('Total Number of Accidents');
 plt.ylabel('Year');
@@ -454,92 +492,57 @@ plt.title('Distribution of Accidents by Year', pad=10);
 # The number of accidents across genders should be equal across males and females.
 
 users.sexe.replace(to_replace=-1,value=1,inplace=True)
+users.sexe.value_counts()
 
-
+plt.figure(figsize=(5,5));
 ax = sns.countplot(data=users, x='sexe');
 plt.xticks(ticks=[0,1],labels=['Male', 'Female'])
 plt.xlabel('Sex');
-plt.ylabel('Total Number of Accidents');
+plt.ylabel('Total Number of Accidents ( in Millions )');
+locs,labels = yticks();
+yticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+ylim(bottom=0);
 plt.title('Distribution of Accidents by Gender', pad=10);
-plt.ticklabel_format(style='plain', axis='y');
 
 # We see that the amount of Males doing accidents is almost double that of females, probably because the amount of males who generally drive are higher than females, or because males are reckless drivers.
-
-# Accidents by Age
-
-#users.an_nais.value_counts()
-users['Age']=df['year']-df['an_nais']
-
-users.Age.fillna(21,inplace=True) #Mode
-users.Age = users.Age.astype(int)
-
-# We want to check the amount of accidents by Age and we suspect that the majority is of young age
-
-#ENTIRE AGE LIMIT (Include babies in cars)
-ax = sns.countplot(data=users, x='Age');
-plt.xlabel('Age');
-plt.locator_params(axis='x', nbins=11)
-plt.ylabel('Total Number of Drivers');
-plt.title('Distribution of Accidents by Age', pad=10);
-plt.ticklabel_format(style='plain', axis='y')
-
-#Limit the accidents to minimum of 18 years of Age
-ax = sns.countplot(data=users, x='Age');
-plt.xlabel('Age');
-plt.locator_params(axis='x', nbins=11)
-plt.xlim(17,100)
-plt.ylabel('Total Number of Drivers');
-plt.title('Distribution of Accidents by Age', pad=10);
-plt.ticklabel_format(style='plain', axis='y')
-
-# We confirm our theory that the number of accident victims generally decrease with age
 
 # ## Accidents by Gravity
 
 users.grav.replace(to_replace=-1,value=1,inplace=True)
+users.grav.value_counts()
 
-# We nee to check the severity (gravity) of accidents and its effects on the drivers, which is our target variable.
+# We nee to check the severity (gravity) of accidents and its effects on the dirvers, which is our target variable.
 # Only a low number of accidents should result in serious injury or death due to the advanced security systems and road designs.
 
-#Pie Chart
-plt.figure(figsize = (10,8))
-plt.pie(x=users.grav.value_counts(),
-        explode = [0,0,0,0.15],
-        autopct = lambda x: str(round(x, 2)) + '%',
-        labeldistance = 1.1 , pctdistance = 0.8);
-plt.title("Pie Chart for Severity of accidents");
-plt.legend(['Unharmed', 'Slightly Injured',
-        'Hospitalized','Killed']);
-
+plt.figure(figsize=(5,5));
 sns.countplot(data=users, x='grav');  
 plt.xticks(ticks=[0,1,2,3], labels=['1\nUnscathed', '2\nKilled',
     '3\nHospitalized\nwounded','4\nLight injury'])
-plt.xlabel('gravity');
-plt.ylabel('Total Number of Accidents');
-plt.title('Number of Accidents according to their gravity', pad=10);
-plt.ticklabel_format(style='plain', axis='y')
+plt.xlabel('Severity');
+plt.ylabel('Total Number of Accidents ( in Millions )');
+locs,labels = yticks();
+yticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+ylim(bottom=0);
+plt.title('Number of Accidents according to their Severity', pad=10);
 
 # Conclusion: We can see that almost 20% of people are Hospitalized and only a very small amount is killed,and hence we can deduce that the target variable is unbalanced.
-
-# # Violen plot
-
-sns.catplot(x='sexe' , y='Age' , kind = 'violin' , data = users);
-
-# Violen plot to see Grav in terms of Age split by Sex
-
-sns.catplot(x='grav' , y='Age' ,hue = "sexe" , kind = 'violin' , split = True , data = users);
-
-# We can observe that the Age range is quite unifrom across all grav types for both sexes
 
 # ## Accidents per Road Categories
 #
 # What types of roads do most accidents happen on? Can roads with high speeds or rather small distances show a clear trend? We would not expect a clear trend.
 
-plt.figure(figsize = (8,4));
+plt.figure(figsize = (8,5));
 sns.countplot( y = df.Rd_Cat);
 plt.title('Road Categories with most Accidents', pad=10);
-plt.yticks(ticks=list(range(0,9)),labels=['0=Nans','1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = Urban Metropolis Roads' , '9 = other']);
-plt.ticklabel_format(style='plain', axis='x')
+plt.yticks(ticks=list(range(0,9)),labels=['Nans','Highway', 'National Road', 'Departmental Road',
+                                          'Communal Way' ,'Off puplic Network','Parking Lot (Puplic)' ,
+                                          'Urban Metropolis Roads' , 'Other']);
+plt.xlabel('Count ( in Millions )');
+plt.ylabel('Road Categories');
+locs,labels = xticks();
+xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+ylim(top=0.5);
+xlim(left=0);
 
 #
 # Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
@@ -548,23 +551,31 @@ plt.ticklabel_format(style='plain', axis='x')
 #
 # In which direction of travel do most accidents occur and does the type of road plays a role here. Can oncoming traffic be a factor?
 
-g = sns.FacetGrid(df, col = 'Traf_Direct');
-chart = g.map(plt.hist, 'Rd_Cat');
+indexNames = places[ places['Traf_Direct'] < 1 ].index
+places.drop(indexNames , inplace=True)
+
+g = sns.FacetGrid(places, col = 'Traf_Direct',height=5, aspect=0.5);
+chart = g.map_dataframe(sns.histplot, x="Rd_Cat",binwidth=3, binrange=(0, 10))
 g.fig.subplots_adjust(top=0.8);
-g.fig.suptitle('Accidents according to traffic direction and road category');
+g.fig.suptitle('Accidents according to Traffic Direction and Road Category (Accident Count in Millions )');
 plt.ticklabel_format(style='plain', axis='y');
+plt.ylabel('Accident Count ( in Millions )');
+locs,labels = yticks();
+yticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+ylim(bottom=0);
+xlim(left=0.5);
 
 
 # Legend:
-# - Rd.Cats:-----------------------------                    - Traff.Direct: 
-# - 1=Highway--------------------------                  - 1=False
-# - 2=National Road--------------------              - 0=False 
-# - 3=Departmental Road--------------          - 1=One Way 
-# - 4=Communal Way------------------               - 2=Bidirectional
-# - 5=Off puplic Network---------------         - 3=Separated Carriageways 
-# - 6=Parking Lot (puplic)--------------       - 4=With variable assignment Channels
+# - Road Categories:---------------------Traffic Directions                   
+# - 1=Highway--------------------------        - 1=One Way           
+# - 2=National Road--------------------            - 2=Bidirectional  
+# - 3=Departmental Road--------------           - 3=Separated Carriageways 
+# - 4=Communal Way------------------           - 4=With variable assignment Channels    
+# - 5=Off puplic Network         
+# - 6=Parking Lot (Puplic)      
 # - 7=Urban Metropolis Roads
-# - 9=other                                            
+# - 9=Other                                            
 
 #
 # We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic.
@@ -611,8 +622,15 @@ plt.ylabel('Type of movable Obstacle');
 #
 # Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
 
+# ## ?
+
+fig, ax = plt.subplots(figsize=(12,12))
+sns.heatmap(vehicles.corr()[['secu']].sort_values('secu').tail(10),
+vmax=1, vmin=-1, annot=True, ax=ax);
+ax.invert_yaxis()
+
 # ## Conclusion for Visualizations
 #
-# In fact, accidents often do not seem to have been brought about by any particular external influence. Although there are some missing factors (alcohol/drug tests of drivers for example) which may give a clearer picture. Rather, physical conditions such as tiredness, stress or lack of concentration maybe the general cause of these accidents.This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
+# In fact, accidents often do not seem to have been brought about by any particular external influence. Rather, physical conditions such as tiredness, stress or lack of concentration are the cause. This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
 
 
