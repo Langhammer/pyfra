@@ -14,15 +14,27 @@
 #
 # Notebook 1
 # ==============
-# Exploring Data and Visualization
+# Data Visualization
 
+# # Importing Packages and Data
+
+import pyfra
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 # %matplotlib inline
 
-# # Import Data
+# +
+#df = pd.read_pickle('../data/df.p')
+#n_rows_complete = len(df)
+# -
+
+#pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
+                         #right=pyfra.df_testing_info(df),\
+                         #check_dtype=False, check_exact=False)
+
+# # Importing Data
 
 french_categories = {'characteristics': 'caracteristiques', 'places':'lieux', 'users':'usagers', 'vehicles':'vehicules'}
 data_categories = french_categories.keys()
@@ -43,7 +55,7 @@ def read_csv_of_year(start_year, end_year, separators, name_separator='_'):
         for this_category, this_sep in zip(data_categories, separators):
             # We need the French name of the category for the filename
             this_french_category = french_categories[this_category]
-            this_file_path_and_name = '../Data/'+this_year_str+'/' + this_french_category+name_separator+this_year_str+'.csv'
+            this_file_path_and_name = '../data/'+this_year_str+'/' + this_french_category+name_separator+this_year_str+'.csv'
             this_df_dict[this_category] = pd.read_csv(this_file_path_and_name, encoding='latin-1', sep=this_sep, low_memory=False)
         df_dict[year] = this_df_dict
     return df_dict
@@ -58,7 +70,7 @@ df_dict.update(read_csv_of_year(2019, 2021, separators=';', name_separator='-'))
 
 # -
 
-# ## Put all the data in one dataframe for each category
+# ## Merge all the Data in one Data Frame for each Category
 
 # +
 dict_of_category_dfs = {}
@@ -69,15 +81,14 @@ characteristics = dict_of_category_dfs['characteristics']
 places = dict_of_category_dfs['places']
 users = dict_of_category_dfs['users']
 vehicles = dict_of_category_dfs['vehicles']
+
+
 # -
 
 # # Data Cleaning
 # We will perform some of the cleaning of the data on the individual datasets. Not all cleaning is possible before merging the datasets, so there will be a second round of cleaning.
 
-places.columns
-
-
-# ## Calculate the percentage of missing values for each dataframe
+# ### Function for calculating the percentage of missing values for each data frame
 
 def na_percentage(df):
   return df.isna().sum() *100 / len(df)
@@ -211,10 +222,6 @@ characteristics['year'].value_counts()
 characteristics['year'].replace({5:2005, 6:2006, 7:2007, 8:2008, 9:2009, 10:2010, 11:2011,
                                                          12:2012, 13:2013, 14:2014, 15:2015, 16:2016, 17:2017, 18:2018}, inplace=True)
 
-# #### Check
-
-characteristics['year'].value_counts()
-
 # ### Fix inconsistent time format
 
 # The time format inconsistent, sometimes it is hhmm, and sometimes hh:mm. We will therefore remove any ":" from the column 
@@ -268,11 +275,33 @@ characteristics.loc[(np.less(characteristics['year'],2019)),'department'] = \
 
 characteristics['department'] = characteristics['department'].apply(lambda code: code.lstrip('0'))
 
-# # Vehicles dataset
+# ## Vehicles dataset
 
-# +
-#hello
-# -
+# ### Translate variable names from French to English
+
+# We will translate the variable names from French to English for better interpretability and name them more clear (using small letters).
+
+vehicles = vehicles.rename(columns = {'id_vehicule' : 'id_veh' , 'num_veh' : 'num_veh' ,
+                           'senc' : 'direction' , 'catv' : 'cat_veh', 'obs' : 'obstacle', 'obsm' : 'obstacle_movable' ,
+                          'choc' : 'initial_point' , 'manv' : 'principal_maneuver' , 'motor' : 'motor_veh', 'occutc' : 'num_occupants'})
+vehicles.columns
+
+# ### Check of the variables with the most missing values
+
+# Variable num_occupants is representing amount of passangers being victims of an accident when they used public transport system. Missing values are caused by not recording value 0 and keeping the cell empty. For this reason we decided to replace the missing values by 0.
+
+vehicles["num_occupants"] = vehicles["num_occupants"].fillna(0)
+vehicles['num_occupants'].isna().sum()
+vehicles['num_occupants'].value_counts()
+
+# Variables motor_veh and id_veh represents type of the motorisation of the vehicle. There are 85% missing values in this column. Some of the values of this variable dont specificate exact type but are tracked as unspecified, unknown, other. We have decided to drop this variable as it doesnt have any significant influence on the target variable. 
+
+vehicles = vehicles.drop(columns=['motor_veh','id_veh'])
+
+# 8 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
+
+vehicles[['Num_Acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']] = vehicles[['Num_Acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']].fillna(0)
+vehicles.isna().sum()
 
 # # Merge all datasets
 
@@ -291,47 +320,41 @@ df = characteristics.merge(right=places, how='left').merge(users, how='left').me
 print(df.info())
 print(na_percentage(df))
 
+# # Visualizations
+
 # ## Correlation of the feature variables with the target
 
 cm=df.corr()
-cm["grav"].sort_values(ascending=False)[1:]
+cm['grav'].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
 
-plt.figure(figsize=(14,14));
-sns.heatmap(cm, annot=False);
+fig, ax = plt.subplots(figsize=(33,20));
+sns.heatmap(cm, annot = True, ax = ax, cmap='coolwarm', linewidths = 0.40);
+fontsize = 40
+plt.title("Heatmap of Correlation for all Variables with the Target", fontdict={'fontsize': fontsize}, pad=40);
 
-# ## Fixing incoherency of 'secu' Variable
-# Safety equipment until 2018 was in 2 variables: existence and use.
-#
-# From 2019, it is the use with up to 3 possible equipments for the same user
-# (especially for motorcyclists whose helmet and gloves are mandatory).
-#
-# ### secu1
-# The character information indicates the presence and use of the safety equipment:
-# -1 - No information
-# 0 - No equipment
-# 1 - Belt
-# 2 - Helmet
-# 3 - Children device
-# 4 - Reflective vest
-# 5 - Airbag (2WD/3WD)
-# 6 - Gloves (2WD/3WD)
-# 7 - Gloves + Airbag (2WD/3WD)
-# 8 - Non-determinable
-# 9 - Other
-#
-# ### secu2
-# The character information indicates the presence and use of the safety equipment
-#
-# ### secu3
-# The character information indicates the presence and use of safety equipment
-#
+# This heat map is intended to provide an overall view of where strong correlations occur .
 
-df['secu'] = df[df['year']==2007]['secu'].astype(int)
-df[df['year']==2007]['secu'].value_counts()
+# ## Heatmap per Subject Area
 
-# # Visualizations
+# +
+fig, S = plt.subplots(figsize=(12,5));
+sns.heatmap(users.corr() , annot = True, cmap='Blues',linewidths = 0.40);
+plt.title('Heatmap for Users', pad=10);
+
+fig, S = plt.subplots(figsize=(12,5));
+sns.heatmap(places.corr() , annot = True, cmap='Blues',linewidths = 0.40);
+plt.title('Heatmap for Places', pad=10);
+
+fig, S = plt.subplots(figsize=(12,5));
+sns.heatmap(vehicles.corr() , annot = True, cmap='Blues',linewidths = 0.40);
+plt.title('Heatmap for Vehicles', pad=10);
+
+fig, S = plt.subplots(figsize=(12,5));
+sns.heatmap(characteristics.corr() , annot = True, cmap='Blues',linewidths = 0.40);
+plt.title('Heatmap for Characteristics', pad=10);
+# -
 
 # ## Datetime
 
@@ -345,21 +368,22 @@ day_time_tick_labels = ('0:00', '03:00','06:00','09:00','12:00','15:00',
 plot_data = pd.DataFrame({'weekdays': (dict_of_category_dfs['characteristics'][dict_of_category_dfs['characteristics']['is_weekend'] != 1 ])['hhmm'],
                  'weekends': (dict_of_category_dfs['characteristics'][dict_of_category_dfs['characteristics']['is_weekend'] == 1 ])['hhmm']})
 fig= plt.figure();
-sns.histplot(data=plot_data, stat='proportion', bins=24, common_norm=False);
+sns.histplot(data=plot_data, stat='proportion', bins=24, binrange=(0,2400), common_norm=False);
 plt.xticks(ticks=day_time_ticks, 
            labels=day_time_tick_labels);
 plt.xlabel('Time of Day')
-plt.title('Distribution of Accidents by Daytime')
+plt.xlim((0,2400))
+plt.title('Distribution of Accidents by Daytime', pad = 10);
 
 # The plot shows, that the temporal distribution is different on the weekends: On weekends, there are far more accidents between 19:00 and 07:00, while there are more accidents on weekday around 09:00 and 18:00. These differences align very well with our hypothesis. We did not expect the peak on weekends around 18:00, though. 
 #
 # Possible policy measures could be more public transport offers during these times and more police inspections on the weekends near party locations.
 
 # ## Accidents per capita
-# ### Outline
+#
 # We will investigate, how the ratio accident / habitant differs between the departments. For this, we will create a new DataFrame of Departments. We will count the accidents per Department and import the population data from INSEE to calculate the ratio. 
 #
-# ### Hypothesis
+#
 # We do not expect that this comparison shows stark contrast between the departments. Departments with dense cities will probably have a higher ratio, though. This plot will show us, if there are any outliers.
 
 # +
@@ -388,60 +412,147 @@ departments_2019_df.dropna(axis=0,subset='n_accidents_per_10k', inplace=True)
 #departments_2019_df['n_accidents_per_10k'].plot(kind='bar')
 departments_2019_df.sort_values(by='n_accidents_per_10k').tail(10).plot.barh(x='DEP',y='n_accidents_per_10k',    
     figsize=(5,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
+plt.title('Number of Accidents per 10,000 habitants (2019)',pad = 10);
 
 departments_2019_df.sort_values(by='n_accidents_per_10k').head(10).plot.barh(x='DEP',y='n_accidents_per_10k',    
     figsize=(5,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
+plt.title('Number of Accidents per 10,000 habitants (2019)',pad = 10);
 # -
 
 plt.plot(departments_2019_df['PTOT'], departments_2019_df['n_accidents'], 'x');
-plt.title('Accidents in a Department in Function of its Population 2009');
+plt.title('Accidents in a Department in Function of its Population 2009', pad=10);
 plt.xlabel('Total Population of the Department');
 plt.ylabel('Number of Accidents in the Department');
+plt.ticklabel_format(style='plain', axis='x');
 
 
-# ### Conclusion
+#
 # The differences between the departments are generally higher than expected. Other than the departments without data (which have been dropped before plotting), there are no outliers. The relation between habitants and accidents does not seem to be linear, a quadratic function could be used for fitting here.  
 
-sns.countplot(y = "month" , data = characteristics);
+# ## Checking Accidents per month and per year
 
-sns.countplot(y = "year" , data = characteristics);
+# In general accidents should be uniform accross all months of the year, and generally accidents should be decreasing across the years especially in covid area since we had a lower volume of car movement across the world
 
-# Displaying dataframe correlations as a heatmap 
-# with diverging colourmap as RdYlGn
-sns.heatmap(vehicles.corr(), cmap ='RdYlGn', linewidths = 0.30, annot = True);
+sns.countplot(y = "month" , data = characteristics)
+plt.xlabel('Total Number of Accidents');
+plt.ylabel('Month');
+plt.title('Distribution of Accidents by Month', pad=10);
 
-# showing frequency of each manevuer before car accident
-plt.hist(vehicles["manv"])
-plt.show()
 
-sns.countplot(data=users, x='sexe');
-plt.xticks(ticks=[0,1,2],labels=['data missing','male', 'female']);
+sns.countplot(y = "year" , data = characteristics)
+plt.xlabel('Total Number of Accidents');
+plt.ylabel('Year');
+plt.title('Distribution of Accidents by Year', pad=10);
+
+# We can see that the number of accidents per month is almost uniform.
+#
+# For the years we see a decline in the number of accidents per year, maybe for increased security measures or improved laws and roads.
+# We can also see that there is a sharp decrease in the number in the year 2020 probably due to Covid and lockdown in France, and a relative increase after that in 2021.
+
+# ## Accidents by Gender
+
+# The number of accidents across genders should be equal across males and females.
+
+users.sexe.replace(to_replace=-1,value=1,inplace=True)
+
+
+ax = sns.countplot(data=users, x='sexe');
+plt.xticks(ticks=[0,1],labels=['Male', 'Female'])
+plt.xlabel('Sex');
+plt.ylabel('Total Number of Accidents');
+plt.title('Distribution of Accidents by Gender', pad=10);
+plt.ticklabel_format(style='plain', axis='y');
+
+# We see that the amount of Males doing accidents is almost double that of females, probably because the amount of males who generally drive are higher than females, or because males are reckless drivers.
+
+# Accidents by Age
+
+#users.an_nais.value_counts()
+users['Age']=df['year']-df['an_nais']
+
+users.Age.fillna(21,inplace=True) #Mode
+users.Age = users.Age.astype(int)
+
+# We want to check the amount of accidents by Age and we suspect that the majority is of young age
+
+#ENTIRE AGE LIMIT (Include babies in cars)
+ax = sns.countplot(data=users, x='Age');
+plt.xlabel('Age');
+plt.locator_params(axis='x', nbins=11)
+plt.ylabel('Total Number of Drivers');
+plt.title('Distribution of Accidents by Age', pad=10);
+plt.ticklabel_format(style='plain', axis='y')
+
+#Limit the accidents to minimum of 18 years of Age
+ax = sns.countplot(data=users, x='Age');
+plt.xlabel('Age');
+plt.locator_params(axis='x', nbins=11)
+plt.xlim(17,100)
+plt.ylabel('Total Number of Drivers');
+plt.title('Distribution of Accidents by Age', pad=10);
+plt.ticklabel_format(style='plain', axis='y')
+
+# We confirm our theory that the number of accident victims generally decrease with age
+
+# ## Accidents by Gravity
+
+users.grav.replace(to_replace=-1,value=1,inplace=True)
+
+# We nee to check the severity (gravity) of accidents and its effects on the drivers, which is our target variable.
+# Only a low number of accidents should result in serious injury or death due to the advanced security systems and road designs.
+
+#Pie Chart
+plt.figure(figsize = (10,8))
+plt.pie(x=users.grav.value_counts(),
+        explode = [0,0,0,0.15],
+        autopct = lambda x: str(round(x, 2)) + '%',
+        labeldistance = 1.1 , pctdistance = 0.8);
+plt.title("Pie Chart for Severity of accidents");
+plt.legend(['Unharmed', 'Slightly Injured',
+        'Hospitalized','Killed']);
 
 sns.countplot(data=users, x='grav');  
-plt.xticks(ticks=[0,1,2,3,4], labels=['Missing data','1\nUnscathed', '2\nKilled',
+plt.xticks(ticks=[0,1,2,3], labels=['1\nUnscathed', '2\nKilled',
     '3\nHospitalized\nwounded','4\nLight injury'])
 plt.xlabel('gravity');
+plt.ylabel('Total Number of Accidents');
+plt.title('Number of Accidents according to their gravity', pad=10);
+plt.ticklabel_format(style='plain', axis='y')
 
-fig, S = plt.subplots(figsize=(18,18));
-sns.heatmap(users.corr() , annot = True );
+# Conclusion: We can see that almost 20% of people are Hospitalized and only a very small amount is killed,and hence we can deduce that the target variable is unbalanced.
 
-sns.countplot(data=users, y='grav');  #•	1 - Unscathed•	2 - Killed•	3 - Hospitalized wounded•	4 - Light injury
+# # Violen plot
 
-plt.figure(figsize = (10,9));
-sns.countplot( y = places.Rd_Cat);
-plt.title('Road Categories with most Accidents');
+sns.catplot(x='sexe' , y='Age' , kind = 'violin' , data = users);
+
+# Violen plot to see Grav in terms of Age split by Sex
+
+sns.catplot(x='grav' , y='Age' ,hue = "sexe" , kind = 'violin' , split = True , data = users);
+
+# We can observe that the Age range is quite unifrom across all grav types for both sexes
+
+# ## Accidents per Road Categories
+#
+# What types of roads do most accidents happen on? Can roads with high speeds or rather small distances show a clear trend? We would not expect a clear trend.
+
+plt.figure(figsize = (8,4));
+sns.countplot( y = df.Rd_Cat);
+plt.title('Road Categories with most Accidents', pad=10);
 plt.yticks(ticks=list(range(0,9)),labels=['0=Nans','1 = Highway', '2 = National Road', '3 = Departmental Road', '4 = Communal Way' ,'5 = Off puplic Network','6 = Parking Lot (puplic)' , '7 = Urban Metropolis Roads' , '9 = other']);
+plt.ticklabel_format(style='plain', axis='x')
 
-# ### Conclusion for road categories with most accidents: 
+#
 # Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
 
-# +
+# ## Accidents per Road Categories vs. Traffic Direction
+#
+# In which direction of travel do most accidents occur and does the type of road plays a role here. Can oncoming traffic be a factor?
 
-g = sns.FacetGrid(places, col = 'Traf_Direct');
-g.map(plt.hist, 'Rd_Cat');
+g = sns.FacetGrid(df, col = 'Traf_Direct');
+chart = g.map(plt.hist, 'Rd_Cat');
 g.fig.subplots_adjust(top=0.8);
 g.fig.suptitle('Accidents according to traffic direction and road category');
-# -
+plt.ticklabel_format(style='plain', axis='y');
 
 
 # Legend:
@@ -455,45 +566,53 @@ g.fig.suptitle('Accidents according to traffic direction and road category');
 # - 7=Urban Metropolis Roads
 # - 9=other                                            
 
-# ### Conclusion for accidents according to traffic direction and road category:
+#
 # We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic.
 
-plt.figure(figsize = (10,9));
-sns.countplot( y = places.Rd_Cond);
-plt.title('Road Conditions with most Accidents');
-plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '2 = Wet', '3 = Puddles', '4 = Flooded' ,'5 = Snow-Convered','6 = Mud' , '7 = Icy' , '8=Greasy (Oil)', '9 = other']);
+# ## Road Conditions
+#
+# In what weather conditions do most accidents happen? We would expect snow, ice, rain, mud as clear evidence.
 
-# ### Conclusion for road conditions with most accidents:
+plt.figure(figsize = (8,4));
+sns.countplot( y = df.Rd_Cond);
+plt.title('Road Conditions with most Accidents', pad=10);
+plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '2 = Wet', '3 = Puddles', '4 = Flooded' ,'5 = Snow-Convered','6 = Mud' , '7 = Icy' , '8=Greasy (Oil)', '9 = other']);
+plt.ticklabel_format(style='plain', axis='x');
+
+#
 # By far the most accidents happend during normal weather conditions.
 
-plt.figure(figsize = (10,9));
-sns.countplot( y = places.Pos_Acc);
-plt.title('Accident Location');
-plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', '2 = On Emergancy Lane', '3 = On Hard Shoulder', '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']);
+# ## Locations
+#
+# Are there areas of the road that are particularly often associated with accidents?
 
-# ### Conclusion for accident location:
-# By far the most accidents happend on the carriage way.
+plt.figure(figsize = (8,4));
+sns.countplot( y = df.Pos_Acc);
+plt.title('Accident Location', pad=10);
+plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', 
+                                          '2 = On Emergancy Lane', '3 = On Hard Shoulder', 
+                                          '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']);
+plt.ticklabel_format(style='plain', axis='x');
 
-# ### Summary of the most important variables of the data set places.
-# Many changes have been made to this data set over time. Unfortunately, no new columns were created for this but existing columns were used for other inputs, so that one column can have several meanings. Unfortunately, some very interesting data cannot be used very well. In general, there is hardly any meaningful connection between the variables. It's not clear which place-descriptive variables give clear clues, but I'll try to come to a conclusion anyway.
+#
+# By far the most accidents just happend directly on the carriage way.
 
-# +
-plt.figure(figsize = (10,8));
+# ## Chrashed Obstacle
+#
+# Can traffic obstacles be a special index for accidents? It is to be expected that most accidents involving other road users occur in the form of vehicles.
 
-places_a = places.loc[places['Rd_Cond'] == 1]
-places_b = places.loc[places['Pos_Acc'] == 1]
-places_c = places.loc[places['Rd_Prof'] == 1]
-places_d = places.loc[places['Rd_Cat'] == 4]
+plt.figure(figsize = (6,4));
+sns.countplot( y = vehicles.obstacle_movable);
+plt.title('Crashed Obstacle', pad=10);
+plt.yticks(ticks=list(range(0,8)),labels=['-1=Nans','0=Nothing','1 = Pedestrian', '2 = Vehicle', '3 = Rail vehicle', '4 = Pet' ,'5 = Wild animal','6 = Other']);
+plt.ticklabel_format(style='plain', axis='x');
+plt.ylabel('Type of movable Obstacle');
 
-places_a.loc[places_a["Rd_Cond"]==1, "Rd_Cond"] = "Normal Condition"
-places_b.loc[places_b["Pos_Acc"]==1, "Pos_Acc"] = "On the Road"
-places_c.loc[places_c["Rd_Prof"]==1, "Rd_Prof"] = "Flat Road"
-places_d.loc[places_d["Rd_Cat"]==4, "Rd_Cat"] = "Communal Way"
+#
+# Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
 
-plt.hist([places_b.Pos_Acc, places_c.Rd_Prof, places_a.Rd_Cond,places_d.Rd_Cat],color=['blue','lightgrey','red','green'], width = 0.7, rwidth=50);
-plt.ylabel('Count');
-plt.title('The Most Common Accidents');
-# -
+# ## Conclusion for Visualizations
+#
+# In fact, accidents often do not seem to have been brought about by any particular external influence. Although there are some missing factors (alcohol/drug tests of drivers for example) which may give a clearer picture. Rather, physical conditions such as tiredness, stress or lack of concentration maybe the general cause of these accidents.This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
 
-# ### Conclusion for the most common accidents:
-# I'm not saying that all of these accidents are related, but I think one can deduce thatfrom the total number of accidents (1.121.571 accidents) a high number of accidents occur with "good" parameters. At least as far as the place of the accident is concerned.
+

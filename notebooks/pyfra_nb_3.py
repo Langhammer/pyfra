@@ -35,7 +35,6 @@ from sklearn.metrics import f1_score, accuracy_score, recall_score, make_scorer
 from imblearn import under_sampling
 from imblearn.under_sampling import RandomUnderSampler
 from time import sleep
-from tqdm.notebook import tqdm
 from sklearn.ensemble import AdaBoostClassifier
 
 
@@ -53,8 +52,8 @@ rus = RandomUnderSampler(random_state=23)
 relative_sample_size = 0.01
 df = df.sample(frac=relative_sample_size, random_state=23)
 
-data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df.grav
+data = df.drop(columns='Gravity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df.Gravity
 data, target = rus.fit_resample(X=data, y=target)
 
 target.value_counts()
@@ -163,12 +162,12 @@ result_metrics
 # +
 params = {
     'criterion': ['gini', 'entropy'],
-    'max_depth': [15,35],
-    'min_samples_leaf':[7,15],
-    'n_estimators': [400,800]
+    'max_depth': [5,10,20,40],
+    'min_samples_leaf':[3,7,15,25],
+    'n_estimators': [50,100,200,400]
     }
 
-RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = RepeatedKFold(n_splits=4, n_repeats=1, random_state=23))
+RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = cv)
 RFCLF.fit(X_train_scaled_selection,y_train)
 
 print('Best Params are:',RFCLF.best_params_)
@@ -340,3 +339,15 @@ severity_categories = ("Unscathed","Killed", "Hospitalized wounded", "Light inju
 print(classification_report(y_true=y_test, y_pred=y_stacking, target_names=severity_categories))
 
 # The classification report reflects our observations from the correlation matrix. It is satisfying that the categorie "Killed" is predicted with the highest accuracy; we consider this category as particularly important.
+
+# +
+# Saving the models for further use and investigation
+from joblib import dump, load
+
+
+dump(stacking_clf, '../models/stacking_clf.joblib')
+# -
+
+loaded_model = load('../models/stacking_clf.joblib')
+y_test_loaded = loaded_model.predict(X_test_scaled_selection)
+
