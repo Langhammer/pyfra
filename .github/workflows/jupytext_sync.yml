@@ -33,6 +33,7 @@ jobs:
       run: git commit -a -m "Auto-Sync w/ Jupytext"
 
     - name: Push changes to the Output branch
+      uses: actions/checkout@v3.3.0
       with:
         ref: Output
         force: true
