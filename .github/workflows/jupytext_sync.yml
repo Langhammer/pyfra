@@ -27,11 +27,13 @@ jobs:
       run: |
         jupytext --sync .notebooks/pyfra_nb_*.py
 
-    - name: Commit and push changes
-      uses: ad-m/github-push-action@main
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: Output
-        message: Sync Jupytext notebooks
+    - name: Commit the changes
+      run: git commit -a -m "Auto-Sync w/ Jupytext"
 
-    
+    - name: Push changes to the Output branch
+      uses: actions/git-actions@v2
+      with:
+        ref: Output
+        force: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+
