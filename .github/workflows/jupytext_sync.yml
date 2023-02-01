@@ -3,7 +3,7 @@
 name: Jupytext Sync
 
 on: 
-  commit:
+  push:
     branches:
       - Output
 
