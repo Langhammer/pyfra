@@ -636,13 +636,6 @@ xlim(left=0);
 #
 # Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
 
-# ## ?
-
-fig, ax = plt.subplots(figsize=(12,12))
-sns.heatmap(vehicles.corr()[['secu']].sort_values('secu').tail(10),
-vmax=1, vmin=-1, annot=True, ax=ax);
-ax.invert_yaxis()
-
 # ## Conclusion for Visualizations
 #
 # In fact, accidents often do not seem to have been brought about by any particular external influence. Rather, physical conditions of road users such as tiredness, stress, the influence of alcohol and drugs or poor concentration could be the cause. This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
