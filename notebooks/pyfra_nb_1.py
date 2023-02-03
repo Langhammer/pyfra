@@ -506,7 +506,7 @@ plt.title('Distribution of Accidents by Gender', pad=10);
 
 # We see that the amount of Males doing accidents is almost double that of females, probably because the amount of males who generally drive are higher than females, or because males are reckless drivers.
 
-# ## Accidents by Gravity
+# ## Accidents by Severity
 
 users.grav.replace(to_replace=-1,value=1,inplace=True)
 users.grav.value_counts()
@@ -537,7 +537,7 @@ plt.title('Road Categories with most Accidents', pad=10);
 plt.yticks(ticks=list(range(0,9)),labels=['Nans','Highway', 'National Road', 'Departmental Road',
                                           'Communal Way' ,'Off puplic Network','Parking Lot (Puplic)' ,
                                           'Urban Metropolis Roads' , 'Other']);
-plt.xlabel('Count ( in Millions )');
+plt.xlabel('Accident Count ( in Millions )');
 plt.ylabel('Road Categories');
 locs,labels = xticks();
 xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
@@ -551,24 +551,23 @@ xlim(left=0);
 #
 # In which direction of travel do most accidents occur and does the type of road plays a role here. Can oncoming traffic be a factor?
 
-indexNames = places[ places['Traf_Direct'] < 1 ].index
-places.drop(indexNames , inplace=True)
+indexNames = df[ df['Traf_Direct'] < 1 ].index
+df.drop(indexNames , inplace=True)
 
-g = sns.FacetGrid(places, col = 'Traf_Direct',height=5, aspect=0.5);
-chart = g.map_dataframe(sns.histplot, x="Rd_Cat",binwidth=3, binrange=(0, 10))
+g = sns.FacetGrid(df, col = 'Traf_Direct', col_wrap=4, height=3.5, aspect=1.2,hue='Rd_Cat');
+chart = g.map_dataframe(sns.histplot, x='Rd_Cat', binwidth=.5, binrange=(1, 9));
+g.add_legend()
 g.fig.subplots_adjust(top=0.8);
 g.fig.suptitle('Accidents according to Traffic Direction and Road Category (Accident Count in Millions )');
-plt.ticklabel_format(style='plain', axis='y');
-plt.ylabel('Accident Count ( in Millions )');
 locs,labels = yticks();
 yticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 ylim(bottom=0);
-xlim(left=0.5);
+xlim(left=0.6);
 
 
 # Legend:
 # - Road Categories:---------------------Traffic Directions                   
-# - 1=Highway--------------------------        - 1=One Way           
+# - 1=Highway--------------------------         - 1=One Way           
 # - 2=National Road--------------------            - 2=Bidirectional  
 # - 3=Departmental Road--------------           - 3=Separated Carriageways 
 # - 4=Communal Way------------------           - 4=With variable assignment Channels    
@@ -578,17 +577,22 @@ xlim(left=0.5);
 # - 9=Other                                            
 
 #
-# We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic.
+# We can see that with road categories 3 and 4, on which most accidents happen, we have most accidents in places with bidirectional traffic. A suspicion that arose from this, that frontal or side collisions of vehicles on narrow streets with traffic on both sides are the most common, has not been confirmed. In fact, the most common type of collision is the side collision (1.4 million times), but this in turn is distributed fairly evenly across the type of road and traffic direction.
 
 # ## Road Conditions
 #
 # In what weather conditions do most accidents happen? We would expect snow, ice, rain, mud as clear evidence.
 
-plt.figure(figsize = (8,4));
+plt.figure(figsize = (8,5));
 sns.countplot( y = df.Rd_Cond);
 plt.title('Road Conditions with most Accidents', pad=10);
-plt.yticks(ticks=list(range(0,11)),labels=['-1=Failure','0=Nans','1 = Normal', '2 = Wet', '3 = Puddles', '4 = Flooded' ,'5 = Snow-Convered','6 = Mud' , '7 = Icy' , '8=Greasy (Oil)', '9 = other']);
-plt.ticklabel_format(style='plain', axis='x');
+plt.yticks(ticks=list(range(0,11)),labels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
+                                           'Mud','Icy','Greasy (Oil)', 'Other']);
+plt.ylabel('Road Conditions');
+ylim(top=1.5);
+plt.xlabel('Accident Count ( in Millions )');
+locs,labels = xticks();
+xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 
 #
 # By far the most accidents happend during normal weather conditions.
@@ -597,13 +601,18 @@ plt.ticklabel_format(style='plain', axis='x');
 #
 # Are there areas of the road that are particularly often associated with accidents?
 
-plt.figure(figsize = (8,4));
+plt.figure(figsize = (8,5));
 sns.countplot( y = df.Pos_Acc);
-plt.title('Accident Location', pad=10);
-plt.yticks(ticks=list(range(0,9)),labels=['-1=Failure','0=Nans','1 = On Carriageway', 
-                                          '2 = On Emergancy Lane', '3 = On Hard Shoulder', 
-                                          '4 = On Pavement' ,'5 = On Cycle Path / Lane','6 = On Special Lane' , '8=Other']);
-plt.ticklabel_format(style='plain', axis='x');
+plt.title('Accident Locations', pad=10);
+plt.ylabel('Road Locations');
+plt.yticks(ticks=list(range(0,9)),labels=['Failure','Nans','On Carriageway', 
+                                          'On Emergancy Lane', 'On Hard Shoulder', 
+                                          'On Pavement' ,'On Cycle Path / Lane','On Special Lane' , 'Other']);
+ylim(top=1.5);
+plt.xlabel('Accident Count ( in Millions )')
+locs,labels = xticks();
+xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+xlim(left=0);
 
 #
 # By far the most accidents just happend directly on the carriage way.
@@ -612,25 +621,21 @@ plt.ticklabel_format(style='plain', axis='x');
 #
 # Can traffic obstacles be a special index for accidents? It is to be expected that most accidents involving other road users occur in the form of vehicles.
 
-plt.figure(figsize = (6,4));
+plt.figure(figsize = (8,5));
 sns.countplot( y = vehicles.obstacle_movable);
 plt.title('Crashed Obstacle', pad=10);
-plt.yticks(ticks=list(range(0,8)),labels=['-1=Nans','0=Nothing','1 = Pedestrian', '2 = Vehicle', '3 = Rail vehicle', '4 = Pet' ,'5 = Wild animal','6 = Other']);
-plt.ticklabel_format(style='plain', axis='x');
 plt.ylabel('Type of movable Obstacle');
+plt.yticks(ticks=list(range(0,8)),labels=['Nans','No Obstacle','Pedestrian', 'Vehicle', 'Rail vehicle', 'Pet' ,
+                                          'Wild animal','Other']);
+ylim(top=.5);
+plt.xlabel('Accident Count ( in Millions )')
+locs,labels = xticks();
+xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+xlim(left=0);
 
 #
 # Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
 
-# ## ?
-
-fig, ax = plt.subplots(figsize=(12,12))
-sns.heatmap(vehicles.corr()[['secu']].sort_values('secu').tail(10),
-vmax=1, vmin=-1, annot=True, ax=ax);
-ax.invert_yaxis()
-
 # ## Conclusion for Visualizations
 #
-# In fact, accidents often do not seem to have been brought about by any particular external influence. Rather, physical conditions such as tiredness, stress or lack of concentration are the cause. This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
-
-
+# In fact, accidents often do not seem to have been brought about by any particular external influence. Rather, physical conditions of road users such as tiredness, stress, the influence of alcohol and drugs or poor concentration could be the cause. This is of course a circumstance that is not easy to solve in order to be able to reduce the number of accidents in the future. Campaigns can only draw attention to the most common causes of accidents in France and the best way to counteract them.
