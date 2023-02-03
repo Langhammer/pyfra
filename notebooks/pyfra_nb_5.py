@@ -50,8 +50,8 @@ pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', ind
 rus = RandomUnderSampler(random_state=23)
 
 # %%
-data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df.grav
+data = df.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df['Severity']
 data, target = rus.fit_resample(X=data, y=target)
 
 # %%
@@ -61,8 +61,8 @@ target.value_counts()
 print(f'We are working on {len(target)} data points, which represent {len(target)/n_rows_complete*100:.04f}% of the original data,')
 
 # %%
-data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df.grav
+data = df.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df['Severity']
 
 # %% [markdown]
 # # Relation between Amount of Training Data and Model Performance
@@ -129,3 +129,13 @@ print(result_metrics)
 
 # %%
 result_metrics
+
+# %%
+plt.plot(result_metrics['n_rows'],result_metrics['f1'],'x-', label='$f_1$');
+#plt.plot(result_metrics['n_rows'],result_metrics['accuracy'], label='Accuracy');
+plt.plot(result_metrics['n_rows'],result_metrics['recall'],'o-', label='Recall');
+plt.title('Performance in Relation to the Amount of Input Data')
+plt.xlabel('Number of Data Points')
+plt.ylabel('Performance')
+plt.ylim((0,0.5))
+plt.legend();
