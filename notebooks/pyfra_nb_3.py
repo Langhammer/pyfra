@@ -52,8 +52,8 @@ rus = RandomUnderSampler(random_state=23)
 relative_sample_size = 0.01
 df = df.sample(frac=relative_sample_size, random_state=23)
 
-data = df.drop(columns='Gravity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df.Gravity
+data = df.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df['Severity']
 data, target = rus.fit_resample(X=data, y=target)
 
 target.value_counts()
@@ -161,10 +161,10 @@ result_metrics
 
 # +
 params = {
-    'criterion': ['gini', 'entropy'],
-    'max_depth': [5,10,20,40],
-    'min_samples_leaf':[3,7,15,25],
-    'n_estimators': [50,100,200,400]
+    'criterion': ['gini'],
+    'max_depth': [5,10,20],
+    'min_samples_leaf':[3,7,15],
+    'n_estimators': [50,100]
     }
 
 RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = cv)
