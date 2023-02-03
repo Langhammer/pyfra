@@ -125,7 +125,6 @@ def store_metrics(model_label, model, n_rows, result_df):
 
 for n_rows in [500, 1_000, 2_000, 5_000, 10_000, 20_000]:
     result_metrics = store_metrics('stacking', stacking_clf, n_rows, result_metrics)
-print(result_metrics)
 
 # %%
 result_metrics
