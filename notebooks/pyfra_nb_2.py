@@ -84,10 +84,6 @@ for this_category, df in dict_of_category_dfs.items():
     print(this_category+'\n', na_percentage(df),'\n')
 
 # ## Users Dataset
-#
-# Dropping unwanted columns: which are num_veh , id_vehicule, and Num_Acc
-
-users = users.drop(columns=['num_veh','id_vehicule']) #Not needed #2509620 
 
 #Grav
 users.grav.replace(to_replace=-1,value=1,inplace=True)
@@ -432,9 +428,9 @@ vehicles['num_occupants'].isna().sum()
 
 vehicles['num_occupants'].value_counts()
 
-# Variables motor_veh and id_veh represents type of the motorisation of the vehicle. There are 85% missing values in this column. Some of the values of this variable dont specificate exact type but are tracked as unspecified, unknown, other. We have decided to drop this variable as it doesnt have any significant influence on the target variable. 
+# The variable motor_veh represents the type of the motorisation of the vehicle. There are 85 % missing values in this column. Some of the values of this variable don't specificate an exact type but are tracked as unspecified, unknown, or other. We have decided to drop this variable as it doesn't have any significant influence on the target variable. 
 
-vehicles = vehicles.drop(columns=['motor_veh','id_veh'])
+vehicles = vehicles.drop(columns=['motor_veh'])
 
 # 8 Variables have <= 1% missing information, so for those it should be fine to set the missing information just to zero.
 
@@ -443,26 +439,25 @@ vehicles.isna().sum()
 
 # # Merge all datasets
 
-# ## Compute the percentage of missing data
+# ## Ensure Correct Attribution of Users to Vehicles
 
-outer_df = characteristics.merge(right=places, how='outer').merge(users, how='outer').merge(vehicles, how='outer')
-
-print(f'number of rows:........{outer_df.shape[0]}')
-print(f'number of variables:...{outer_df.shape[1]}')
-na_percentage(outer_df)
-
-# The outer join was just performed to get a better understanding of the missing values
-# The created DataFrame takes a lot of memory, which we will deallocate
-del outer_df
+users['id_vehicule'].fillna(users['num_veh'], inplace=True)
+users.drop(columns=['num_veh'], inplace=True)
+users.rename(columns={'id_vehicule': 'id_veh'}, inplace=True)
+users.set_index(['Num_Acc', 'id_veh'], inplace=True)
 
 # ## Left Join for further investigations
 # We will continue working with the left join of the data, as the missing lines miss the most important variables anyway.
 
-df = characteristics.merge(right=places, how='left').merge(users, how='left').merge(vehicles, how='left')
-print(df.info())
-print(na_percentage(df))
+# +
+df = users.merge(vehicles, how='left', left_index=True, right_on=['Num_Acc', 'id_veh']) \
+     .merge(characteristics, how='left', on='Num_Acc') \
+     .merge(places, how='left', on='Num_Acc')
 
-# ## Correlation of the feature variables with the target
+print(na_percentage(df))
+# -
+
+del characteristics, places, vehicles, users, dict_of_category_dfs
 
 cm=df.corr()
 cm["Severity"].sort_values(ascending=False)[1:]
