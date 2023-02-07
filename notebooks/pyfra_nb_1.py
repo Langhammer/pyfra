@@ -384,7 +384,7 @@ df[df['year']==2007]['secu'].value_counts()
 
 # ## Correlation of the feature variables with the target
 
-cm=df.corr()
+cm = df.corr(numeric_only=True)
 cm['grav'].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
@@ -666,8 +666,6 @@ plt.yticks(ticks=list(range(10)),labels=['Unknown', 'Normal', 'Light rain', 'Hea
 #plt.xlabel('Accident Count ( in Millions )');
 #locs,labels = xticks();
 #xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
-
-
 
 # ## Locations
 #
