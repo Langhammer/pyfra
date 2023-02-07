@@ -178,8 +178,6 @@ users.sexe.replace(to_replace=-1,value=1,inplace=True)
 #Security 
 users.drop(columns='secu3',inplace=True)
 
-users
-
 # +
 #secu has some missing values for older years , must fill with mode before continuing
 
