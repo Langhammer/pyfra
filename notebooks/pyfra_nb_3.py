@@ -49,7 +49,7 @@ pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', ind
 rus = RandomUnderSampler(random_state=23)
 
 # Create a sample of the data, because the whole dataset is too big for us to work with
-relative_sample_size = 0.01
+relative_sample_size = 0.1
 df = df.sample(frac=relative_sample_size, random_state=23)
 
 data = df.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
@@ -73,7 +73,7 @@ std_scaler = preprocessing.StandardScaler().fit(X_train)
 X_train_scaled = std_scaler.transform(X_train)
 X_test_scaled = std_scaler.transform(X_test)
 
-k_features = 50
+k_features = 60
 kbest_selector = SelectKBest(k=k_features)
 kbest_selector.fit(X_train_scaled,y_train);
 X_train_scaled_selection = kbest_selector.transform(X_train_scaled)
@@ -116,7 +116,7 @@ cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=23)
 # Instantiation of the SVM Classifier
 # We set the cache size to 1600 MB (default: 200 MB) to reduce the computing time.
 # The other parameters will be set via grid search.
-svc = svm.SVC(cache_size=1600)
+svc = svm.SVC(cache_size=4000)
 
 # Choosing the parameters for the grid search
 svc_params = {

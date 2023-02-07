@@ -459,12 +459,9 @@ print(na_percentage(df))
 
 del characteristics, places, vehicles, users, dict_of_category_dfs
 
-cm=df.corr()
-cm["Severity"].sort_values(ascending=False)[1:]
+# ## One-Hot Encoding of Categorical Features
 
-# The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
-
-df = pd.get_dummies(df,columns=['daylight', 'built-up_area', 'intersection_category', 
+df = pd.get_dummies(df.sample(frac=0.1),columns=['daylight', 'built-up_area', 'intersection_category', 
        'atmospheric_conditions', 'collision_category', 'Rd_Cat',
        'Traf_Direct', 'Add_Lanes', 'Rd_Prof', 'Rd_Plan', 
        'Rd_Cond', 'Envinmt', 'Pos_Acc', 'place', 'User_category',
@@ -476,7 +473,7 @@ df = pd.get_dummies(df,columns=['daylight', 'built-up_area', 'intersection_categ
        'User_category', 'Sex', 'Trajectory', 'LOCP', 'ACTP',
        'StateP', 'YoB', 'Security', 'direction', 'cat_veh',
        'num_occupants', 'obstacle', 'obstacle_movable', 'initial_point',
-       'principal_maneuver', 'num_veh'])
+       'principal_maneuver'])
 
 # # Export DataFrame to Pickle 
 # This step is necessary to be able to work with the data in another notebook.
