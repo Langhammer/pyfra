@@ -451,6 +451,10 @@ print(f'number of rows:........{outer_df.shape[0]}')
 print(f'number of variables:...{outer_df.shape[1]}')
 na_percentage(outer_df)
 
+# The outer join was just performed to get a better understanding of the missing values
+# The created DataFrame takes a lot of memory, which we will deallocate
+del outer_df
+
 # ## Left Join for further investigations
 # We will continue working with the left join of the data, as the missing lines miss the most important variables anyway.
 
@@ -464,6 +468,20 @@ cm=df.corr()
 cm["Severity"].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
+
+df = pd.get_dummies(df,columns=['daylight', 'built-up_area', 'intersection_category', 
+       'atmospheric_conditions', 'collision_category', 'Rd_Cat',
+       'Traf_Direct', 'Add_Lanes', 'Rd_Prof', 'Rd_Plan', 
+       'Rd_Cond', 'Envinmt', 'Pos_Acc', 'place', 'User_category',
+       'Sex', 'Trajectory', 'LOCP', 'ACTP', 'StateP', 'direction', 
+       'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver',
+       'department', 'Rd_Cat', 'Traf_Direct', 'Lanes', 'Landmark',
+       'Dist_to_Landmark', 'Add_Lanes', 'Rd_Prof', 'Rd_Plan', 'Gre_Verge',
+       'Rd_Width', 'Rd_Cond', 'Envinmt', 'Pos_Acc', 'place',
+       'User_category', 'Sex', 'Trajectory', 'LOCP', 'ACTP',
+       'StateP', 'YoB', 'Security', 'direction', 'cat_veh',
+       'num_occupants', 'obstacle', 'obstacle_movable', 'initial_point',
+       'principal_maneuver', 'num_veh'])
 
 # # Export DataFrame to Pickle 
 # This step is necessary to be able to work with the data in another notebook.
