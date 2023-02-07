@@ -98,13 +98,6 @@ def na_percentage(df):
 for this_category, df in dict_of_category_dfs.items():
     print(this_category+'\n', na_percentage(df),'\n')
 
-# ## Users Dataset
-
-# Dropping unwanted columns , which are num_veh , and id_vehicule
-#
-
-users = users.drop(columns=['num_veh','id_vehicule']) #Not needed
-
 # ## Places Dataset
 
 # +
@@ -311,32 +304,53 @@ vehicles["num_occupants"] = vehicles["num_occupants"].fillna(0)
 vehicles['num_occupants'].isna().sum()
 vehicles['num_occupants'].value_counts()
 
-# Variables motor_veh and id_veh represents type of the motorisation of the vehicle. There are 85% missing values in this column. Some of the values of this variable dont specificate exact type but are tracked as unspecified, unknown, other. We have decided to drop this variable as it doesnt have any significant influence on the target variable. 
+# The variable motor_veh represents the type of the motorisation of the vehicle. There are 85 % missing values in this column. Some of the values of this variable don't specificate an exact type but are tracked as unspecified, unknown, or other. We have decided to drop this variable as it doesn't have any significant influence on the target variable. 
 
-vehicles = vehicles.drop(columns=['motor_veh','id_veh'])
+vehicles = vehicles.drop(columns=['motor_veh'])
 
 # 8 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
 
 vehicles[['Num_Acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']] = vehicles[['Num_Acc', 'direction', 'cat_veh', 'obstacle', 'obstacle_movable', 'initial_point', 'principal_maneuver']].fillna(0)
 vehicles.isna().sum()
 
+vehicles['id_veh'].fillna(vehicles['num_veh'], inplace=True)
+vehicles.drop(columns=['num_veh'], inplace=True)
+vehicles.set_index(['Num_Acc', 'id_veh'], inplace=True)
+
 # # Merge all datasets
+
+
+
+# ## Ensure Correct Attribution of Users to Vehicles
+
+users['id_vehicule'].fillna(users['num_veh'], inplace=True)
+users.drop(columns=['num_veh'], inplace=True)
+users.rename(columns={'id_vehicule': 'id_veh'}, inplace=True)
+users.set_index(['Num_Acc', 'id_veh'], inplace=True)
 
 # ## Compute the percentage of missing data
 
-outer_df = characteristics.merge(right=places, how='outer').merge(users, how='outer').merge(vehicles, how='outer')
+outer_df = users.merge(vehicles, how='outer', left_index=True, right_on=['Num_Acc', 'id_veh']) \
+     .merge(characteristics, how='outer', on='Num_Acc') \
+     .merge(places, how='outer', on='Num_Acc')
+
 
 print(f'number of rows:........{outer_df.shape[0]}')
 print(f'number of variables:...{outer_df.shape[1]}')
-na_percentage(outer_df)
+print(na_percentage(outer_df))
 del outer_df
 
 # ## Left Join for further investigations
 # We will continue working with the left join of the data, as the missing lines miss the most important variables anyway.
 
-df = characteristics.merge(right=places, how='left').merge(users, how='left').merge(vehicles, how='left')
+# +
+df = users.merge(vehicles, how='left', left_index=True, right_on=['Num_Acc', 'id_veh']) \
+     .merge(characteristics, how='left', on='Num_Acc') \
+     .merge(places, how='left', on='Num_Acc')
+    
 print(df.info())
 print(na_percentage(df))
+# -
 
 # ### Fixing incoherency of 'secu' Variable
 # Safety equipment until 2018 was in 2 variables: existence and use.
@@ -370,7 +384,7 @@ df[df['year']==2007]['secu'].value_counts()
 
 # ## Correlation of the feature variables with the target
 
-cm=df.corr()
+cm = df.corr(numeric_only=True)
 cm['grav'].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
@@ -652,8 +666,6 @@ plt.yticks(ticks=list(range(10)),labels=['Unknown', 'Normal', 'Light rain', 'Hea
 #plt.xlabel('Accident Count ( in Millions )');
 #locs,labels = xticks();
 #xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
-
-
 
 # ## Locations
 #
