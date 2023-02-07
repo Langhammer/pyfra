@@ -194,7 +194,7 @@ print(places.isna().sum())
 print()
 print(places.info())
 print()
-print(places.shape)#it appears that there is a problem with the shape of the df (couldnt normalize) ValueError: Found array with dim 3. the normalize function expected <= 2.
+print(places.shape)
 
 # -
 
