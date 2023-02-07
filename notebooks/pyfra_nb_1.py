@@ -280,6 +280,18 @@ characteristics.loc[(np.less(characteristics['year'],2019)),'department'] = \
 
 characteristics['department'] = characteristics['department'].apply(lambda code: code.lstrip('0'))
 
+# ### Fill missing values in atmospheric conditions variable
+
+characteristics['atmospheric_conditions'] = characteristics['atmospheric_conditions'].fillna(
+    characteristics['atmospheric_conditions'].mode()[0])
+characteristics['atmospheric_conditions'].replace({-1, 0}, inplace=True)
+characteristics['atmospheric_conditions'].astype('int')
+
+# ### Fill missing values in collision category variable
+
+characteristics['collision_category'] = characteristics['collision_category'].fillna(
+    characteristics['collision_category'].mode()[0])
+
 # ## Vehicles dataset
 
 # ### Translate variable names from French to English
@@ -583,19 +595,64 @@ xlim(left=0.6);
 #
 # In what weather conditions do most accidents happen? We would expect snow, ice, rain, mud as clear evidence.
 
-plt.figure(figsize = (8,5));
+# +
+plt.figure(figsize = (8,10));
+ax1 = plt.subplot(2,1,1);
 sns.countplot( y = df.Rd_Cond);
 plt.title('Road Conditions with most Accidents', pad=10);
 plt.yticks(ticks=list(range(0,11)),labels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
                                            'Mud','Icy','Greasy (Oil)', 'Other']);
-plt.ylabel('Road Conditions');
-ylim(top=1.5);
-plt.xlabel('Accident Count ( in Millions )');
-locs,labels = xticks();
-xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+plt.ylabel('Road Condition');
+#plt.ylim(top=1.5);
+plt.xlabel('Accident Count (in Millions)');
+locs,labels = plt.xticks();
+plt.xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+
+ax2 = plt.subplot(2,1,2, sharex=ax1);
+sns.countplot( y = df['atmospheric_conditions']);
+plt.yticks(ticks=list(range(10)),labels=['Unknown', 'Normal', 'Light rain', 'Heavy rain', 'Snow/Hail',
+                'Fog/smoke', 'Strong wind/\nstorm', 'Dazzling',
+                'Overcast', 'Other']);
+plt.ylabel('Atmospheric Condition')
+plt.xlabel(None)
+#plt.xlabel('Accident Count (in Millions)');
+#plt.xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+ax2.xaxis.tick_top()
+#fig.tight_layout(w_pad=2)
+# -
 
 #
 # By far the most accidents happend during normal weather conditions.
+
+fig = plt.figure(figsize=(10,4));
+sns.heatmap(pd.crosstab(df['atmospheric_conditions'], df['Rd_Cond'], 
+                        normalize='index'), 
+            annot=True, fmt='.02f', cmap='coolwarm',
+            xticklabels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
+                                           'Mud','Icy','Greasy (Oil)', 'Other'],
+            yticklabels=['Unknown', 'Normal', 'Light rain', 'Heavy rain', 'Snow - Hail',
+                'Fog / smoke', 'Strong wind / storm', 'Dazzling weather',
+                'Overcast weather', 'Other']);
+plt.xlabel('Road Condition');
+plt.ylabel('Atmospheric Condition');
+plt.title('Relationship between Weather and Road Condition', pad=10);
+plt.xticks(rotation=45);
+
+plt.figure(figsize = (8,5));
+sns.countplot( y = df['atmospheric_conditions']);
+plt.yticks(ticks=list(range(10)),labels=['Unknown', 'Normal', 'Light rain', 'Heavy rain', 'Snow - Hail',
+                'Fog / smoke', 'Strong wind / storm', 'Dazzling weather',
+                'Overcast weather', 'Other']);
+#plt.title('Atmospheric Conditions with most Accidents', pad=10);
+#plt.yticks(ticks=list(range(0,11)),labels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
+#                                           'Mud','Icy','Greasy (Oil)', 'Other']);
+#plt.ylabel('Road Conditions');
+#ylim(top=1.5);
+#plt.xlabel('Accident Count ( in Millions )');
+#locs,labels = xticks();
+#xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+
+
 
 # ## Locations
 #
