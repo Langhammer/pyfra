@@ -120,9 +120,9 @@ svc = svm.SVC(cache_size=4000)
 
 # Choosing the parameters for the grid search
 svc_params = {
-    'kernel': ['poly', 'rbf', 'sigmoid'],
-    'gamma': [0.1, 0.5, 'scale'],
-    'C': [0.1, 0.5, 1, 2]
+    'kernel': ['rbf'],
+    'gamma': ['scale'],
+    'C': [0.5]
 }
 
 # Setup of the scoring. 
@@ -132,8 +132,15 @@ svc_params = {
 f1_scoring = make_scorer(score_func=f1_score, average='micro')
 
 # Instantiation of the GridSearchCv
+# verbose is set to 1000 to get as much output as possible, because computation
+# can take a long time
 # n_jobs is set to -1 to use all available threads for computation.
-svc_grid = GridSearchCV(svc, param_grid=svc_params, scoring=f1_scoring, cv=cv, n_jobs=-1)
+svc_grid = GridSearchCV(svc, 
+                        param_grid=svc_params, 
+                        scoring=f1_scoring, 
+                        cv=cv,
+                        verbose=1000, 
+                        n_jobs=-1)
 # -
 
 # ### SVM Parameter Optimization, Training and Prediction
@@ -166,10 +173,10 @@ result_metrics
 
 # +
 params = {
-    'criterion': ['gini', 'entropy'],
-    'max_depth': [5,10,20,40],
-    'min_samples_leaf':[3,7,15,25],
-    'n_estimators': [50,100,200,400]
+    'criterion': ['gini'],
+    'max_depth': [5,10],
+    'min_samples_leaf':[3,7],
+    'n_estimators': [50,100]
     }
 
 RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = cv)
