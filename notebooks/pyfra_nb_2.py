@@ -451,6 +451,10 @@ print(f'number of rows:........{outer_df.shape[0]}')
 print(f'number of variables:...{outer_df.shape[1]}')
 na_percentage(outer_df)
 
+# The outer join was just performed to get a better understanding of the missing values
+# The created DataFrame takes a lot of memory, which we will deallocate
+del outer_df
+
 # ## Left Join for further investigations
 # We will continue working with the left join of the data, as the missing lines miss the most important variables anyway.
 
