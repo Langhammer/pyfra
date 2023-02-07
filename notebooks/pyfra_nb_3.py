@@ -333,7 +333,7 @@ cm = pd.crosstab(y_test, y_stacking, rownames=['observations'], colnames=['predi
 severity_categories = ("Unscathed","Killed", "Hospitalized\nwounded", "Light injury")
 plt.figure(figsize=(4,4))
 plt.title('Correlation Matrix of the Stacking Classifier');
-sns.heatmap(cm, annot=True);
+sns.heatmap(cm, cmap='RdYlGn', annot=True);
 plt.xticks(np.array(range(4))+0.5, labels=severity_categories, rotation=45);
 plt.yticks(np.array(range(4))+0.5, labels=severity_categories, rotation=0);
 
