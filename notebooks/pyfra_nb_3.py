@@ -65,7 +65,7 @@ X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2
 # # Scaling the Data and Selecting Features
 
 from sklearn.feature_selection import VarianceThreshold
-constant_filter = VarianceThreshold(threshold=0.1)
+constant_filter = VarianceThreshold(threshold=0.01).fit(X_train)
 X_train = constant_filter.fit_transform(X_train)
 X_test = constant_filter.transform(X_test)
 
