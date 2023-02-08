@@ -34,8 +34,8 @@ categories_dict = dict(zip(data_categories, [0,0,0,0]))
 
 
 # +
-# Define the function that reads the raw data for the specified time range
 def read_csv_of_year(start_year, end_year, separators, name_separator='_'):
+    '''Imports the 4 csv files for the given time range and returns them as a dictionary'''
     if len (separators)<4:
         separators = [separators]*4
         
@@ -83,6 +83,7 @@ vehicles = dict_of_category_dfs['vehicles']
 # ### Function for calculating the percentage of missing values for each data frame
 
 def na_percentage(df):
+  '''Calculate the percentage of missing values for each column of the given DataFrame'''
   return df.isna().sum() *100 / len(df)
 
 
@@ -243,9 +244,10 @@ str(dc).rstrip('0')
 
 # +
 def department_converter(dep):
-    # Takes in a department code as int and returns a string
-    # e.g. 750 will be '75' for Paris
-    # and 201 will be '2B'
+    '''
+    Takes in a department code as int and returns a string
+    e.g. 750 will be '75' for Paris and 201 will be '2B'
+    '''
     if dep == 201:
         return '2A'
     elif dep == 202:
