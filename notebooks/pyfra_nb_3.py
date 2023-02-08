@@ -17,7 +17,6 @@
 
 # # Importing Packages and Data
 
-import pyfra
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
@@ -31,11 +30,13 @@ from sklearn.ensemble import RandomForestClassifier, StackingClassifier
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn import preprocessing
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import f1_score, accuracy_score, recall_score, make_scorer
 from imblearn import under_sampling
 from imblearn.under_sampling import RandomUnderSampler
 from time import sleep
-from sklearn.ensemble import AdaBoostClassifier
+import pyfra
+
 
 
 df = pd.read_pickle('../data/df.p')
