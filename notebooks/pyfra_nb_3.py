@@ -49,7 +49,7 @@ pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', ind
 rus = RandomUnderSampler(random_state=23)
 
 # Create a sample of the data, because the whole dataset is too big for us to work with
-relative_sample_size = 0.01
+relative_sample_size = 0.1
 df = df.sample(frac=relative_sample_size, random_state=23)
 
 data = df.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
@@ -64,11 +64,16 @@ X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2
 
 # # Scaling the Data and Selecting Features
 
+from sklearn.feature_selection import VarianceThreshold
+constant_filter = VarianceThreshold(threshold=0.01).fit(X_train)
+X_train = constant_filter.fit_transform(X_train)
+X_test = constant_filter.transform(X_test)
+
 std_scaler = preprocessing.StandardScaler().fit(X_train)
 X_train_scaled = std_scaler.transform(X_train)
 X_test_scaled = std_scaler.transform(X_test)
 
-k_features = 25
+k_features = 60
 kbest_selector = SelectKBest(k=k_features)
 kbest_selector.fit(X_train_scaled,y_train);
 X_train_scaled_selection = kbest_selector.transform(X_train_scaled)
@@ -111,13 +116,13 @@ cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=23)
 # Instantiation of the SVM Classifier
 # We set the cache size to 1600 MB (default: 200 MB) to reduce the computing time.
 # The other parameters will be set via grid search.
-svc = svm.SVC(cache_size=1600)
+svc = svm.SVC(cache_size=4000)
 
 # Choosing the parameters for the grid search
 svc_params = {
-    'kernel': ['poly', 'rbf', 'sigmoid'],
-    'gamma': [0.1, 0.5, 'scale'],
-    'C': [0.1, 0.5, 1, 2]
+    'kernel': ['rbf'],
+    'gamma': ['scale'],
+    'C': [0.5]
 }
 
 # Setup of the scoring. 
@@ -127,8 +132,15 @@ svc_params = {
 f1_scoring = make_scorer(score_func=f1_score, average='micro')
 
 # Instantiation of the GridSearchCv
+# verbose is set to 1000 to get as much output as possible, because computation
+# can take a long time
 # n_jobs is set to -1 to use all available threads for computation.
-svc_grid = GridSearchCV(svc, param_grid=svc_params, scoring=f1_scoring, cv=cv, n_jobs=-1)
+svc_grid = GridSearchCV(svc, 
+                        param_grid=svc_params, 
+                        scoring=f1_scoring, 
+                        cv=cv,
+                        verbose=1000, 
+                        n_jobs=-1)
 # -
 
 # ### SVM Parameter Optimization, Training and Prediction
@@ -162,8 +174,8 @@ result_metrics
 # +
 params = {
     'criterion': ['gini'],
-    'max_depth': [5,10,20],
-    'min_samples_leaf':[3,7,15],
+    'max_depth': [5,10],
+    'min_samples_leaf':[3,7],
     'n_estimators': [50,100]
     }
 
@@ -328,7 +340,7 @@ cm = pd.crosstab(y_test, y_stacking, rownames=['observations'], colnames=['predi
 severity_categories = ("Unscathed","Killed", "Hospitalized\nwounded", "Light injury")
 plt.figure(figsize=(4,4))
 plt.title('Correlation Matrix of the Stacking Classifier');
-sns.heatmap(cm, annot=True);
+sns.heatmap(cm, cmap='RdYlGn', annot=True);
 plt.xticks(np.array(range(4))+0.5, labels=severity_categories, rotation=45);
 plt.yticks(np.array(range(4))+0.5, labels=severity_categories, rotation=0);
 
