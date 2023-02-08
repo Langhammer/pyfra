@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
-import os
 
 def run():
     st.set_page_config(
@@ -11,9 +10,9 @@ def run():
     )
 
     st.write("# pyfra 👋")
-    st.image(image='images/stable_diffusion.jpeg', width=200)
-
-   # plt.imread(fname='./images/stable_diffusion.jpeg')
+    st.image(image='images/stable_diffusion.jpeg', 
+             width=200,
+             caption='Generated with Stable Diffusion')
 
     with st.sidebar:
         add_radio = st.radio(
@@ -32,7 +31,7 @@ def run():
         * Kay Langhammer
         * Robert Leisring
         * Saleh Saleh
-        * Michal Turákp
+        * Michal Turák
     """
     )
 
