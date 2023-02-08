@@ -9,12 +9,13 @@ pyfra
 
 # Overview
 ## Notebooks
-| Notebook  | Content | 
-| --- | --- | 
-| [pyfra_nb_1.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_1.py) | Visualitation |
-| [pyfra_nb_2.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_2.py) | Data Cleaning & Feature Engineering |
-| [pyfra_nb_3.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_3.py) | Modelling, Training and Scoring |
-| [pyfra_nb_5.py](https://github.com/DataScientest-Studio/pyfra/blob/main/notebooks/pyfra_nb_5.py) | Further Performance Analysis |
+| Notebook  | Content | Description |
+| --- | --- | --- |
+| [pyfra_nb_1.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_1.ipynb) | Visualization | Exploring the dataset with different plots provided by Matplotlib and Seaborn |
+| [pyfra_nb_2.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_2.ipynb) | Data Cleaning & Feature Engineering | Import of unprocessed data, filling nans, renaming features, merging the relational datasets with multi-indexing, one-hot encoding, export to pickle format |
+| [pyfra_nb_3.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_3.ipynb) | Modelling, Training and Scoring | Import of preprocessed data, GridSearchCV (SVC, Logistic Regression, Decision Tree, Random Forest), Stacking, AdaBoost and performance comparison |
+| [coming soon] | Further Performance Analysis I |  |
+| [pyfra_nb_5.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_5.ipynb) | Further Performance Analysis II | Sensitivity analysis of amount of training data |
 
 # Credits
 ## Project members
