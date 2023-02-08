@@ -26,15 +26,6 @@ import seaborn as sns
 from pylab import *
 # %matplotlib inline
 
-# +
-#df = pd.read_pickle('../data/df.p')
-#n_rows_complete = len(df)
-# -
-
-#pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
-                         #right=pyfra.df_testing_info(df),\
-                         #check_dtype=False, check_exact=False)
-
 # # Importing Data
 
 french_categories = {'characteristics': 'caracteristiques', 'places':'lieux', 'users':'usagers', 'vehicles':'vehicules'}
@@ -316,10 +307,6 @@ vehicles.isna().sum()
 vehicles['id_veh'].fillna(vehicles['num_veh'], inplace=True)
 vehicles.drop(columns=['num_veh'], inplace=True)
 vehicles.set_index(['Num_Acc', 'id_veh'], inplace=True)
-
-# # Merge all datasets
-
-
 
 # ## Ensure Correct Attribution of Users to Vehicles
 
