@@ -26,15 +26,6 @@ import seaborn as sns
 from pylab import *
 # %matplotlib inline
 
-# +
-#df = pd.read_pickle('../data/df.p')
-#n_rows_complete = len(df)
-# -
-
-#pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
-                         #right=pyfra.df_testing_info(df),\
-                         #check_dtype=False, check_exact=False)
-
 # # Importing Data
 
 french_categories = {'characteristics': 'caracteristiques', 'places':'lieux', 'users':'usagers', 'vehicles':'vehicules'}
@@ -43,8 +34,8 @@ categories_dict = dict(zip(data_categories, [0,0,0,0]))
 
 
 # +
-# Define the function that reads the raw data for the specified time range
 def read_csv_of_year(start_year, end_year, separators, name_separator='_'):
+    '''Imports the 4 csv files for the given time range and returns them as a dictionary'''
     if len (separators)<4:
         separators = [separators]*4
         
@@ -92,6 +83,7 @@ vehicles = dict_of_category_dfs['vehicles']
 # ### Function for calculating the percentage of missing values for each data frame
 
 def na_percentage(df):
+  '''Calculate the percentage of missing values for each column of the given DataFrame'''
   return df.isna().sum() *100 / len(df)
 
 
@@ -224,9 +216,10 @@ str(dc).rstrip('0')
 
 # +
 def department_converter(dep):
-    # Takes in a department code as int and returns a string
-    # e.g. 750 will be '75' for Paris
-    # and 201 will be '2B'
+    '''
+    Takes in a department code as int and returns a string
+    e.g. 750 will be '75' for Paris and 201 will be '2B'
+    '''
     if dep == 201:
         return '2A'
     elif dep == 202:
@@ -288,10 +281,6 @@ vehicles.isna().sum()
 vehicles['id_veh'].fillna(vehicles['num_veh'], inplace=True)
 vehicles.drop(columns=['num_veh'], inplace=True)
 vehicles.set_index(['Num_Acc', 'id_veh'], inplace=True)
-
-# # Merge all datasets
-
-
 
 # ## Ensure Correct Attribution of Users to Vehicles
 
