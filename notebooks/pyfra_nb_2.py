@@ -244,13 +244,19 @@ users.YoB = users.YoB.astype(int)
 
 # ## Places Dataset
 
-# ### Translating the variable names from French to English
+# ### Dropping unwanted columns , which are v1 , v2, vma, voie, env1
 
 # +
-# Change french names against english names (Teamdecision)
 # Droped 'Unnamed: 0','v1','v2','vma', because they contained no information.
 
 places = places.drop(['v1','v2','vma','voie','env1'], axis = 1)
+# -
+
+# ### French to English Variables
+
+# +
+# Change french names against english names.
+
 places = places.rename(columns = {'catr' : 'Rd_Cat', 'circ' : 'Traf_Direct' , 'nbv' : 'Lanes' ,
                            'pr' : 'Landmark' , 'pr1' : 'Dist_to_Landmark', 'vosp' : 'Add_Lanes', 'prof' : 'Rd_Prof' ,
                           'plan' : 'Rd_Plan' , 'lartpc' : 'Gre_Verge' , 'larrout' : 'Rd_Width', 'surf' : 'Rd_Cond',
@@ -258,68 +264,47 @@ places = places.rename(columns = {'catr' : 'Rd_Cat', 'circ' : 'Traf_Direct' , 'n
 places.head()
 # -
 
-# ### Change Nans against zeros
 
-# Set most empty variables to Zero / Null, because its for all variables not in use and can be defined as not applicable.
-#
-# 9 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
-# In addition, the recorded data are not suitable for filling the NaNs with, for example, the mean value, since this is almost exclusively about describing states.
+# ### Changing Nans with Zeros
 
 # +
+# There is no value = 0 assigned to information in the places data set. 
+# Zeros are used in the cleaned data set as a feature to identify original Nans
+# and to keep the data set with as much information as possible.
 
-places['Rd_Cat'] = places['Rd_Cat'].fillna(0.0)
-places['Traf_Direct'] = places['Traf_Direct'].fillna(0.0)
-places['Lanes'] = places['Lanes'].fillna(0.0)
-places['Landmark'] = places['Landmark'].fillna(0.0)
-places['Dist_to_Landmark'] = places['Dist_to_Landmark'].fillna(0.0)
-places['Add_Lanes'] = places['Add_Lanes'].fillna(0.0)
-places['Rd_Prof'] = places['Rd_Prof'].fillna(0.0)
-places['Rd_Plan'] = places['Rd_Plan'].fillna(0.0)
-places['Gre_Verge'] = places['Gre_Verge'].fillna(0.0)
-places['Rd_Width'] = places['Rd_Width'].fillna(0.0)
-places['Rd_Cond'] = places['Rd_Cond'].fillna(0.0)
-places['Envinmt'] = places['Envinmt'].fillna(0.0)
-places['Pos_Acc'] = places['Pos_Acc'].fillna(0.0)
+places = places.fillna({'Rd_Cat':0, 'Traf_Direct': 0, 'Lanes':0, 'Add_Lanes':0, 'Rd_Prof':0,'Rd_Plan':0,
+                        'Rd_Cond':0, 'Envinmt':0, 'Pos_Acc':0})
+# -
 
+# ### Changing needed "object" Variables to "int" Variables
 
 # +
-# Convert object to float
-places['Landmark'] = pd.to_numeric(places['Landmark'],errors = 'coerce')
-places['Dist_to_Landmark'] = pd.to_numeric(places['Dist_to_Landmark'],errors = 'coerce')
-places['Gre_Verge'] = pd.to_numeric(places['Gre_Verge'],errors = 'coerce')
-places['Rd_Width'] = pd.to_numeric(places['Rd_Width'],errors = 'coerce')
+# Convert 'object' Variables to 'float' Variables
 
-# replace empty cells with nans
-places.replace('', np.nan)
-places = places.copy()
+object_list = ['Landmark', 'Dist_to_Landmark', 'Gre_Verge', 'Rd_Width']
 
-# fill nans with 0
-places['Landmark'] = places['Landmark'].fillna(0.0)
-places['Dist_to_Landmark'] = places['Dist_to_Landmark'].fillna(0.0)
-places['Gre_Verge'] = places['Gre_Verge'].fillna(0.0)
-places['Rd_Width'] = places['Rd_Width'].fillna(0.0)
+places[object_list] = places[object_list].apply(pd.to_numeric, errors='coerce', axis=1)
 
-# Convert float to int
-places['Rd_Cat'] = places['Rd_Cat'].astype(int, errors = 'raise')
-places['Traf_Direct'] = places['Traf_Direct'].astype(int, errors = 'raise')
-places['Lanes'] = places['Lanes'].astype(int, errors = 'raise')
-places['Landmark'] = places['Landmark'].astype(int, errors = 'raise')
-places['Dist_to_Landmark'] = places['Dist_to_Landmark'].astype(int, errors = 'raise')
-places['Add_Lanes'] = places['Add_Lanes'].astype(int, errors = 'raise')
-places['Rd_Prof'] = places['Rd_Prof'].astype(int, errors = 'raise')
-places['Rd_Plan'] = places['Rd_Plan'].astype(int, errors = 'raise')
-places['Gre_Verge'] = places['Gre_Verge'].astype(int, errors = 'raise')
-places['Rd_Width'] = places['Rd_Width'].astype(int, errors = 'raise')
-places['Rd_Cond'] = places['Rd_Cond'].astype(int, errors = 'raise')
-places['Envinmt'] = places['Envinmt'].astype(int, errors = 'raise')
-places['Pos_Acc'] = places['Pos_Acc'].astype(int, errors = 'raise')
+# Replace empty cells with 'Nans'
+
+places.replace('', np.nan).copy()
+
+# Fill 'Nans' with 0
+
+places = places.fillna({'Landmark':0, 'Dist_to_Landmark': 0, 'Gre_Verge':0, 'Rd_Width':0})
+
+# Convert 'float' Variables to 'int' Variables
+
+float_list = ['Rd_Cat', 'Traf_Direct', 'Lanes', 'Landmark','Dist_to_Landmark', 'Add_Lanes', 'Rd_Prof', 'Rd_Plan',
+              'Gre_Verge', 'Rd_Width', 'Rd_Cond', 'Envinmt','Pos_Acc']
+
+places[float_list] = places[float_list].astype(int, errors = 'raise')
 
 print(places.isna().sum())
 print()
 print(places.info())
 print()
-print(places.shape)#it appears that there is a problem with the shape of the df (couldnt normalize) ValueError: Found array with dim 3. the normalize function expected <= 2.
-
+print(places.shape)
 # -
 
 # ## Characteristics Dataset
