@@ -17,6 +17,32 @@ pyfra
 | [coming soon] | Further Performance Analysis I |  |
 | [pyfra_nb_5.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_5.ipynb) | Further Performance Analysis II | Sensitivity analysis of amount of training data |
 
+# Requirements
+The notebooks of this project make use uf the following packages:
+* imblearn (0.0)
+* matplotlib (3.5.1)
+* numpy (1.21.5)
+* pandas (1.5.3)
+* pyspark (3.3.1)
+* scikit_learn (1.2.1)
+* seaborn (0.12.2)
+
+The following packages were used for this project, but are not reuired to run the notebooks:
+* [Jupytext](https://github.com/mwouts/jupytext)
+* [Papermill](https://github.com/nteract/papermill) 
+
+Install the required packages by 
+```
+pip install -r requirements.txt
+```
+The Repository consists mainly of Jupyter Notebooks. For simplifying the version control, we used [Jupytext](https://github.com/mwouts/jupytext) to convert the notebooks to .py files. These files do not contain any cell output by design. The latest version of .ipynb files (i.e. with cell output) is available on the Output branch of the project. You can directly access these files via the table above. 
+All the other notebooks, which are in .py format, can be obtained by running `jupytext --sync <FILENAME>` in the terminal after installing Jupytext. 
+
+# References
+* [Unprocessed Datasets provided by the French Ministry of the Interior and the Overseas](https://www.data.gouv.fr/en/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/)
+* [INSEE Population Data](https://www.insee.fr/fr/statistiques/6011070?sommaire=6011075)
+* [INSEE Department Codes](https://www.insee.fr/fr/information/5057840)
+
 # Credits
 ## Project members
 Kay Langhammer [GitHub](https://github.com/Langhammer) / [LinkedIn](https://www.linkedin.com/in/kay-langhammer/)  
