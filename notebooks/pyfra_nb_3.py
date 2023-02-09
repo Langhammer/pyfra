@@ -17,7 +17,6 @@
 
 # # Importing Packages and Data
 
-import pyfra
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
@@ -31,29 +30,29 @@ from sklearn.ensemble import RandomForestClassifier, StackingClassifier
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn import preprocessing
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import f1_score, accuracy_score, recall_score, make_scorer
 from imblearn import under_sampling
 from imblearn.under_sampling import RandomUnderSampler
 from time import sleep
-from sklearn.ensemble import AdaBoostClassifier
+import pyfra
+
 
 
 df = pd.read_pickle('../data/df.p')
 n_rows_complete = len(df)
 
 # Check whether or not the data is up-to-date (file can't be tracked on github because of it's file size)
-pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
-                         right=pyfra.df_testing_info(df),\
-                         check_dtype=False, check_exact=False)
+pyfra.df_compare_to_description(df=df, description_filepath='../data/df_check_info.csv')
 
 rus = RandomUnderSampler(random_state=23)
 
 # Create a sample of the data, because the whole dataset is too big for us to work with
-relative_sample_size = 0.01
+relative_sample_size = 0.1
 df = df.sample(frac=relative_sample_size, random_state=23)
 
-data = df.drop(columns='Gravity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df.Gravity
+data = df.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df['Severity']
 data, target = rus.fit_resample(X=data, y=target)
 
 target.value_counts()
@@ -64,11 +63,16 @@ X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2
 
 # # Scaling the Data and Selecting Features
 
+from sklearn.feature_selection import VarianceThreshold
+constant_filter = VarianceThreshold(threshold=0.01).fit(X_train)
+X_train = constant_filter.fit_transform(X_train)
+X_test = constant_filter.transform(X_test)
+
 std_scaler = preprocessing.StandardScaler().fit(X_train)
 X_train_scaled = std_scaler.transform(X_train)
 X_test_scaled = std_scaler.transform(X_test)
 
-k_features = 25
+k_features = 60
 kbest_selector = SelectKBest(k=k_features)
 kbest_selector.fit(X_train_scaled,y_train);
 X_train_scaled_selection = kbest_selector.transform(X_train_scaled)
@@ -76,23 +80,6 @@ X_test_scaled_selection = kbest_selector.transform(X_test_scaled)
 print(f'We use {k_features} of the original {df.shape[1]} features')
 
 k_best_feature_names = data.columns[kbest_selector.get_support(indices=True)]
-
-# # Application of Machine Learning Models
-# ## Setup of Metrics Table
-
-# Creating a matrix to store the results
-result_metrics = pd.DataFrame(columns=['model', 'f1', 'accuracy', 'recall'])
-result_metrics
-
-
-# Creating a function to compute and store the results for the respective model
-def store_metrics(model_name, model, y_test, y_pred, result_df):
-    result_df.loc[model_name, 'model'] = model
-    result_df.loc[model_name, 'f1'] = f1_score(y_true=y_test, y_pred=y_pred, average='weighted')
-    result_df.loc[model_name, 'accuracy'] = accuracy_score(y_true=y_test, y_pred=y_pred)
-    result_df.loc[model_name, 'recall'] = recall_score(y_true=y_test, y_pred=y_pred, average='weighted')
-    return result_df
-
 
 # ## Setup of the Cross-Validator
 # We will use a repeated stratified cross-validation to make sure to pick the best parameters.
@@ -111,13 +98,13 @@ cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=23)
 # Instantiation of the SVM Classifier
 # We set the cache size to 1600 MB (default: 200 MB) to reduce the computing time.
 # The other parameters will be set via grid search.
-svc = svm.SVC(cache_size=1600)
+svc = svm.SVC(cache_size=4000)
 
 # Choosing the parameters for the grid search
 svc_params = {
-    'kernel': ['poly', 'rbf', 'sigmoid'],
-    'gamma': [0.1, 0.5, 'scale'],
-    'C': [0.1, 0.5, 1, 2]
+    'kernel': ['rbf'],
+    'gamma': ['scale'],
+    'C': [0.5]
 }
 
 # Setup of the scoring. 
@@ -127,8 +114,15 @@ svc_params = {
 f1_scoring = make_scorer(score_func=f1_score, average='micro')
 
 # Instantiation of the GridSearchCv
+# verbose is set to 1000 to get as much output as possible, because computation
+# can take a long time
 # n_jobs is set to -1 to use all available threads for computation.
-svc_grid = GridSearchCV(svc, param_grid=svc_params, scoring=f1_scoring, cv=cv, n_jobs=-1)
+svc_grid = GridSearchCV(svc, 
+                        param_grid=svc_params, 
+                        scoring=f1_scoring, 
+                        cv=cv,
+                        verbose=1000, 
+                        n_jobs=-1)
 # -
 
 # ### SVM Parameter Optimization, Training and Prediction
@@ -150,9 +144,8 @@ y_svc = svc.predict(X_test_scaled_selection)
 
 # Calculate the metrics for the optimal svm model and store them in the result_metrics DataFrame 
 # The model will be stored as well in the DataFrame
-result_metrics = store_metrics(model=svc, model_name='Support Vector Machine',
-                               y_test=y_test, y_pred=y_svc,
-                               result_df=result_metrics)
+result_metrics = pyfra.store_metrics(model=svc, model_name='Support Vector Machine',
+                               y_test=y_test, y_pred=y_svc)
 # Show the interim result                               
 result_metrics
 
@@ -161,10 +154,10 @@ result_metrics
 
 # +
 params = {
-    'criterion': ['gini', 'entropy'],
-    'max_depth': [5,10,20,40],
-    'min_samples_leaf':[3,7,15,25],
-    'n_estimators': [50,100,200,400]
+    'criterion': ['gini'],
+    'max_depth': [5,10],
+    'min_samples_leaf':[3,7],
+    'n_estimators': [50,100]
     }
 
 RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = cv)
@@ -183,7 +176,7 @@ y_rf = rf.predict(X_test_scaled_selection)
 cm = pd.crosstab(y_test,y_rf, rownames=['Real'], colnames=['Prediction'])
 print(cm)
 
-result_metrics = store_metrics(model=rf, model_name='Random Forest',
+result_metrics = pyfra.store_metrics(model=rf, model_name='Random Forest',
                                y_test=y_test, y_pred=y_rf,
                                result_df=result_metrics)
                               
@@ -226,7 +219,7 @@ y_LR = LR.predict(X_test_scaled_selection)
 
 # Calculate the metrics for the optimal LR model and store them in the result_metrics DataFrame 
 # The model will be stored as well in the DataFrame
-result_metrics = store_metrics(model=LR, model_name='Logistic Regression',
+result_metrics = pyfra.store_metrics(model=LR, model_name='Logistic Regression',
                                y_test=y_test, y_pred=y_LR,
                                result_df=result_metrics)
 # Show the interim result                               
@@ -262,7 +255,7 @@ dt = DT.best_estimator_
 y_dt = dt.predict(X_test_scaled_selection)
 cm = pd.crosstab(y_test,y_dt, rownames=['Real'], colnames=['Prediction'])
 print(cm)
-result_metrics = store_metrics(model=dt, model_name='Decision Tree',
+result_metrics = pyfra.store_metrics(model=dt, model_name='Decision Tree',
                                y_test=y_test, y_pred=y_dt,
                                result_df=result_metrics)
                               
@@ -289,7 +282,7 @@ stacking_clf = StackingClassifier(estimators=estimators, final_estimator=svc, cv
 
 stacking_clf.fit(X_train_scaled_selection, y_train)
 y_stacking = stacking_clf.predict(X_test_scaled_selection)
-result_metrics = store_metrics(model=stacking_clf, model_name='Stacking',
+result_metrics = pyfra.store_metrics(model=stacking_clf, model_name='Stacking',
                                y_test=y_test, y_pred=y_stacking,
                                result_df=result_metrics)
 result_metrics
@@ -301,7 +294,7 @@ ADA_Boost = AdaBoostClassifier(estimator = LR , n_estimators = 1000)
 ADA_Boost.fit(X_train_scaled_selection, y_train)
 y_ada = ADA_Boost.predict(X_test_scaled_selection)
 
-result_metrics = store_metrics(model=ADA_Boost, model_name='ADA Boost',
+result_metrics = pyfra.store_metrics(model=ADA_Boost, model_name='ADA Boost',
                                y_test=y_test, y_pred=y_ada,
                                result_df=result_metrics)
 # Show the interim result                               
@@ -328,7 +321,7 @@ cm = pd.crosstab(y_test, y_stacking, rownames=['observations'], colnames=['predi
 severity_categories = ("Unscathed","Killed", "Hospitalized\nwounded", "Light injury")
 plt.figure(figsize=(4,4))
 plt.title('Correlation Matrix of the Stacking Classifier');
-sns.heatmap(cm, annot=True);
+sns.heatmap(cm, cmap='RdYlGn', annot=True);
 plt.xticks(np.array(range(4))+0.5, labels=severity_categories, rotation=45);
 plt.yticks(np.array(range(4))+0.5, labels=severity_categories, rotation=0);
 
@@ -343,7 +336,6 @@ print(classification_report(y_true=y_test, y_pred=y_stacking, target_names=sever
 # +
 # Saving the models for further use and investigation
 from joblib import dump, load
-froam
 
 
 dump(stacking_clf, '../models/stacking_clf.joblib')
