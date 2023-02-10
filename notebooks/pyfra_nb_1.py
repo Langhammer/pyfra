@@ -16,6 +16,12 @@
 # ==============
 # Data Visualization
 
+# # Outline
+# The aim is to visualize the different data present in our Datasets.
+# We will
+# 1- Assume Hypothesis before each visualization to try and understand our Dataset
+# 2- Affirm or Deny our theory after each visualization graph.
+
 # # Importing Packages and Data
 
 import pyfra
