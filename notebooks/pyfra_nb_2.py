@@ -178,10 +178,13 @@ users.sexe.replace(to_replace=-1,value=1,inplace=True)
 #Security 
 users.drop(columns='secu3',inplace=True)
 
+#Searching for the exact index where the year 2019 starts to accuratly study secu factors
+X = users.loc[users['Num_Acc'].astype(str).str.startswith("2019")].index[0]
+
 # +
 #secu has some missing values for older years , must fill with mode before continuing
 
-users.secu[:2142195].fillna(value=1,inplace=True)
+users.secu[:X].fillna(value=1,inplace=True)
 
 # +
 users['SecuA'] = ((users.secu - users.secu%10)/10) #Type of security Used
@@ -211,11 +214,14 @@ users.SecuB.value_counts()
 
 #must add iloc
 users['Security']=0
-users['Security'][:2142195] = users.SecuB[:2142195]
-users['Security'][2142196:] = users.secu1[2142196:]
+users['Security'][:X] = users.SecuB[:X]
+users['Security'][X+1:] = users.secu1[X+1:]
 
+# +
 #To drop unneeded columns
-users = users.drop(columns=['secu','secu1','secu2','SecuA','SecuB'])
+# #copy this to begining of df 3 before modeling for df
+#users = users.drop(columns=['secu','secu1','secu2','SecuA','SecuB'])
+# -
 
 na_percentage(users)
 
@@ -439,6 +445,9 @@ df = users.merge(vehicles, how='left', left_index=True, right_on=['Num_Acc', 'id
 
 print(na_percentage(df))
 # -
+
+df_test = df
+df_test.to_pickle('../data/df_test.p')
 
 del characteristics, places, vehicles, users, dict_of_category_dfs
 
