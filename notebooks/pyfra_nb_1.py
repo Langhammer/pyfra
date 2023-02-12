@@ -381,6 +381,7 @@ plt.xlim((0,2400))
 plt.title('Distribution of Accidents by Daytime', pad = 10)
 plt.savefig('./figures/Accidents by Daytime.png');
 
+
 # The plot shows, that the temporal distribution is different on the weekends: On weekends, there are far more accidents between 19:00 and 07:00, while there are more accidents on weekday around 09:00 and 18:00. These differences align very well with our hypothesis. We did not expect the peak on weekends around 18:00, though. 
 #
 # Possible policy measures could be more public transport offers during these times and more police inspections on the weekends near party locations.

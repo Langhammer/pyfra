@@ -197,36 +197,3 @@ result_metrics = store_metrics(model=svc, model_name='Support Vector Machine',
                                result_df=result_metrics)
 # Show the interim result                               
 result_metrics
-
-# ## Random Forest
-# ### Setup and GridSearch
-
-# +
-params = {
-    'criterion': ['gini', 'entropy'],
-    'max_depth': [5,10,20,40],
-    'min_samples_leaf':[3,7,15,25],
-    'n_estimators': [50,100,200,400]
-    }
-
-RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = cv)
-RFCLF.fit(X_train_scaled,y_train)
-
-print('Best Params are:',RFCLF.best_params_)
-print('Best Score is:',RFCLF.best_score_)
-# -
-
-# ### Optimized Model and Metrics
-
-# +
-rf = RFCLF.best_estimator_
-y_rf = rf.predict(X_test_scaled_selection)
-
-cm = pd.crosstab(y_test,y_rf, rownames=['Real'], colnames=['Prediction'])
-print(cm)
-
-result_metrics = store_metrics(model=rf, model_name='Random Forest',
-                               y_test=y_test, y_pred=y_rf,
-                               result_df=result_metrics)
-                              
-result_metrics
