@@ -37,8 +37,6 @@ from imblearn.under_sampling import RandomUnderSampler
 from time import sleep
 import pyfra
 
-
-
 df = pd.read_pickle('../data/df.p')
 n_rows_complete = len(df)
 
