@@ -16,6 +16,12 @@
 # ==============
 # Data Visualization
 
+# # Outline
+# The aim is to visualize the different data present in our Datasets.
+# We will
+# 1- Assume Hypothesis before each visualization to try and understand our Dataset
+# 2- Affirm or Deny our theory after each visualization graph.
+
 # # Importing Packages and Data
 
 import pyfra
@@ -327,7 +333,7 @@ fig, ax = plt.subplots(figsize=(33,20));
 sns.heatmap(cm, annot = True, ax = ax, cmap='coolwarm', linewidths = 0.40);
 fontsize = 40
 plt.title("Heatmap of Correlation for all Variables with the Target", fontdict={'fontsize': fontsize}, pad=40);
-plt.savefig('./figures/corr_heatmap.png')
+plt.savefig('./Github/pyfra/figures/corr_heatmap.png')
 
 # This heat map is intended to provide an overall view of where strong correlations occur .
 
@@ -337,22 +343,22 @@ plt.savefig('./figures/corr_heatmap.png')
 fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(users.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Users', pad=10)
-plt.savefig('./figures/corr_heatmap_USERS.png');
+plt.savefig('./Github/pyfra//figures/corr_heatmap_USERS.png');
 
 fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(places.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Places', pad=10)
-plt.savefig('./figures/corr_heatmap_PLACES.png');
+plt.savefig('./Github/pyfra//figures/corr_heatmap_PLACES.png');
 
 fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(vehicles.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Vehicles', pad=10)
-plt.savefig('./figures/corr_heatmap_VEHICULES.png');
+plt.savefig('./Github/pyfra//figures/corr_heatmap_VEHICULES.png');
 
 fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(characteristics.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Characteristics', pad=10)
-plt.savefig('./figures/corr_heatmap_CHARACTERISTICS.png');
+plt.savefig('./Github/pyfra//figures/corr_heatmap_CHARACTERISTICS.png');
 # -
 
 # ## Datetime
@@ -373,7 +379,8 @@ plt.xticks(ticks=day_time_ticks,
 plt.xlabel('Time of Day')
 plt.xlim((0,2400))
 plt.title('Distribution of Accidents by Daytime', pad = 10)
-plt.savefig('./figures/Accidents by Daytime.png');
+plt.savefig('./Github/pyfra//figures/Accidents by Daytime.png');
+
 
 # The plot shows, that the temporal distribution is different on the weekends: On weekends, there are far more accidents between 19:00 and 07:00, while there are more accidents on weekday around 09:00 and 18:00. These differences align very well with our hypothesis. We did not expect the peak on weekends around 18:00, though. 
 #
