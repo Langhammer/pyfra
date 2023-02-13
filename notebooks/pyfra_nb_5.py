@@ -80,9 +80,6 @@ std_scaler = StandardScaler().fit(X_train)
 # %%
 k_features = 60
 kbest_selector = SelectKBest(k=k_features)
-kbest_selector.fit(X_train_scaled,y_train);
-X_train_scaled_selection = kbest_selector.transform(X_train_scaled)
-X_test_scaled_selection = kbest_selector.transform(X_test_scaled)
 print(f'We use {k_features} of the original {df.shape[1]} features')
 
 # %%
@@ -101,7 +98,6 @@ result_metrics.shape
 
 # %%
 loaded_model = load('../models/log_reg_clf.joblib')
-y_test_loaded = loaded_model.predict(X_test_scaled_selection)
 
 # %%
 # Create a sample of the data, because the whole dataset is too big for us to work with
