@@ -67,54 +67,71 @@ def run():
 
     if page==pages[2]:
         st.write('# Data Visualization')
+        subpages = ['Hypothesis 1', 'Hypothesis 2', 'Hypothesis 3', 'Hypothesis 4' , 'Hypothesis 5' , 'Hypothesis 6']
+        subpage = st.sidebar.radio(label='', options=subpages)
 
-        st.header("Hypothesis 1 : Accidents occur more often during a Specific time of the day and on weekends")
-        image = Image.open("./figures/Accidents by Daytime.png")
-        st.image(image)
 
-        st.header("Hypothesis 2  : Accidents are split evenly among all age groups")
-        image2 = Image.open("./figures/Accidents per Age.png")
-        st.image(image2)
+        if subpage==subpages[0]:
+            st.header("Hypothesis 1 : Accidents occur more often during a Specific time of the day and on weekends")
+            image = Image.open("./figures/Accidents by Daytime.png")
+            st.image(image)
+
+        if subpage==subpages[1]:
+            st.header("Hypothesis 2  : Accidents are split evenly among all age groups")
+            image2 = Image.open("./figures/Accidents per Age.png")
+            st.image(image2)
        
-        st.header("Hypothesis 3  : Generally Accidents rarely result in serious injury or death")
-        image3 = Image.open("./figures/Nb Accidents by Severity.png")
-        st.image(image3)
+        if subpage==subpages[2]:
+            st.header("Hypothesis 3  : Generally Accidents rarely result in serious injury or death")
+            image3 = Image.open("./figures/Nb Accidents by Severity.png")
+            st.image(image3)
 
-        st.header("Hypothesis 4  : Severity of Accidents are split uniformly across all ages and sex groups")
-        image4 = Image.open("./figures/Violin Chart.png")
-        st.image(image4)
+        if subpage==subpages[3]:
+            st.header("Hypothesis 4  : Severity of Accidents are split uniformly across all ages and sex groups")
+            image4 = Image.open("./figures/Violin Chart.png")
+            st.image(image4)
 
-        st.header("Hypothesis 5  : Number of Accidents are higher for bad weather conditions")
-        image5 = Image.open("./figures/Accidents by Weather conditions.png")
-        st.image(image5)
+        if subpage==subpages[4]:
+            st.header("Hypothesis 5  : Number of Accidents are higher for bad weather conditions")
+            image5 = Image.open("./figures/Accidents by Weather conditions.png")
+            st.image(image5)
 
-        st.header("Hypothesis 6  : Number of Accidents generally should increase by year due to higher volume of traffic")
-        image6 = Image.open("./figures/Accidents per Year.png")
-        st.image(image6)
+        if subpage==subpages[5]:
+            st.header("Hypothesis 6  : Number of Accidents generally should increase by year due to higher volume of traffic")
+            image6 = Image.open("./figures/Accidents per Year.png")
+            st.image(image6)
 
 
 
     if page==pages[3]:
         st.write('# Modeling')
+        subpages = ['Model Comparison', 'Impact of Data Amount', 'Impact of Data Imbalance']
+        subpage = st.sidebar.radio(label='', options=subpages)
 
+        if subpage==subpages[0]:
+            st.write('## Model Comparison')
+            result_metrics = pd.read_pickle('./data/nb_3_results.p')
 
-        result_metrics = pd.read_pickle('./data/nb_3_results.p')
+            st.write('## $f_1$ score by model')
+            res_chart = alt.Chart(result_metrics).mark_bar().encode(
+                x='f1',
+                y="model"
+            ).properties(height=300, width=500)
+            
+            # Plot the f1 scores
+            st.altair_chart(res_chart)
 
-        st.write('## $f_1$ score by model')
-        res_chart = alt.Chart(result_metrics).mark_bar().encode(
-            x='f1',
-            y="model"
-        ).properties(height=300, width=500)
-        
-        # Plot the f1 scores
-        st.altair_chart(res_chart)
+            # Display the metrics table
+            st.dataframe(data=result_metrics)
 
-        # Display the metrics table
-        st.dataframe(data=result_metrics)
+        if subpage==subpages[1]:
+            st.write('## Impact of Data Amount')
 
+        if subpage==subpages[2]:
+            st.write('## Impact of Data Imbalance')
 
     if page==pages[4]:
-        st.write('# Further Analysis')
+        st.write('# Conclusion')
 
 if __name__ == "__main__":
     run()
