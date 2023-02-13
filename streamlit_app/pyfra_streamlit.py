@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import altair as alt
 from PIL import Image
 
 def run():
@@ -72,6 +73,22 @@ def run():
 
     if page==pages[3]:
         st.write('# Modeling')
+
+
+        result_metrics = pd.read_pickle('./data/nb_3_results.p')
+
+        st.write('## $f_1$ score by model')
+        res_chart = alt.Chart(result_metrics).mark_bar().encode(
+            x='f1',
+            y="model"
+        ).properties(height=300, width=500)
+        
+        # Plot the f1 scores
+        st.altair_chart(res_chart)
+
+        # Display the metrics table
+        st.dataframe(data=result_metrics)
+
 
     if page==pages[4]:
         st.write('# Further Analysis')
