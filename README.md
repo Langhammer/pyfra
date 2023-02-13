@@ -16,10 +16,11 @@ pyfra
 - [Installation](#installation)
 - [References](#references)
 - [Credits](#credits)
-  - [Project members](#project-members)
+  - [Project Members](#project-members)
   - [Project Mentors](#project-mentors)
 
 # Overview
+[(Back to top)](#table-of-contents)
 ## Notebooks
 | Notebook  | Content | Description |
 | --- | --- | --- |
@@ -62,11 +63,13 @@ pip install -r requirements.txt
 ```
 
 # References
+[(Back to top)](#table-of-contents)
 * [Unprocessed Datasets provided by the French Ministry of the Interior and the Overseas](https://www.data.gouv.fr/en/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/)
 * [INSEE Population Data](https://www.insee.fr/fr/statistiques/6011070?sommaire=6011075)
 * [INSEE Department Codes](https://www.insee.fr/fr/information/5057840)
 
 # Credits
+[(Back to top)](#table-of-contents)
 ## Project members
 Kay Langhammer [GitHub](https://github.com/Langhammer) / [LinkedIn](https://www.linkedin.com/in/kay-langhammer/)  
 Robert Leisring  
