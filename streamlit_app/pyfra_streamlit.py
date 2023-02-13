@@ -14,6 +14,7 @@ def run():
     with st.sidebar:
         st.write('# Overview')
         page = st.radio(label='',options=pages)
+        is_presentation = st.checkbox(label='Presentation Mode', value=True)
 
     if page==pages[0]:
         st.header("PYFRA")
@@ -21,15 +22,18 @@ def run():
         st.image(image='images/stable_diffusion.jpeg', 
                 width=200,
                 caption='Generated with Stable Diffusion')
-        st.markdown(
-            """
-            PYFRA is a Data Science project, that analyzes goverment records of Car accidents in France
-            between the year 2005 till 2021, with the aim of building a machine learning model to expect the 
-            Severity of each car accident.
-            
-            ### Github
-            [Project Page](https://github.com/DataScientest-Studio/pyfra)
-
+        
+        if not is_presentation:
+            st.markdown(
+                """
+                PYFRA is a Data Science project, that analyzes goverment records of Car accidents in France
+                between the year 2005 till 2021, with the aim of building a machine learning model to expect the 
+                Severity of each car accident.
+                
+                ### Github
+                [Project Page](https://github.com/DataScientest-Studio/pyfra)
+                """)
+        st.markdown("""
             ### Project Members
             * Kay Langhammer
             * Robert Leisring
