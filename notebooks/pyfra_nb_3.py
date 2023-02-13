@@ -185,7 +185,7 @@ result_metrics
 
 # +
 #We use and define logistic Regression with n_jobs=-1 to use all cores
-LR = LogisticRegression()
+LR = LogisticRegression(max_iter=250)
 #for parameters we use 3 type of solver and 6 for C
 LR_params = {
     'solver': ['liblinear', 'lbfgs', 'saga'], 
