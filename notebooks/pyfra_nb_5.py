@@ -51,8 +51,8 @@ pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', ind
 rus = RandomUnderSampler(random_state=23)
 
 # %%
-data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df.grav
+data = df.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df['Severity']
 data, target = rus.fit_resample(X=data, y=target)
 
 # %%
@@ -62,8 +62,8 @@ target.value_counts()
 print(f'We are working on {len(target)} data points, which represent {len(target)/n_rows_complete*100:.04f}% of the original data,')
 
 # %%
-data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df.grav
+data = df.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df['Severity']
 
 # %%
 X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2 ,random_state=23)

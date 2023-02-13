@@ -17,7 +17,6 @@
 
 # # Importing Packages and Data
 
-import pyfra
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
@@ -31,20 +30,18 @@ from sklearn.ensemble import RandomForestClassifier, StackingClassifier
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn import preprocessing
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import f1_score, accuracy_score, recall_score, make_scorer
 from imblearn import under_sampling
 from imblearn.under_sampling import RandomUnderSampler
 from time import sleep
-from sklearn.ensemble import AdaBoostClassifier
-
+import pyfra
 
 df = pd.read_pickle('../data/df.p')
 n_rows_complete = len(df)
 
 # Check whether or not the data is up-to-date (file can't be tracked on github because of it's file size)
-pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
-                         right=pyfra.df_testing_info(df),\
-                         check_dtype=False, check_exact=False)
+pyfra.df_compare_to_description(df=df, description_filepath='../data/df_check_info.csv')
 
 rus = RandomUnderSampler(random_state=23)
 
@@ -81,23 +78,6 @@ X_test_scaled_selection = kbest_selector.transform(X_test_scaled)
 print(f'We use {k_features} of the original {df.shape[1]} features')
 
 k_best_feature_names = data.columns[kbest_selector.get_support(indices=True)]
-
-# # Application of Machine Learning Models
-# ## Setup of Metrics Table
-
-# Creating a matrix to store the results
-result_metrics = pd.DataFrame(columns=['model', 'f1', 'accuracy', 'recall'])
-result_metrics
-
-
-# Creating a function to compute and store the results for the respective model
-def store_metrics(model_name, model, y_test, y_pred, result_df):
-    result_df.loc[model_name, 'model'] = model
-    result_df.loc[model_name, 'f1'] = f1_score(y_true=y_test, y_pred=y_pred, average='weighted')
-    result_df.loc[model_name, 'accuracy'] = accuracy_score(y_true=y_test, y_pred=y_pred)
-    result_df.loc[model_name, 'recall'] = recall_score(y_true=y_test, y_pred=y_pred, average='weighted')
-    return result_df
-
 
 # ## Setup of the Cross-Validator
 # We will use a repeated stratified cross-validation to make sure to pick the best parameters.
@@ -162,9 +142,8 @@ y_svc = svc.predict(X_test_scaled_selection)
 
 # Calculate the metrics for the optimal svm model and store them in the result_metrics DataFrame 
 # The model will be stored as well in the DataFrame
-result_metrics = store_metrics(model=svc, model_name='Support Vector Machine',
-                               y_test=y_test, y_pred=y_svc,
-                               result_df=result_metrics)
+result_metrics = pyfra.store_metrics(model=svc, model_name='Support Vector Machine',
+                               y_test=y_test, y_pred=y_svc)
 # Show the interim result                               
 result_metrics
 
@@ -195,7 +174,7 @@ y_rf = rf.predict(X_test_scaled_selection)
 cm = pd.crosstab(y_test,y_rf, rownames=['Real'], colnames=['Prediction'])
 print(cm)
 
-result_metrics = store_metrics(model=rf, model_name='Random Forest',
+result_metrics = pyfra.store_metrics(model=rf, model_name='Random Forest',
                                y_test=y_test, y_pred=y_rf,
                                result_df=result_metrics)
                               
@@ -206,7 +185,7 @@ result_metrics
 
 # +
 #We use and define logistic Regression with n_jobs=-1 to use all cores
-LR = LogisticRegression()
+LR = LogisticRegression(max_iter=250)
 #for parameters we use 3 type of solver and 6 for C
 LR_params = {
     'solver': ['liblinear', 'lbfgs', 'saga'], 
@@ -238,7 +217,7 @@ y_LR = LR.predict(X_test_scaled_selection)
 
 # Calculate the metrics for the optimal LR model and store them in the result_metrics DataFrame 
 # The model will be stored as well in the DataFrame
-result_metrics = store_metrics(model=LR, model_name='Logistic Regression',
+result_metrics = pyfra.store_metrics(model=LR, model_name='Logistic Regression',
                                y_test=y_test, y_pred=y_LR,
                                result_df=result_metrics)
 # Show the interim result                               
@@ -274,7 +253,7 @@ dt = DT.best_estimator_
 y_dt = dt.predict(X_test_scaled_selection)
 cm = pd.crosstab(y_test,y_dt, rownames=['Real'], colnames=['Prediction'])
 print(cm)
-result_metrics = store_metrics(model=dt, model_name='Decision Tree',
+result_metrics = pyfra.store_metrics(model=dt, model_name='Decision Tree',
                                y_test=y_test, y_pred=y_dt,
                                result_df=result_metrics)
                               
@@ -301,7 +280,7 @@ stacking_clf = StackingClassifier(estimators=estimators, final_estimator=svc, cv
 
 stacking_clf.fit(X_train_scaled_selection, y_train)
 y_stacking = stacking_clf.predict(X_test_scaled_selection)
-result_metrics = store_metrics(model=stacking_clf, model_name='Stacking',
+result_metrics = pyfra.store_metrics(model=stacking_clf, model_name='Stacking',
                                y_test=y_test, y_pred=y_stacking,
                                result_df=result_metrics)
 result_metrics
@@ -313,7 +292,7 @@ ADA_Boost = AdaBoostClassifier(estimator = LR , n_estimators = 1000)
 ADA_Boost.fit(X_train_scaled_selection, y_train)
 y_ada = ADA_Boost.predict(X_test_scaled_selection)
 
-result_metrics = store_metrics(model=ADA_Boost, model_name='ADA Boost',
+result_metrics = pyfra.store_metrics(model=ADA_Boost, model_name='ADA Boost',
                                y_test=y_test, y_pred=y_ada,
                                result_df=result_metrics)
 # Show the interim result                               
@@ -352,14 +331,12 @@ print(classification_report(y_true=y_test, y_pred=y_stacking, target_names=sever
 
 # The classification report reflects our observations from the correlation matrix. It is satisfying that the categorie "Killed" is predicted with the highest accuracy; we consider this category as particularly important.
 
+# Export the results
+result_metrics.to_pickle('../data/nb_3_results.p')
+
 # +
 # Saving the models for further use and investigation
 from joblib import dump, load
 
-
+dump(LR, '../models/log_reg_clf.joblib')
 dump(stacking_clf, '../models/stacking_clf.joblib')
-# -
-
-loaded_model = load('../models/stacking_clf.joblib')
-y_test_loaded = loaded_model.predict(X_test_scaled_selection)
-
