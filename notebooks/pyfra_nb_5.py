@@ -18,9 +18,7 @@
 # %% [markdown]
 # # Outline
 # The aim is to further investigate the models developed in the third notebook.
-# We will
-# 1. Identify the relationship between amount of training data and model performance
-# 2. Compare the performance of our model with a naive approach of training on the un-stratified, imbalanced dataset
+# We will identify the relationship between amount of training data and model performance
 
 # %% [markdown]
 # # Import Modules, Data and Model 
@@ -34,6 +32,9 @@ from matplotlib import pyplot as plt
 from joblib import load
 from sklearn.model_selection import train_test_split
 from imblearn.under_sampling import RandomUnderSampler
+from sklearn.feature_selection import VarianceThreshold, SelectKBest
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 
 
 # %%
@@ -64,24 +65,43 @@ print(f'We are working on {len(target)} data points, which represent {len(target
 data = df.drop(columns='grav',axis=1).select_dtypes(include=np.number).dropna(axis=1)
 target = df.grav
 
-# %% [markdown]
-# # Relation between Amount of Training Data and Model Performance
+# %%
+X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2 ,random_state=23)
 
 # %%
-preprocessing_pipeline = load('../models/preprocessing_pipeline.joblib')
-svc = load('../models/svc.joblib')
-stacking_clf = load('../models/stacking_clf.joblib')
+
+constant_filter = VarianceThreshold(threshold=0.01).fit(X_train)
+
 
 # %%
-svc.verbose= 100
-stacking_clf.verbose = 100
+std_scaler = StandardScaler().fit(X_train)
+
 
 # %%
-# Creating a matrix to store the results
+k_features = 60
+kbest_selector = SelectKBest(k=k_features)
+kbest_selector.fit(X_train_scaled,y_train);
+X_train_scaled_selection = kbest_selector.transform(X_train_scaled)
+X_test_scaled_selection = kbest_selector.transform(X_test_scaled)
+print(f'We use {k_features} of the original {df.shape[1]} features')
+
+# %%
+preprocessing_pipeline = Pipeline(steps=[('var_threshold', constant_filter),
+                                 ('scaler', std_scaler),
+                                 ('kbest_selector', kbest_selector)])
+
+# %%
 result_metrics = pd.DataFrame(columns=['model', 'n_rows','f1', 'accuracy', 'recall'])
 result_metrics.index.name = 'id'
 result_metrics
 result_metrics.shape
+
+# %% [markdown]
+# # Relation between Amount of Training Data and Model Performance
+
+# %%
+loaded_model = load('../models/log_reg_clf.joblib')
+y_test_loaded = loaded_model.predict(X_test_scaled_selection)
 
 # %%
 # Create a sample of the data, because the whole dataset is too big for us to work with
@@ -92,7 +112,7 @@ from sklearn.utils import random
 # Creating a function to compute and store the results for the respective model
 from sklearn.utils import random
 from sklearn.metrics import f1_score, accuracy_score, recall_score
-def store_metrics(model_label, model, n_rows, result_df):
+def fit_evaluate(model_label, model, n_rows, result_df):
     id = result_df.shape[0]
     result_df.loc[id, 'model_label'] = model_label
     result_df.loc[id, 'model'] = model
@@ -122,10 +142,30 @@ def store_metrics(model_label, model, n_rows, result_df):
 
 
 # %%
+n_repetitions = 10
+for n_rows in [500, 1_000, 2_000, 5_000, 10_000, 20_000, 50_000, 100_000]:
+    for _ in range(n_repetitions):
+        result_metrics = fit_evaluate('logistic_regression_200', loaded_model, n_rows, result_metrics)
 
-for n_rows in [500, 1_000, 2_000, 5_000, 10_000, 20_000]:
-    result_metrics = store_metrics('stacking', stacking_clf, n_rows, result_metrics)
+# Show the interim result                               
+result_metrics
 print(result_metrics)
 
 # %%
-result_metrics
+plt.plot(result_metrics['f1'])
+
+# %%
+import seaborn as sns
+sns.barplot(x='n_rows',y='f1',data=result_metrics)
+plt.savefig('../images/n_data_f1.png', format='png')
+plt.savefig('../images/n_data_f1.svg', format='svg')
+
+# %%
+loaded_model.max_iter = 200
+
+# %%
+result_metrics.groupby(by=[n_rows])
+
+# %% [markdown]
+# # Conclusion
+# TODO
