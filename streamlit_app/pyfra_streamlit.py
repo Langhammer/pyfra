@@ -10,7 +10,7 @@ def run():
         page_icon="👋",
     )
 
-    pages = ["Project Presentation","Data Introduction and Cleaning","Data Visualization","Modeling","Further Analysis"]
+    pages = ["Project Presentation","Data Introduction and Cleaning","Data Visualization","Modeling","Conclusion"]
     with st.sidebar:
         st.write('# Overview')
         page = st.radio(label='',options=pages)
