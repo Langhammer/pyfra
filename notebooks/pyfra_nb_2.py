@@ -446,8 +446,7 @@ df = users.merge(vehicles, how='left', left_index=True, right_on=['Num_Acc', 'id
 print(na_percentage(df))
 # -
 
-df_test = df
-df_test.to_pickle('../data/df_test.p')
+df['Age'] = df['year'] - df['YoB']
 
 del characteristics, places, vehicles, users, dict_of_category_dfs
 
