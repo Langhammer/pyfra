@@ -10,14 +10,14 @@ def run():
         page_icon="👋",
     )
 
-    pages = ["Project Presentation","Data Cleaning","Data Viz","Modeling","Further Analysis"]
+    pages = ["Project Presentation","Data Introduction and Cleaning","Data Visualization","Modeling","Further Analysis"]
     with st.sidebar:
         st.write('# Overview')
         page = st.radio(label='',options=pages)
 
     if page==pages[0]:
         st.header("PYFRA")
-        st.write("# Car Accident Analysis France")
+        st.write("# Car Accident Analysis in France")
         st.image(image='images/stable_diffusion.jpeg', 
                 width=200,
                 caption='Generated with Stable Diffusion')
@@ -35,11 +35,31 @@ def run():
             * Robert Leisring
             * Saleh Saleh
             * Michal Turák
+
+            ### Project Mentors
+            * Robin Trinh
+            * Laurene Bouskila
         """
         )
 
     if page==pages[1]:
-        st.write('# Data Cleaning')
+        st.header('Data Introduction and Cleaning')
+        st.markdown(
+        
+        '''
+        ### Data Source
+        The data used for this analysis is found in the official French goverment records and is split
+         each year into 4 categories that include csv files of: Users, Characteristics, Vehicules, and Location.
+
+        [Goverment Database](https://www.data.gouv.fr/en/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/)
+        
+        
+        ### Data import and cleaning
+
+        
+
+        '''
+        )
 
     if page==pages[2]:
         st.write('# Data Visualization')
@@ -57,7 +77,7 @@ def run():
         st.image(image3)
 
         st.header("Hypothesis 4  : Severity of Accidents are split uniformly across all ages and sex groups")
-        image4 = Image.open("./figures/Violen Chart.png")
+        image4 = Image.open("./figures/Violin Chart.png")
         st.image(image4)
 
         st.header("Hypothesis 5  : Number of Accidents are higher for bad weather conditions")
