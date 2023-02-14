@@ -322,6 +322,8 @@ plt.title('Correlation Matrix of the Stacking Classifier');
 sns.heatmap(cm, cmap='RdYlGn', annot=True);
 plt.xticks(np.array(range(4))+0.5, labels=severity_categories, rotation=45);
 plt.yticks(np.array(range(4))+0.5, labels=severity_categories, rotation=0);
+plt.savefig('../figures/stacking_conf.png', bbox_inches='tight');
+plt.savefig('../figures/stacking_conf.svg', bbox_inches='tight');
 
 # The correlation matrix of the stacking classifier shows that some categories are more difficult to predict than others. The category "Hospitalized wounded" seems to be the most difficult to predict, as the predictions seem to be quite evenly distributed between the different classes. We can quantify these difficulties by looking at the scores for accuracy and recall for each category.
 
@@ -341,3 +343,6 @@ from joblib import dump, load
 dump(LR, '../models/log_reg_clf.joblib')
 dump(svc, '../models/svc.joblib')
 dump(stacking_clf, '../models/stacking_clf.joblib')
+# -
+
+
