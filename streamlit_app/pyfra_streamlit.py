@@ -183,11 +183,11 @@ def run():
 
     if page==pages[3]:
         st.write('# Modeling')
-        subpages = ['Model Comparison', 'Simulation', 'Impact of Data Amount', 'Impact of Data Imbalance']
+        subpages = ['Model Comparison', 'Simulation', 'Impact of Input Size', 'Impact of Data Imbalance']
         subpage = st.sidebar.radio(label='', options=subpages)
 
         if subpage==subpages[0]:
-            st.write('## Model Comparison')
+            st.subheader(subpages[0])
             result_metrics = pd.read_pickle('./data/nb_3_results.p')
 
             st.write('## $f_1$ score by model')
@@ -203,11 +203,11 @@ def run():
             st.dataframe(data=result_metrics)
 
         if subpage==subpages[1]:
+            st.subheader(subpages[1])
             log_reg_preprocessing_pipe = load('models/log_reg_preprocessing_pipeline.joblib')
             svc_preprocessing_pipe = load('models/svc_preprocessing_pipeline.joblib')
             log_reg_clf = load('models/log_reg_nb5.joblib')
             svc = load('models/svc_nb5.joblib')
-            st.write(svc)
 
             # Select Department
             date = st.date_input("Select Date", datetime.date(2022,2,14))
@@ -220,6 +220,7 @@ def run():
                                                                        'Two vehicles -- from the side',
                                                                        'Three or more vehicles in a chain'])
             n_sample = 1000
+            st.write('Result (based on', n_sample, ' data points)')
             example_df = pd.read_pickle('data/streamlit_example.p').sample(n_sample)
             example_df['YoB'] = year_of_birth
             example_df['year'] = date.year
@@ -259,7 +260,7 @@ def run():
             if collision_type == 'Three or more vehicles in a chain':
                 example_df['collision_category_4.0'] = 1         
 
-            st.dataframe(data=example_df)
+            #st.dataframe(data=example_df)
             example_df = log_reg_preprocessing_pipe.transform(example_df)
             #st.write(log_reg_clf.feature_names_in_)
             log_reg_pred, log_reg_pred_counts = np.unique(log_reg_clf.predict(example_df), return_counts=True)
@@ -278,10 +279,10 @@ def run():
             
 
         if subpage==subpages[2]:
-            st.write('## Impact of Data Amount')
+            st.subheader(subpages[2])
 
         if subpage==subpages[3]:
-            st.write('## Impact of Data Imbalance')
+            st.subheader(subpages[3])
 
     if page==pages[4]:
         st.write('# Conclusion')
