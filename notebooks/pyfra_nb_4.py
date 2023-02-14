@@ -38,26 +38,15 @@ from time import sleep
 from sklearn.ensemble import AdaBoostClassifier
 
 
-df = pd.read_pickle('../data/df_test.p')
+df = pd.read_pickle('../data/df.p')
 n_rows_complete = len(df)
 
 df = df.drop(columns=['adress','gps_origin','latitude','longitude'])
-
 df.municipality.fillna(55,inplace=True)
 
-I = df[df.year == 2019].index[0]
-
-df_new = df.iloc[I:] #2019 and beyond
-
-df_new = df_new.drop(columns=['SecuA','SecuB','secu','num_veh'])
-
-df_old = df.iloc[:I-1] #2018 and before
-
-df_old = df_old.drop(columns=['secu1','secu2','num_veh'])
-
-df_old_sample=df_old.sample(frac=0.002,random_state=23)
-data = df_old_sample.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df_old_sample.Severity
+df_sample=df.sample(frac=0.01,random_state=23)
+data = df_sample.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
+target = df_sample.Severity
 target.value_counts()
 
 X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2 ,random_state=23)
@@ -163,37 +152,69 @@ result_metrics
 # -
 
 
-# NEW 2019+
-
-
-df_new_sample=df_new.sample(frac=0.008,random_state=23)
-data = df_new_sample.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
-target = df_new_sample.Severity
-target.value_counts()
-
-
-df_new_sample
-
-X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2 ,random_state=23)
-
-std_scaler = preprocessing.StandardScaler().fit(X_train)
-X_train_scaled = std_scaler.transform(X_train)
-X_test_scaled = std_scaler.transform(X_test)
+# # Random Forest
 
 # +
-# Fitting the grid search to find the best parameter combination
-svc_grid.fit(X_train_scaled, y_train)
+params = {
+    'criterion': ['gini'],
+    'max_depth': [5,10],
+    'min_samples_leaf':[3,7],
+    'n_estimators': [50,100]
+    }
 
-# Print result of parameter optimization
-print('Best parameter combination: ',svc_grid.best_params_)
+RFCLF = GridSearchCV(RandomForestClassifier(),param_grid = params, cv = cv)
+RFCLF.fit(X_train_scaled,y_train)
 
-# Predict target variable for the test set
-svc = svc_grid.best_estimator_
-y_svc = svc.predict(X_test_scaled)
+print('Best Params are:',RFCLF.best_params_)
+print('Best Score is:',RFCLF.best_score_)
+
+# +
+rf = RFCLF.best_estimator_
+y_rf = rf.predict(X_test_scaled)
+
+cm = pd.crosstab(y_test,y_rf, rownames=['Real'], colnames=['Prediction'])
+print(cm)
+
+result_metrics = pyfra.store_metrics(model=rf, model_name='Random Forest',
+                               y_test=y_test, y_pred=y_rf,
+                               result_df=result_metrics)
+                              
+result_metrics
 # -
 
-result_metrics = store_metrics(model=svc, model_name='Support Vector Machine',
-                               y_test=y_test, y_pred=y_svc,
+# # Decision Tree
+
+# +
+from sklearn import tree
+from sklearn.pipeline import Pipeline
+
+# Grid
+criterion = ['gini', 'entropy']
+max_depth = [2,4,6,8,10,12]
+parameters = dict(criterion=criterion, max_depth=max_depth)
+
+DT = GridSearchCV(DecisionTreeClassifier(),param_grid = parameters, cv = RepeatedKFold(n_splits=4, n_repeats=1, random_state=23))
+# 
+DT.fit(X_train_scaled,y_train)
+
+# 
+print('Best Criterion:', DT.best_estimator_.get_params())
+print('Best max_depth:', DT.best_estimator_.get_params())
+print(); print(DT.best_estimator_.get_params())
+
+# +
+dt = DT.best_estimator_
+y_dt = dt.predict(X_test_scaled)
+cm = pd.crosstab(y_test,y_dt, rownames=['Real'], colnames=['Prediction'])
+print(cm)
+result_metrics = pyfra.store_metrics(model=dt, model_name='Decision Tree',
+                               y_test=y_test, y_pred=y_dt,
                                result_df=result_metrics)
-# Show the interim result                               
+                              
 result_metrics
+# -
+
+plt.barh(y=result_metrics.index.values, width=result_metrics['f1']);
+plt.title('$F_1$ Score of different ML models');
+
+result_metrics.to_pickle('../data/nb_4_results.p')
