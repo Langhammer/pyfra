@@ -66,7 +66,7 @@ target.value_counts()
 # %%
 data = df.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
 target = df['Severity']
-data.to_pickle('../data/streamlit_example.p')
+data.sample(frac=0.5).to_pickle('../data/streamlit_example.p')
 
 # %%
 X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2 ,random_state=23)
@@ -89,6 +89,15 @@ svc = load('../models/svc.joblib')
 
 # %% [markdown]
 # # Relation between Amount of Training Data and Model Performance
+
+# %% [markdown]
+# ## Hypothesis
+# The performance of machine learning models depends on the quantity of input data (also to the quality, but this will not be discussed in this notebook).
+# Training a model with large amounts of data, however, can result in long training times. We will compare the performance of our models trained on different amounts of data.
+# We expect the performance to increase with the amount of data, while the variance should decrease because of the bigger sample size. 
+
+# %% [markdown]
+# ## Experiment
 
 # %%
 result_metrics = pd.DataFrame(columns=['model', 'n_rows','f1', 'accuracy', 'recall'])
@@ -127,7 +136,7 @@ def fit_evaluate(model_label, model, n_rows, result_df):
 
 
 # %%
-n_repetitions = 4
+n_repetitions = 2
 for n_rows in [500, 1_000, 2_000, 5_000, 10_000, 20_000, 50_000]:
     for i_repetition in range(n_repetitions):
         print('Repetition nr.', i_repetition)
@@ -153,7 +162,18 @@ plt.savefig('../figures/n_rows_f1.png');
 plt.savefig('../figures/n_rows_f1.svg');
 
 # %% [markdown]
+# ## Conclusion
+# We can see that the performance increases with the amount of data. We can also observe that the performance is already reaching a plateau, which means that the amount of data for training is already sufficient. We expected the variance to decrease, but nat to that extent. The reason for the high variance in the beginning could be that not only the amount of training data is smaller, but also the amount of test data.
+
+# %% [markdown]
 # # Impact of Number of Variables
+
+# %% [markdown]
+# ## Hypothesis
+# We expect the number of variables to have an important impact on the performance. We are dealing with a large number of features in our dataset, and we expect some of these variables to not have an impact. We use k-best selection to reduce the number of features. This means, that the most important features will be used early on and the least important features will be added later. Hence we expect the performance to reach a plateau.
+
+# %% [markdown]
+# ## Experiment
 
 # %%
 k_feat_metrics = pd.DataFrame(columns=['model', 'f1', 'accuracy', 'recall'])
