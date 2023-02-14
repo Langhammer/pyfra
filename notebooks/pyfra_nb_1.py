@@ -16,6 +16,12 @@
 # ==============
 # Data Visualization
 
+# # Outline
+# The aim is to visualize the different data present in our Datasets.
+# We will
+# 1- Assume Hypothesis before each visualization to try and understand our Dataset
+# 2- Affirm or Deny our theory after each visualization graph.
+
 # # Importing Packages and Data
 
 import pyfra
@@ -26,15 +32,6 @@ import seaborn as sns
 from pylab import *
 # %matplotlib inline
 
-# +
-#df = pd.read_pickle('../data/df.p')
-#n_rows_complete = len(df)
-# -
-
-#pd.testing.assert_frame_equal(left=(pd.read_csv('../data/df_check_info.csv', index_col=0)), \
-                         #right=pyfra.df_testing_info(df),\
-                         #check_dtype=False, check_exact=False)
-
 # # Importing Data
 
 french_categories = {'characteristics': 'caracteristiques', 'places':'lieux', 'users':'usagers', 'vehicles':'vehicules'}
@@ -43,8 +40,8 @@ categories_dict = dict(zip(data_categories, [0,0,0,0]))
 
 
 # +
-# Define the function that reads the raw data for the specified time range
 def read_csv_of_year(start_year, end_year, separators, name_separator='_'):
+    '''Imports the 4 csv files for the given time range and returns them as a dictionary'''
     if len (separators)<4:
         separators = [separators]*4
         
@@ -92,6 +89,7 @@ vehicles = dict_of_category_dfs['vehicles']
 # ### Function for calculating the percentage of missing values for each data frame
 
 def na_percentage(df):
+  '''Calculate the percentage of missing values for each column of the given DataFrame'''
   return df.isna().sum() *100 / len(df)
 
 
@@ -100,11 +98,19 @@ for this_category, df in dict_of_category_dfs.items():
 
 # ## Places Dataset
 
+# ### Dropping unwanted columns , which are v1 , v2, vma, voie, env1
+
 # +
-# Change french names against english names (Teamdecision)
 # Droped 'Unnamed: 0','v1','v2','vma', because they contained no information.
 
 places = places.drop(['v1','v2','vma','voie','env1'], axis = 1)
+# -
+
+# ### French to English Variables
+
+# +
+# Change french names against english names.
+
 places = places.rename(columns = {'catr' : 'Rd_Cat', 'circ' : 'Traf_Direct' , 'nbv' : 'Lanes' ,
                            'pr' : 'Landmark' , 'pr1' : 'Dist_to_Landmark', 'vosp' : 'Add_Lanes', 'prof' : 'Rd_Prof' ,
                           'plan' : 'Rd_Plan' , 'lartpc' : 'Gre_Verge' , 'larrout' : 'Rd_Width', 'surf' : 'Rd_Cond',
@@ -112,83 +118,47 @@ places = places.rename(columns = {'catr' : 'Rd_Cat', 'circ' : 'Traf_Direct' , 'n
 places.head()
 # -
 
-# ### Change Nans against zeros
-
-# Set most empty varibles to Zero / Null, because its for all vaiables not in use and can be defined as not applicable.
-#
-# 9 Variables have <= 1% missing information, so for those it should be fine to set the missing information just tu zero.
-# In addition, the recorded data are not suitable for filling the NaNs with, for example, the mean value, since this is almost exclusively about describing states.
-#
-# Hoped to fill up the missing information for Rd_Width with a comparsion Rd_Nr vs. Rd_Width, but it turns out that the same street has different widths.
-#
-# Nr_n_Width = places[['Rd_Nr','Rd_Width','Gre_Verge']]#comparsion Rd_Nr vs. Rd_Width. Same for Gre_Verge.
-# Nr_n_Width.head()
-#
-# Landmark and Dist_to_Landmark are information to localize an accident. Nearly 50% of the Data are missing but I will keep the Data. Maybe it will be usefull to complete some location data.
-#
-# Missing information of Rd_Nr, biggest problem is that later in the Datasets they changed input of numbers against names. So I need a list which says which street is which number. I will drop the variable, it turns out useless.
-#
-# For column school there are 3 Types of information 99.0 / 0.0 and 3.0, according to the description the variable schools should only contain 1 or 2 so if it is or not near by a school.
-# I can't find a logical and reliable way to replace the data. So I will drop them
-# In 2019 they droped this column and start with speed limits. Its a importent information but I cant use it in this format. I will drop it for the moment.
-# Code
-# sns.countplot( x = places.School)
+# ### Changing Nans with Zeros
 
 # +
+# There is no value = 0 assigned to information in the places data set. 
+# Zeros are used in the cleaned data set as a feature to identify original Nans
+# and to keep the data set with as much information as possible.
 
-places['Rd_Cat'] = places['Rd_Cat'].fillna(0.0)
-places['Traf_Direct'] = places['Traf_Direct'].fillna(0.0)
-places['Lanes'] = places['Lanes'].fillna(0.0)
-places['Landmark'] = places['Landmark'].fillna(0.0)
-places['Dist_to_Landmark'] = places['Dist_to_Landmark'].fillna(0.0)
-places['Add_Lanes'] = places['Add_Lanes'].fillna(0.0)
-places['Rd_Prof'] = places['Rd_Prof'].fillna(0.0)
-places['Rd_Plan'] = places['Rd_Plan'].fillna(0.0)
-places['Gre_Verge'] = places['Gre_Verge'].fillna(0.0)
-places['Rd_Width'] = places['Rd_Width'].fillna(0.0)
-places['Rd_Cond'] = places['Rd_Cond'].fillna(0.0)
-places['Envinmt'] = places['Envinmt'].fillna(0.0)
-places['Pos_Acc'] = places['Pos_Acc'].fillna(0.0)
+places = places.fillna({'Rd_Cat':0, 'Traf_Direct': 0, 'Lanes':0, 'Add_Lanes':0, 'Rd_Prof':0,'Rd_Plan':0,
+                        'Rd_Cond':0, 'Envinmt':0, 'Pos_Acc':0})
+# -
+
+# ### Changing needed "object" Variables to "int" Variables
 
 
 # +
-# Convert object to float
-places['Landmark'] = pd.to_numeric(places['Landmark'],errors = 'coerce')
-places['Dist_to_Landmark'] = pd.to_numeric(places['Dist_to_Landmark'],errors = 'coerce')
-places['Gre_Verge'] = pd.to_numeric(places['Gre_Verge'],errors = 'coerce')
-places['Rd_Width'] = pd.to_numeric(places['Rd_Width'],errors = 'coerce')
+# Convert 'object' Variables to 'float' Variables
 
-# replace empty cells with nans
-places.replace('', np.nan)
-places = places.copy()
+object_list = ['Landmark', 'Dist_to_Landmark', 'Gre_Verge', 'Rd_Width']
 
-# fill nans with 0
-places['Landmark'] = places['Landmark'].fillna(0.0)
-places['Dist_to_Landmark'] = places['Dist_to_Landmark'].fillna(0.0)
-places['Gre_Verge'] = places['Gre_Verge'].fillna(0.0)
-places['Rd_Width'] = places['Rd_Width'].fillna(0.0)
+places[object_list] = places[object_list].apply(pd.to_numeric, errors='coerce', axis=1)
 
-# Convert float to int
-places['Rd_Cat'] = places['Rd_Cat'].astype(int, errors = 'raise')
-places['Traf_Direct'] = places['Traf_Direct'].astype(int, errors = 'raise')
-places['Lanes'] = places['Lanes'].astype(int, errors = 'raise')
-places['Landmark'] = places['Landmark'].astype(int, errors = 'raise')
-places['Dist_to_Landmark'] = places['Dist_to_Landmark'].astype(int, errors = 'raise')
-places['Add_Lanes'] = places['Add_Lanes'].astype(int, errors = 'raise')
-places['Rd_Prof'] = places['Rd_Prof'].astype(int, errors = 'raise')
-places['Rd_Plan'] = places['Rd_Plan'].astype(int, errors = 'raise')
-places['Gre_Verge'] = places['Gre_Verge'].astype(int, errors = 'raise')
-places['Rd_Width'] = places['Rd_Width'].astype(int, errors = 'raise')
-places['Rd_Cond'] = places['Rd_Cond'].astype(int, errors = 'raise')
-places['Envinmt'] = places['Envinmt'].astype(int, errors = 'raise')
-places['Pos_Acc'] = places['Pos_Acc'].astype(int, errors = 'raise')
+# Replace empty cells with 'Nans'
+
+places.replace('', np.nan).copy()
+
+# Fill 'Nans' with 0
+
+places = places.fillna({'Landmark':0, 'Dist_to_Landmark': 0, 'Gre_Verge':0, 'Rd_Width':0})
+
+# Convert 'float' Variables to 'int' Variables
+
+float_list = ['Rd_Cat', 'Traf_Direct', 'Lanes', 'Landmark','Dist_to_Landmark', 'Add_Lanes', 'Rd_Prof', 'Rd_Plan',
+              'Gre_Verge', 'Rd_Width', 'Rd_Cond', 'Envinmt','Pos_Acc']
+
+places[float_list] = places[float_list].astype(int, errors = 'raise')
 
 print(places.isna().sum())
 print()
 print(places.info())
 print()
 print(places.shape)
-
 # -
 
 # ## Characteristics Dataset
@@ -252,9 +222,10 @@ str(dc).rstrip('0')
 
 # +
 def department_converter(dep):
-    # Takes in a department code as int and returns a string
-    # e.g. 750 will be '75' for Paris
-    # and 201 will be '2B'
+    '''
+    Takes in a department code as int and returns a string
+    e.g. 750 will be '75' for Paris and 201 will be '2B'
+    '''
     if dep == 201:
         return '2A'
     elif dep == 202:
@@ -317,10 +288,6 @@ vehicles['id_veh'].fillna(vehicles['num_veh'], inplace=True)
 vehicles.drop(columns=['num_veh'], inplace=True)
 vehicles.set_index(['Num_Acc', 'id_veh'], inplace=True)
 
-# # Merge all datasets
-
-
-
 # ## Ensure Correct Attribution of Users to Vehicles
 
 users['id_vehicule'].fillna(users['num_veh'], inplace=True)
@@ -352,39 +319,12 @@ print(df.info())
 print(na_percentage(df))
 # -
 
-# ### Fixing incoherency of 'secu' Variable
-# Safety equipment until 2018 was in 2 variables: existence and use.
-#
-# From 2019, it is the use with up to 3 possible equipments for the same user (especially for motorcyclists whose helmet and gloves are mandatory).
-#
-# #### secu1
-# The character information indicates the presence and use of the safety equipment:
-# -1 - No information 
-# 0 - No equipment 
-# 1 - Belt 
-# 2 - Helmet 
-# 3 - Children device 
-# 4 - Reflective vest 
-# 5 - Airbag (2WD/3WD) 
-# 6 - Gloves (2WD/3WD) 
-# 7 - Gloves + Airbag (2WD/3WD) 
-# 8 - Non-determinable 
-# 9 - Other
-#
-# #### secu2
-# The character information indicates the presence and use of the safety equipment
-#
-# #### secu3
-# The character information indicates the presence and use of safety equipment
-
-df['secu'] = df[df['year']==2007]['secu'].astype(int)
-df[df['year']==2007]['secu'].value_counts()
-
 # # Visualizations
 
 # ## Correlation of the feature variables with the target
 
 cm = df.corr(numeric_only=True)
+#cm = df.corr()
 cm['grav'].sort_values(ascending=False)[1:]
 
 # The list shows the correlation between each variables and the target variable. Note: The decision whether a variable is important or not has to be based on the absolute value of the correlation.
@@ -393,27 +333,32 @@ fig, ax = plt.subplots(figsize=(33,20));
 sns.heatmap(cm, annot = True, ax = ax, cmap='coolwarm', linewidths = 0.40);
 fontsize = 40
 plt.title("Heatmap of Correlation for all Variables with the Target", fontdict={'fontsize': fontsize}, pad=40);
+#plt.savefig('./Github/pyfra/figures/corr_heatmap.png')
 
 # This heat map is intended to provide an overall view of where strong correlations occur .
 
 # ## Heatmap per Subject Area
 
 # +
-fig, S = plt.subplots(figsize=(12,5));
+fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(users.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
-plt.title('Heatmap for Users', pad=10);
+plt.title('Heatmap for Users', pad=10)
+#plt.savefig('./Github/pyfra//figures/corr_heatmap_USERS.png');
 
-fig, S = plt.subplots(figsize=(12,5));
+fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(places.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
-plt.title('Heatmap for Places', pad=10);
+plt.title('Heatmap for Places', pad=10)
+#plt.savefig('./Github/pyfra//figures/corr_heatmap_PLACES.png');
 
-fig, S = plt.subplots(figsize=(12,5));
+fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(vehicles.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
-plt.title('Heatmap for Vehicles', pad=10);
+plt.title('Heatmap for Vehicles', pad=10)
+#plt.savefig('./Github/pyfra//figures/corr_heatmap_VEHICLES.png');
 
-fig, S = plt.subplots(figsize=(12,5));
+fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(characteristics.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
-plt.title('Heatmap for Characteristics', pad=10);
+plt.title('Heatmap for Characteristics', pad=10)
+#plt.savefig('./Github/pyfra//figures/corr_heatmap_CHARACTERISTICS.png');
 # -
 
 # ## Datetime
@@ -433,7 +378,9 @@ plt.xticks(ticks=day_time_ticks,
            labels=day_time_tick_labels);
 plt.xlabel('Time of Day')
 plt.xlim((0,2400))
-plt.title('Distribution of Accidents by Daytime', pad = 10);
+plt.title('Distribution of Accidents by Daytime', pad = 10)
+#plt.savefig('./Github/pyfra//figures/Accidents by Daytime.png');
+
 
 # The plot shows, that the temporal distribution is different on the weekends: On weekends, there are far more accidents between 19:00 and 07:00, while there are more accidents on weekday around 09:00 and 18:00. These differences align very well with our hypothesis. We did not expect the peak on weekends around 18:00, though. 
 #
@@ -471,22 +418,25 @@ departments_2019_df.dropna(axis=0,subset='n_accidents_per_10k', inplace=True)
 # +
 #departments_2019_df['n_accidents_per_10k'].plot(kind='bar')
 departments_2019_df.sort_values(by='n_accidents_per_10k').tail(10).plot.barh(x='DEP',y='n_accidents_per_10k',    
-    figsize=(5,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
-plt.title('Number of Accidents per 10,000 habitants (2019)',pad = 10);
+    figsize=(11,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
+plt.title('Number of Accidents per 10,000 habitants (2019)',pad = 10)
+#plt.savefig('./figures/Nb accidents by departement 2019_1.png');
 
 departments_2019_df.sort_values(by='n_accidents_per_10k').head(10).plot.barh(x='DEP',y='n_accidents_per_10k',    
-    figsize=(5,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
-plt.title('Number of Accidents per 10,000 habitants (2019)',pad = 10);
+    figsize=(12,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
+plt.title('Number of Accidents per 10,000 habitants (2019)',pad = 10)
+#plt.savefig('./figures/Nb accidents by departement_2019_2.png');
 # -
 
-plt.figure(figsize=(5,5));
+plt.figure(figsize=(7,5));
 plt.plot(departments_2019_df['PTOT'], departments_2019_df['n_accidents'], 'x');
 plt.title('Accidents in a Department in Function of its Population 2009', pad=10);
 plt.xlabel('Total Population of the Department ( in Millions )');
 locs,labels = xticks();
 xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 xlim(left=0);
-plt.ylabel('Number of Accidents in the Department');
+plt.ylabel('Number of Accidents in the Department')
+#plt.savefig('./figures/Accidents in terms of population 2009.png');
 
 
 #
@@ -496,18 +446,20 @@ plt.ylabel('Number of Accidents in the Department');
 
 # In general accidents should be uniform accross all months of the year, and generally accidents should be decreasing across the years especially in covid area since we had a lower volume of car movement across the world
 
-plt.figure(figsize=(5,5));
+plt.figure(figsize=(7,7));
 sns.countplot(y = "month" , data = characteristics)
 plt.xlabel('Total Number of Accidents');
 plt.ylabel('Month');
-plt.title('Distribution of Accidents by Month', pad=10);
+plt.title('Distribution of Accidents by Month', pad=10)
+#plt.savefig('./figures/Accidents per month.png');
 
 
-plt.figure(figsize=(5,5));
+plt.figure(figsize=(7,7));
 sns.countplot(y = "year" , data = characteristics)
 plt.xlabel('Total Number of Accidents');
 plt.ylabel('Year');
-plt.title('Distribution of Accidents by Year', pad=10);
+plt.title('Distribution of Accidents by Year', pad=10)
+#plt.savefig('./figures/Accidents per Year.png');
 
 # We can see that the number of accidents per month is almost uniform.
 #
@@ -529,9 +481,31 @@ plt.ylabel('Total Number of Accidents ( in Millions )');
 locs,labels = yticks();
 yticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 ylim(bottom=0);
-plt.title('Distribution of Accidents by Gender', pad=10);
+plt.title('Distribution of Accidents by Gender', pad=10)
+#plt.savefig('./figures/Accidents by Gender.png');
 
 # We see that the amount of Males doing accidents is almost double that of females, probably because the amount of males who generally drive are higher than females, or because males are reckless drivers.
+
+# Accidents by Age
+
+df['Age'] = df['year']-df['an_nais']
+
+df.Age.fillna(20,inplace=True) #Mode
+df.Age = df.Age.astype(int)
+
+# We want to check the amount of accidents by Age and we suspect that the majority is of young age
+
+#ENTIRE AGE LIMIT (Include babies in cars)
+plt.figure(figsize = (8,6))
+ax = sns.countplot(data=df, x='Age');
+plt.xlabel('Age');
+plt.locator_params(axis='x', nbins=11)
+plt.ylabel('Total Number of Drivers');
+plt.title('Distribution of Accidents by Age', pad=10);
+plt.ticklabel_format(style='plain', axis='y')
+#plt.savefig('./figures/Accidents per Age.png');
+
+# We confirm our theory that the number of accident victims generally decrease with age
 
 # ## Accidents by Severity
 
@@ -541,18 +515,33 @@ users.grav.value_counts()
 # We nee to check the severity (gravity) of accidents and its effects on the dirvers, which is our target variable.
 # Only a low number of accidents should result in serious injury or death due to the advanced security systems and road designs.
 
-plt.figure(figsize=(5,5));
-sns.countplot(data=users, x='grav');  
-plt.xticks(ticks=[0,1,2,3], labels=['1\nUnscathed', '2\nKilled',
-    '3\nHospitalized\nwounded','4\nLight injury'])
-plt.xlabel('Severity');
-plt.ylabel('Total Number of Accidents ( in Millions )');
-locs,labels = yticks();
-yticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
-ylim(bottom=0);
-plt.title('Number of Accidents according to their Severity', pad=10);
+#Pie Chart
+plt.figure(figsize = (10,8))
+plt.pie(x=users.grav.value_counts(),
+        explode = [0,0,0,0.15],
+        autopct = lambda x: str(round(x, 2)) + '%',
+        labeldistance = 1.1 , pctdistance = 0.8);
+plt.title("Pie Chart for Severity of accidents");
+plt.legend(['Unharmed', 'Slightly Injured',
+        'Hospitalized','Killed']);
+#plt.savefig('./figures/Nb Accidents by Severity.png');
 
 # Conclusion: We can see that almost 20% of people are Hospitalized and only a very small amount is killed,and hence we can deduce that the target variable is unbalanced.
+
+# # Violen Plot 
+
+# Violen plot to see Grav in terms of Age split by Sex
+
+df.sexe.replace(to_replace=-1,value=1,inplace=True)
+df.grav.replace(to_replace=-1,value=1,inplace=True)
+
+plt.figure(figsize = (12,12));
+sns.catplot(x='grav' , y='Age' ,hue = "sexe" , kind = 'violin' , split = True , data = df);
+plt.title("Violen Chart showing Severity in terms of Age per Sex");
+ax.set(xlabel='Severity');
+#plt.savefig('./figures/Violen Chart.png');
+
+# We can observe that the Age range is quite unifrom across all grav types for both sexes
 
 # ## Accidents per Road Categories
 #
@@ -570,6 +559,7 @@ locs,labels = xticks();
 xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 ylim(top=0.5);
 xlim(left=0);
+#plt.savefig('./figures/Accidents per Road Category.png');
 
 #
 # Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
@@ -589,7 +579,8 @@ g.fig.suptitle('Accidents according to Traffic Direction and Road Category (Acci
 locs,labels = yticks();
 yticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 ylim(bottom=0);
-xlim(left=0.6);
+xlim(left=0.6)
+#plt.savefig('./figures/Accidents by Traffic Direction.png');
 
 
 # Legend:
@@ -611,14 +602,14 @@ xlim(left=0.6);
 # In what weather conditions do most accidents happen? We would expect snow, ice, rain, mud as clear evidence.
 
 # +
-plt.figure(figsize = (8,10));
+plt.figure(figsize = (12,12));
 ax1 = plt.subplot(2,1,1);
 sns.countplot( y = df.Rd_Cond);
 plt.title('Road Conditions with most Accidents', pad=10);
 plt.yticks(ticks=list(range(0,11)),labels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
                                            'Mud','Icy','Greasy (Oil)', 'Other']);
 plt.ylabel('Road Condition');
-#plt.ylim(top=1.5);
+plt.ylim(top=1.5);
 plt.xlabel('Accident Count (in Millions)');
 locs,labels = plt.xticks();
 plt.xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
@@ -630,8 +621,9 @@ plt.yticks(ticks=list(range(10)),labels=['Unknown', 'Normal', 'Light rain', 'Hea
                 'Overcast', 'Other']);
 plt.ylabel('Atmospheric Condition')
 plt.xlabel(None)
-#plt.xlabel('Accident Count (in Millions)');
-#plt.xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+#plt.savefig('./figures/Accidents by Weather conditions.png')
+plt.xlabel('Accident Count (in Millions)');
+plt.xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 ax2.xaxis.tick_top()
 #fig.tight_layout(w_pad=2)
 # -
@@ -639,7 +631,7 @@ ax2.xaxis.tick_top()
 #
 # By far the most accidents happend during normal weather conditions.
 
-fig = plt.figure(figsize=(10,4));
+fig = plt.figure(figsize=(12,6));
 sns.heatmap(pd.crosstab(df['atmospheric_conditions'], df['Rd_Cond'], 
                         normalize='index'), 
             annot=True, fmt='.02f', cmap='coolwarm',
@@ -651,27 +643,28 @@ sns.heatmap(pd.crosstab(df['atmospheric_conditions'], df['Rd_Cond'],
 plt.xlabel('Road Condition');
 plt.ylabel('Atmospheric Condition');
 plt.title('Relationship between Weather and Road Condition', pad=10);
-plt.xticks(rotation=45);
+plt.xticks(rotation=45)
+#plt.savefig('./figures/Relationship between Weather and Road Condition.png');
 
 plt.figure(figsize = (8,5));
 sns.countplot( y = df['atmospheric_conditions']);
 plt.yticks(ticks=list(range(10)),labels=['Unknown', 'Normal', 'Light rain', 'Heavy rain', 'Snow - Hail',
                 'Fog / smoke', 'Strong wind / storm', 'Dazzling weather',
                 'Overcast weather', 'Other']);
-#plt.title('Atmospheric Conditions with most Accidents', pad=10);
-#plt.yticks(ticks=list(range(0,11)),labels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
-#                                           'Mud','Icy','Greasy (Oil)', 'Other']);
-#plt.ylabel('Road Conditions');
-#ylim(top=1.5);
-#plt.xlabel('Accident Count ( in Millions )');
-#locs,labels = xticks();
-#xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+plt.title('Atmospheric Conditions with most Accidents', pad=10);
+plt.yticks(ticks=list(range(0,11)),labels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
+                                           'Mud','Icy','Greasy (Oil)', 'Other']);
+plt.ylabel('Road Conditions');
+ylim(top=1.5);
+plt.xlabel('Accident Count ( in Millions )');
+locs,labels = xticks();
+xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 
 # ## Locations
 #
 # Are there areas of the road that are particularly often associated with accidents?
 
-plt.figure(figsize = (8,5));
+plt.figure(figsize = (13,6));
 sns.countplot( y = df.Pos_Acc);
 plt.title('Accident Locations', pad=10);
 plt.ylabel('Road Locations');
@@ -682,7 +675,8 @@ ylim(top=1.5);
 plt.xlabel('Accident Count ( in Millions )')
 locs,labels = xticks();
 xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
-xlim(left=0);
+xlim(left=0)
+#plt.savefig('./figures/Accidents by Location.png');
 
 #
 # By far the most accidents just happend directly on the carriage way.
@@ -702,6 +696,7 @@ plt.xlabel('Accident Count ( in Millions )')
 locs,labels = xticks();
 xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 xlim(left=0);
+#plt.savefig('./figures/Nb of Accidents per Crashed Obstacle.png')
 
 #
 # Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
