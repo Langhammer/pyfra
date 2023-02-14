@@ -62,7 +62,10 @@ def run():
         
         
         ### Data import and cleaning
-
+        * Introduction to the dataset
+        * Features renaming and fixing inconsistency 
+        * Handling missing values
+        * One-Hot Encoding of Categorical Features
         
 
         '''
