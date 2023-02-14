@@ -281,7 +281,7 @@ def run():
             #st.write(len(svc_pred_counts))
             predictions_df = pd.DataFrame(index=log_reg_pred, data={'P log. Reg.': log_reg_pred_counts*100/n_sample}) \
                                         .sort_values(by='P log. Reg.', ascending=False)
-            predictions_df.loc[:,'P log. Reg.'] = predictions_df['P log. Reg.'].apply(func=(lambda p: str(p)+' %'))
+            predictions_df.loc[:,'P log. Reg.'] = predictions_df.loc[:,'P log. Reg.'].apply(func=(lambda p: str(p)+' %'))
             predictions_df.rename(index={1: 'Unharmed', 2: 'Killed', 3: 'Hospitalized', 4: 'Lightly Injured'}, inplace=True)
             st.dataframe( predictions_df )
             
