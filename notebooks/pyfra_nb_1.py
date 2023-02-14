@@ -333,7 +333,7 @@ fig, ax = plt.subplots(figsize=(33,20));
 sns.heatmap(cm, annot = True, ax = ax, cmap='coolwarm', linewidths = 0.40);
 fontsize = 40
 plt.title("Heatmap of Correlation for all Variables with the Target", fontdict={'fontsize': fontsize}, pad=40);
-plt.savefig('./Github/pyfra/figures/corr_heatmap.png')
+#plt.savefig('./Github/pyfra/figures/corr_heatmap.png')
 
 # This heat map is intended to provide an overall view of where strong correlations occur .
 
@@ -343,22 +343,22 @@ plt.savefig('./Github/pyfra/figures/corr_heatmap.png')
 fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(users.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Users', pad=10)
-plt.savefig('./Github/pyfra//figures/corr_heatmap_USERS.png');
+#plt.savefig('./Github/pyfra//figures/corr_heatmap_USERS.png');
 
 fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(places.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Places', pad=10)
-plt.savefig('./Github/pyfra//figures/corr_heatmap_PLACES.png');
+#plt.savefig('./Github/pyfra//figures/corr_heatmap_PLACES.png');
 
 fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(vehicles.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Vehicles', pad=10)
-plt.savefig('./Github/pyfra//figures/corr_heatmap_VEHICULES.png');
+#plt.savefig('./Github/pyfra//figures/corr_heatmap_VEHICLES.png');
 
 fig, S = plt.subplots(figsize=(14,10));
 sns.heatmap(characteristics.corr() , annot = True, cmap='coolwarm',linewidths = 0.40);
 plt.title('Heatmap for Characteristics', pad=10)
-plt.savefig('./Github/pyfra//figures/corr_heatmap_CHARACTERISTICS.png');
+#plt.savefig('./Github/pyfra//figures/corr_heatmap_CHARACTERISTICS.png');
 # -
 
 # ## Datetime
@@ -379,7 +379,7 @@ plt.xticks(ticks=day_time_ticks,
 plt.xlabel('Time of Day')
 plt.xlim((0,2400))
 plt.title('Distribution of Accidents by Daytime', pad = 10)
-plt.savefig('./Github/pyfra//figures/Accidents by Daytime.png');
+#plt.savefig('./Github/pyfra//figures/Accidents by Daytime.png');
 
 
 # The plot shows, that the temporal distribution is different on the weekends: On weekends, there are far more accidents between 19:00 and 07:00, while there are more accidents on weekday around 09:00 and 18:00. These differences align very well with our hypothesis. We did not expect the peak on weekends around 18:00, though. 
@@ -420,12 +420,12 @@ departments_2019_df.dropna(axis=0,subset='n_accidents_per_10k', inplace=True)
 departments_2019_df.sort_values(by='n_accidents_per_10k').tail(10).plot.barh(x='DEP',y='n_accidents_per_10k',    
     figsize=(11,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
 plt.title('Number of Accidents per 10,000 habitants (2019)',pad = 10)
-plt.savefig('./figures/Nb accidents by departement 2019_1.png');
+#plt.savefig('./figures/Nb accidents by departement 2019_1.png');
 
 departments_2019_df.sort_values(by='n_accidents_per_10k').head(10).plot.barh(x='DEP',y='n_accidents_per_10k',    
     figsize=(12,5), grid=False, title='Number of Accidents per 10,000 habitants (2019)', legend=False);
 plt.title('Number of Accidents per 10,000 habitants (2019)',pad = 10)
-plt.savefig('./figures/Nb accidents by departement_2019_2.png');
+#plt.savefig('./figures/Nb accidents by departement_2019_2.png');
 # -
 
 plt.figure(figsize=(7,5));
@@ -436,7 +436,7 @@ locs,labels = xticks();
 xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 xlim(left=0);
 plt.ylabel('Number of Accidents in the Department')
-plt.savefig('./figures/Accidents in terms of population 2009.png');
+#plt.savefig('./figures/Accidents in terms of population 2009.png');
 
 
 #
@@ -451,7 +451,7 @@ sns.countplot(y = "month" , data = characteristics)
 plt.xlabel('Total Number of Accidents');
 plt.ylabel('Month');
 plt.title('Distribution of Accidents by Month', pad=10)
-plt.savefig('./figures/Accidents per month.png');
+#plt.savefig('./figures/Accidents per month.png');
 
 
 plt.figure(figsize=(7,7));
@@ -459,7 +459,7 @@ sns.countplot(y = "year" , data = characteristics)
 plt.xlabel('Total Number of Accidents');
 plt.ylabel('Year');
 plt.title('Distribution of Accidents by Year', pad=10)
-plt.savefig('./figures/Accidents per Year.png');
+#plt.savefig('./figures/Accidents per Year.png');
 
 # We can see that the number of accidents per month is almost uniform.
 #
@@ -482,7 +482,7 @@ locs,labels = yticks();
 yticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 ylim(bottom=0);
 plt.title('Distribution of Accidents by Gender', pad=10)
-plt.savefig('./figures/Accidents by Gender.png');
+#plt.savefig('./figures/Accidents by Gender.png');
 
 # We see that the amount of Males doing accidents is almost double that of females, probably because the amount of males who generally drive are higher than females, or because males are reckless drivers.
 
@@ -503,7 +503,7 @@ plt.locator_params(axis='x', nbins=11)
 plt.ylabel('Total Number of Drivers');
 plt.title('Distribution of Accidents by Age', pad=10);
 plt.ticklabel_format(style='plain', axis='y')
-plt.savefig('./figures/Accidents per Age.png');
+#plt.savefig('./figures/Accidents per Age.png');
 
 # We confirm our theory that the number of accident victims generally decrease with age
 
@@ -524,7 +524,7 @@ plt.pie(x=users.grav.value_counts(),
 plt.title("Pie Chart for Severity of accidents");
 plt.legend(['Unharmed', 'Slightly Injured',
         'Hospitalized','Killed']);
-plt.savefig('./figures/Nb Accidents by Severity.png');
+#plt.savefig('./figures/Nb Accidents by Severity.png');
 
 # Conclusion: We can see that almost 20% of people are Hospitalized and only a very small amount is killed,and hence we can deduce that the target variable is unbalanced.
 
@@ -535,11 +535,11 @@ plt.savefig('./figures/Nb Accidents by Severity.png');
 df.sexe.replace(to_replace=-1,value=1,inplace=True)
 df.grav.replace(to_replace=-1,value=1,inplace=True)
 
-plt.figure(figsize = (12,12))
-sns.catplot(x='grav' , y='Age' ,hue = "sexe" , kind = 'violin' , split = True , data = df)
-plt.title("Violen Chart showing Severity in terms of Age per Sex")
-ax.set(xlabel='Severity')
-plt.savefig('./figures/Violen Chart.png');
+plt.figure(figsize = (12,12));
+sns.catplot(x='grav' , y='Age' ,hue = "sexe" , kind = 'violin' , split = True , data = df);
+plt.title("Violen Chart showing Severity in terms of Age per Sex");
+ax.set(xlabel='Severity');
+#plt.savefig('./figures/Violen Chart.png');
 
 # We can observe that the Age range is quite unifrom across all grav types for both sexes
 
@@ -558,8 +558,8 @@ plt.ylabel('Road Categories');
 locs,labels = xticks();
 xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 ylim(top=0.5);
-xlim(left=0)
-plt.savefig('./figures/Accidents per Road Category.png');
+xlim(left=0);
+#plt.savefig('./figures/Accidents per Road Category.png');
 
 #
 # Most accidents seem to occur in urban areas. Reasons for this can be oncoming traffic, other road users such as cyclists, narrow or dirty lanes.
@@ -580,7 +580,7 @@ locs,labels = yticks();
 yticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 ylim(bottom=0);
 xlim(left=0.6)
-plt.savefig('./figures/Accidents by Traffic Direction.png');
+#plt.savefig('./figures/Accidents by Traffic Direction.png');
 
 
 # Legend:
@@ -609,7 +609,7 @@ plt.title('Road Conditions with most Accidents', pad=10);
 plt.yticks(ticks=list(range(0,11)),labels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
                                            'Mud','Icy','Greasy (Oil)', 'Other']);
 plt.ylabel('Road Condition');
-#plt.ylim(top=1.5);
+plt.ylim(top=1.5);
 plt.xlabel('Accident Count (in Millions)');
 locs,labels = plt.xticks();
 plt.xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
@@ -621,9 +621,9 @@ plt.yticks(ticks=list(range(10)),labels=['Unknown', 'Normal', 'Light rain', 'Hea
                 'Overcast', 'Other']);
 plt.ylabel('Atmospheric Condition')
 plt.xlabel(None)
-plt.savefig('./figures/Accidents by Weather conditions.png')
-#plt.xlabel('Accident Count (in Millions)');
-#plt.xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+#plt.savefig('./figures/Accidents by Weather conditions.png')
+plt.xlabel('Accident Count (in Millions)');
+plt.xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 ax2.xaxis.tick_top()
 #fig.tight_layout(w_pad=2)
 # -
@@ -644,21 +644,21 @@ plt.xlabel('Road Condition');
 plt.ylabel('Atmospheric Condition');
 plt.title('Relationship between Weather and Road Condition', pad=10);
 plt.xticks(rotation=45)
-plt.savefig('./figures/Relationship between Weather and Road Condition.png');
+#plt.savefig('./figures/Relationship between Weather and Road Condition.png');
 
 plt.figure(figsize = (8,5));
 sns.countplot( y = df['atmospheric_conditions']);
 plt.yticks(ticks=list(range(10)),labels=['Unknown', 'Normal', 'Light rain', 'Heavy rain', 'Snow - Hail',
                 'Fog / smoke', 'Strong wind / storm', 'Dazzling weather',
                 'Overcast weather', 'Other']);
-#plt.title('Atmospheric Conditions with most Accidents', pad=10);
-#plt.yticks(ticks=list(range(0,11)),labels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
-#                                           'Mud','Icy','Greasy (Oil)', 'Other']);
-#plt.ylabel('Road Conditions');
-#ylim(top=1.5);
-#plt.xlabel('Accident Count ( in Millions )');
-#locs,labels = xticks();
-#xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
+plt.title('Atmospheric Conditions with most Accidents', pad=10);
+plt.yticks(ticks=list(range(0,11)),labels=['Nans','Failure','Normal','Wet','Puddles','Flooded','Snow-Convered',
+                                           'Mud','Icy','Greasy (Oil)', 'Other']);
+plt.ylabel('Road Conditions');
+ylim(top=1.5);
+plt.xlabel('Accident Count ( in Millions )');
+locs,labels = xticks();
+xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 
 # ## Locations
 #
@@ -676,7 +676,7 @@ plt.xlabel('Accident Count ( in Millions )')
 locs,labels = xticks();
 xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 xlim(left=0)
-plt.savefig('./figures/Accidents by Location.png');
+#plt.savefig('./figures/Accidents by Location.png');
 
 #
 # By far the most accidents just happend directly on the carriage way.
@@ -696,7 +696,7 @@ plt.xlabel('Accident Count ( in Millions )')
 locs,labels = xticks();
 xticks(locs, map(lambda x: "%.1f" % x, locs*1e-6));
 xlim(left=0);
-plt.savefig('./figures/Nb of Accidents per Crashed Obstacle.png')
+#plt.savefig('./figures/Nb of Accidents per Crashed Obstacle.png')
 
 #
 # Most crashed object during car accidents were other vehicles. Followed by no obstacle crashed and crashed pedestrians.
