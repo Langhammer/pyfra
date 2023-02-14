@@ -147,6 +147,10 @@ result_metrics = pyfra.store_metrics(model=svc, model_name='Support Vector Machi
 # Show the interim result                               
 result_metrics
 
+pyfra.print_confusion_matrix(y_test, y_svc, 
+                            model_name='Support Vector Classifier',
+                            filename='svc_conf')
+
 # ## Random Forest
 # ### Setup and GridSearch
 
@@ -180,6 +184,10 @@ result_metrics = pyfra.store_metrics(model=rf, model_name='Random Forest',
                               
 result_metrics
 # -
+
+pyfra.print_confusion_matrix(y_test, y_rf, 
+                            model_name='Random Fores Classifier',
+                            filename='rf_conf')
 
 # # Logistic Regression
 
@@ -222,6 +230,10 @@ result_metrics = pyfra.store_metrics(model=LR, model_name='Logistic Regression',
                                result_df=result_metrics)
 # Show the interim result                               
 result_metrics
+
+pyfra.print_confusion_matrix(y_test, y_LR, 
+                            model_name='Logistic Regression Classifier',
+                            filename='log_reg_conf')
 
 # # Decision Tree
 
@@ -269,6 +281,10 @@ plot_tree(dt,max_depth=2, fontsize=8, feature_names=k_best_feature_names);
 # The plot shows that the most important feature (according to the decision tree) is built-up_area. This binary variable cointains the information, whether the accident happened in a built-up area. We already showed in the first notebook that there seems to be a positive relation between the density of an area and it's **number** of accident. The decision tree here suggests that the **severity** is also affected by a dense population.
 # -
 
+pyfra.print_confusion_matrix(y_test, y_dt, 
+                            model_name='Decision Tree',
+                            filename='dt_conf')
+
 # # Application of Advanced Models
 
 
@@ -285,6 +301,8 @@ result_metrics = pyfra.store_metrics(model=stacking_clf, model_name='Stacking',
                                result_df=result_metrics)
 result_metrics
 # -
+# The confusion matrix of the stacking classifier will be analyzed in detail below.
+
 # # ADA Boosting
 
 #Trying ADA boosting on LogisticRegresiion
@@ -297,6 +315,10 @@ result_metrics = pyfra.store_metrics(model=ADA_Boost, model_name='ADA Boost',
                                result_df=result_metrics)
 # Show the interim result                               
 result_metrics
+
+pyfra.print_confusion_matrix(y_test, y_ada, 
+                            model_name='AdaBoost',
+                            filename='ada_conf')
 
 #
 # # Results and Conclusion
@@ -313,17 +335,11 @@ plt.title('$F_1$ Score of different ML models');
 # 2. The classifiers based on logistic regression and decision trees have low scores, are not necessarily unfit for the dataset, as they offer more interpretability than the advanced models. This interpretability could help e.g. policy makers to take measures in order to reduce the severity of road accidents.
 # 3. A strong correlation between severity and safety measurements (e.g. safety belt) is expected. Unfortunately, this feature could not be used because useful is only available for the last years (2018--).
 
-# ## Analysis of the Correlation Matrix
+# ## Analysis of the Confusion Matrix
 
-cm = pd.crosstab(y_test, y_stacking, rownames=['observations'], colnames=['predictions']);
-severity_categories = ("Unscathed","Killed", "Hospitalized\nwounded", "Light injury")
-plt.figure(figsize=(4,4))
-plt.title('Correlation Matrix of the Stacking Classifier');
-sns.heatmap(cm, cmap='RdYlGn', annot=True);
-plt.xticks(np.array(range(4))+0.5, labels=severity_categories, rotation=45);
-plt.yticks(np.array(range(4))+0.5, labels=severity_categories, rotation=0);
-plt.savefig('../figures/stacking_conf.png', bbox_inches='tight');
-plt.savefig('../figures/stacking_conf.svg', bbox_inches='tight');
+pyfra.print_confusion_matrix(y_test, y_stacking, 
+                            model_name='Stacking Classifier',
+                            filename='stacking_conf')
 
 # The correlation matrix of the stacking classifier shows that some categories are more difficult to predict than others. The category "Hospitalized wounded" seems to be the most difficult to predict, as the predictions seem to be quite evenly distributed between the different classes. We can quantify these difficulties by looking at the scores for accuracy and recall for each category.
 
@@ -343,6 +359,3 @@ from joblib import dump, load
 dump(LR, '../models/log_reg_clf.joblib')
 dump(svc, '../models/svc.joblib')
 dump(stacking_clf, '../models/stacking_clf.joblib')
-# -
-
-
