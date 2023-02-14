@@ -51,43 +51,16 @@ def run():
     if page==pages[1]:
         st.header('Data Introduction and Cleaning')
         
-        
+        st.write(
         '''
         ### Data Source
         The data used for this analysis is found in the official French goverment records and is split
          each year into 4 categories that include csv files of: Users, Characteristics, Vehicules, and Location.
 
         [Goverment Database](https://www.data.gouv.fr/en/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/)
-        
-        
-        ### Data import and cleaning
-        * Introduction to the dataset
-        * Features renaming and fixing inconsistency 
-        * Handling missing values
-        * One-Hot Encoding of Categorical Features
-        
+        ''')
 
-        * The Data present was of large volume
-        * There was incoherence in the variables across the csv files and years
-        * A high percentage of missing values
-
-
-        '''
-    
-        image = Image.open("./figures/Nan.png")
-        st.image(image)
-
-        st.header('Data improvement for modelisation')
-        
-        '''
-        ##### Several Actions were taken to clean but preserve the data
-        * Replace with Mode,Mean
-        * Drop Certain columns
-        * Feature Engineering to create new common variables (security...)
-
-        '''
-
-        st.components.v1.html(height=3000, width=2500, html="""
+        st.components.v1.html(height=300, width=2500, html="""
         <style type="text/css">
         .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
         .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
@@ -159,6 +132,26 @@ def run():
         </tbody>
         </table>
         """)
+
+        st.write('''
+
+        ### Data import and cleaning
+        * Introduction to the dataset
+        * Features renaming and fixing inconsistency 
+        * Handling missing values
+        * One-Hot Encoding of Categorical Features
+        
+
+        * The Data present was of large volume
+        * There was incoherence in the variables across the csv files and years
+        * A high percentage of missing values
+
+
+        ''')
+        st.header('Data improvement for modeling')
+
+        #image = Image.open("./figures/Nan.png")
+        st.image("figures/Nan.png")
 
     if page==pages[2]:
         st.write('# Data Visualization')
