@@ -186,6 +186,11 @@ def run():
 
         if subpage==subpages[0]:
             st.subheader(subpages[0])
+            st.markdown("""
+            * 4 Basic Models
+            * 2 Advanced Models
+            * 
+            """)
             result_metrics = pd.read_pickle('./data/nb_3_results.p')
 
             st.write('## $f_1$ score by model')
@@ -198,7 +203,9 @@ def run():
             st.altair_chart(res_chart)
 
             # Display the metrics table
-            st.dataframe(data=result_metrics)
+            #st.dataframe(data=result_metrics)
+
+
 
         if subpage==subpages[1]:
             st.subheader(subpages[1])
@@ -278,6 +285,12 @@ def run():
 
         if subpage==subpages[2]:
             st.subheader(subpages[2])
+            tab1, tab2 = st.tabs(['Rows', 'Columns'])
+            with tab1:
+                st.image('figures/n_rows_f1.png')
+            with tab2:
+                st.image('figures/k_features_f1.png')
+                
 
         if subpage==subpages[3]:
             st.subheader(subpages[3])
