@@ -323,7 +323,7 @@ def run():
             st.write('## Remodeling with Imbalanced Datasets')
             
 
-            st.write('### Model Comparison')
+            st.write('#### Model Comparison')
             result_metrics = pd.read_pickle('./data/nb_4_results.p')
 
             st.write('## $f_1$ score by model')
@@ -335,8 +335,9 @@ def run():
             # Plot the f1 scores
             st.altair_chart(res_chart)
 
-            st.write('### Analysis of the results according to the severity variables')
-
+            # Plot confusion matrix
+            st.subheader('Confusion Matrix for imbalanced dataset')
+            st.image('figures/Imb_LR.png')
 
     if page==pages[4]:
         st.write('# Conclusion')
