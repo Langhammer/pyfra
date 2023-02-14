@@ -221,9 +221,7 @@ def run():
         if subpage==subpages[1]:
             st.subheader(subpages[1])
             log_reg_preprocessing_pipe = load('models/log_reg_preprocessing_pipeline.joblib')
-            svc_preprocessing_pipe = load('models/svc_preprocessing_pipeline.joblib')
             log_reg_clf = load('models/log_reg_nb5.joblib')
-            svc = load('models/svc_nb5.joblib')
 
             # Select Department
             date = st.date_input("Select Date", datetime.date(2022,2,14))
@@ -281,15 +279,9 @@ def run():
             #st.write(log_reg_clf.feature_names_in_)
             log_reg_pred, log_reg_pred_counts = np.unique(log_reg_clf.predict(example_df), return_counts=True)
             #st.write(len(svc_pred_counts))
-            svc_pred, svc_pred_counts = np.unique(svc.predict(example_df), return_counts=True)
-            log_reg_predictions_df = pd.DataFrame(index=log_reg_pred, data={'P log. Reg.': log_reg_pred_counts*100/n_sample}) \
+            predictions_df = pd.DataFrame(index=log_reg_pred, data={'P log. Reg.': log_reg_pred_counts*100/n_sample}) \
                                         .sort_values(by='P log. Reg.', ascending=False)
-            svc_predictions_df = pd.DataFrame(index=svc_pred, data={'P SVC': svc_pred_counts*100/n_sample}) \
-                                        .sort_values(by='P SVC', ascending=False)  
-            predictions_df = pd.merge(log_reg_predictions_df, svc_predictions_df, how='outer', left_index=True, right_index=True) \
-                                    .fillna(0)
             predictions_df['P log. Reg.'] = predictions_df['P log. Reg.'].apply(func=(lambda p: str(p)+' %'))
-            predictions_df['P SVC'] = predictions_df['P SVC'].apply(func=(lambda p: str(p)+' %'))
             predictions_df.rename(index={1: 'Unharmed', 2: 'Killed', 3: 'Hospitalized', 4: 'Lightly Injured'}, inplace=True)
             st.dataframe( predictions_df )
             
