@@ -80,30 +80,28 @@ def run():
         <table class="tg">
         <thead>
         <tr>
-            <th class="tg-0lax" colspan="4">Characteristics</th>
+            <th class="tg-0lax" colspan="3">Characteristics</th>
             <th class="tg-0lax" colspan="2">Places</th>
             <th class="tg-0lax" colspan="3">Vehicles</th>
             <th class="tg-0lax" colspan="3">Users</th>
         </tr>
                 <tr>
             <td class="tg-0lax">Accident ID</td>
-            <td class="tg-0lax">Department</td>
             <td class="tg-0lax">Weather</td>
-            <td class="tg-0lax">Collision Type</td>
+            <td class="tg-0lax">Collision <br> Type</td>
             <td class="tg-0lax"># Lanes</td>
             <td class="tg-0lax">Road Condition</td>
             <td class="tg-0lax">Vehicle ID</td>
             <td class="tg-0lax"># Passengers</td>
-            <td class="tg-0lax">Obstacle type</td>
+            <td class="tg-0lax">Obstacle <br> type</td>
             <td class="tg-0lax">Sex</td>
-            <td class="tg-0lax">Year of Birth</td>
+            <td class="tg-0lax">Year of <br> Birth</td>
             <td class="tg-0lax">Severity</td>
         </tr>
         </thead>
         <tbody>
         <tr>
             <td class="tg-0lax" rowspan="5">01</td>
-            <td class="tg-0lax" rowspan="5">33</td>
             <td class="tg-0lax" rowspan="5">Light Rain</td>
             <td class="tg-0lax" rowspan="5">Frontal</td>
             <td class="tg-0lax" rowspan="5">2</td>
