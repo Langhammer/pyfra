@@ -62,7 +62,10 @@ def run():
         
         
         ### Data import and cleaning
-
+        * Introduction to the dataset
+        * Features renaming and fixing inconsistency 
+        * Handling missing values
+        * One-Hot Encoding of Categorical Features
         
 
         '''
@@ -80,30 +83,28 @@ def run():
         <table class="tg">
         <thead>
         <tr>
-            <th class="tg-0lax" colspan="4">Characteristics</th>
+            <th class="tg-0lax" colspan="3">Characteristics</th>
             <th class="tg-0lax" colspan="2">Places</th>
             <th class="tg-0lax" colspan="3">Vehicles</th>
             <th class="tg-0lax" colspan="3">Users</th>
         </tr>
                 <tr>
             <td class="tg-0lax">Accident ID</td>
-            <td class="tg-0lax">Department</td>
             <td class="tg-0lax">Weather</td>
-            <td class="tg-0lax">Collision Type</td>
+            <td class="tg-0lax">Collision <br> Type</td>
             <td class="tg-0lax"># Lanes</td>
             <td class="tg-0lax">Road Condition</td>
             <td class="tg-0lax">Vehicle ID</td>
             <td class="tg-0lax"># Passengers</td>
-            <td class="tg-0lax">Obstacle type</td>
+            <td class="tg-0lax">Obstacle <br> type</td>
             <td class="tg-0lax">Sex</td>
-            <td class="tg-0lax">Year of Birth</td>
+            <td class="tg-0lax">Year of <br> Birth</td>
             <td class="tg-0lax">Severity</td>
         </tr>
         </thead>
         <tbody>
         <tr>
             <td class="tg-0lax" rowspan="5">01</td>
-            <td class="tg-0lax" rowspan="5">33</td>
             <td class="tg-0lax" rowspan="5">Light Rain</td>
             <td class="tg-0lax" rowspan="5">Frontal</td>
             <td class="tg-0lax" rowspan="5">2</td>
@@ -188,6 +189,11 @@ def run():
 
         if subpage==subpages[0]:
             st.subheader(subpages[0])
+            st.markdown("""
+            * 4 Basic Models
+            * 2 Advanced Models
+            * 
+            """)
             result_metrics = pd.read_pickle('./data/nb_3_results.p')
 
             st.write('## $f_1$ score by model')
@@ -200,7 +206,9 @@ def run():
             st.altair_chart(res_chart)
 
             # Display the metrics table
-            st.dataframe(data=result_metrics)
+            #st.dataframe(data=result_metrics)
+
+
 
         if subpage==subpages[1]:
             st.subheader(subpages[1])
@@ -280,6 +288,12 @@ def run():
 
         if subpage==subpages[2]:
             st.subheader(subpages[2])
+            tab1, tab2 = st.tabs(['Rows', 'Columns'])
+            with tab1:
+                st.image('figures/n_rows_f1.png')
+            with tab2:
+                st.image('figures/k_features_f1.png')
+                
 
         if subpage==subpages[3]:
             st.subheader(subpages[3])
