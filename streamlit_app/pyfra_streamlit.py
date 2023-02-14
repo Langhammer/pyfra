@@ -68,6 +68,81 @@ def run():
         '''
         )
 
+        st.components.v1.html(height=3000, width=2500, html="""
+        <style type="text/css">
+        .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
+        .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+        font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+        .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+        font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+        .tg .tg-0lax{text-align:left;vertical-align:top}
+        </style>
+        <table class="tg">
+        <thead>
+        <tr>
+            <th class="tg-0lax" colspan="4">Characteristics</th>
+            <th class="tg-0lax" colspan="2">Places</th>
+            <th class="tg-0lax" colspan="3">Vehicles</th>
+            <th class="tg-0lax" colspan="3">Users</th>
+        </tr>
+                <tr>
+            <td class="tg-0lax">Accident ID</td>
+            <td class="tg-0lax">Department</td>
+            <td class="tg-0lax">Weather</td>
+            <td class="tg-0lax">Collision Type</td>
+            <td class="tg-0lax"># Lanes</td>
+            <td class="tg-0lax">Road Condition</td>
+            <td class="tg-0lax">Vehicle ID</td>
+            <td class="tg-0lax"># Passengers</td>
+            <td class="tg-0lax">Obstacle type</td>
+            <td class="tg-0lax">Sex</td>
+            <td class="tg-0lax">Year of Birth</td>
+            <td class="tg-0lax">Severity</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="tg-0lax" rowspan="5">01</td>
+            <td class="tg-0lax" rowspan="5">33</td>
+            <td class="tg-0lax" rowspan="5">Light Rain</td>
+            <td class="tg-0lax" rowspan="5">Frontal</td>
+            <td class="tg-0lax" rowspan="5">2</td>
+            <td class="tg-0lax" rowspan="5">Wet</td>
+            <td class="tg-0lax" rowspan="3">01</td>
+            <td class="tg-0lax" rowspan="3">3</td>
+            <td class="tg-0lax" rowspan="3">Vehicle</td>
+            <td class="tg-0lax">Male</td>
+            <td class="tg-0lax">1985</td>
+            <td class="tg-0lax">Hospitalized</td>
+        </tr>
+        <tr>
+            <td class="tg-0lax">Female</td>
+            <td class="tg-0lax">1988</td>
+            <td class="tg-0lax">Unharmed</td>
+        </tr>
+        <tr>
+            <td class="tg-0lax">Female</td>
+            <td class="tg-0lax">1960</td>
+            <td class="tg-0lax">Unharmed</td>
+        </tr>
+        <tr>
+            <td class="tg-0lax" rowspan="2">02</td>
+            <td class="tg-0lax" rowspan="2">2</td>
+            <td class="tg-0lax" rowspan="2">Vehicle</td>
+            <td class="tg-0lax">Male</td>
+            <td class="tg-0lax">1972</td>
+            <td class="tg-0lax">Unharmed</td>
+        </tr>
+        <tr>
+            <td class="tg-0lax">Female</td>
+            <td class="tg-0lax">1979</td>
+            <td class="tg-0lax">Unharmed</td>
+        </tr>
+
+        </tbody>
+        </table>
+        """)
+
     if page==pages[2]:
         st.write('# Data Visualization')
         subpages = ['Hypothesis 1', 'Hypothesis 2', 'Hypothesis 3', 'Hypothesis 4' , 'Hypothesis 5' , 'Hypothesis 6']
