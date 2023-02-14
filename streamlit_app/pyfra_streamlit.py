@@ -51,7 +51,7 @@ def run():
 
     if page==pages[1]:
         st.header('Data Introduction and Cleaning')
-        st.markdown(
+        
         
         '''
         ### Data Source
@@ -66,7 +66,9 @@ def run():
         
 
         '''
-        )
+        st.header("Undestanding The Data")
+        image = Image.open("./figures/Nan.svg")
+        st.image(image)
 
     if page==pages[2]:
         st.write('# Data Visualization')
