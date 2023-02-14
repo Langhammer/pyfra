@@ -1,7 +1,11 @@
 """This module provides classes and functions available for all notebooks of the pyfra project."""
 
 import pandas as pd
+import numpy as np
 from sklearn.metrics import f1_score, accuracy_score, recall_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 def df_testing_info(df):
     """Returns a DataFrame that describes the given DataFrame"""
@@ -28,3 +32,15 @@ def store_metrics(model_name, model, y_test, y_pred, result_df=None):
     result_df.loc[model_name, 'accuracy'] = accuracy_score(y_true=y_test, y_pred=y_pred)
     result_df.loc[model_name, 'recall'] = recall_score(y_true=y_test, y_pred=y_pred, average='weighted')
     return result_df
+
+def print_confusion_matrix(y_true, y_pred, model_name, filename=None, figsize=(4,4)):
+    cm = pd.crosstab(y_true, y_pred, rownames=['observations'], colnames=['predictions']);
+    severity_categories = ("Unscathed","Killed", "Hospitalized\nwounded", "Light injury")
+    plt.figure(figsize=figsize)
+    plt.title('Confusion Matrix of the '+ model_name);
+    sns.heatmap(cm, cmap='RdYlGn', annot=True);
+    plt.xticks(np.array(range(4))+0.5, labels=severity_categories, rotation=45);
+    plt.yticks(np.array(range(4))+0.5, labels=severity_categories, rotation=0);
+    if filename is not None:
+        plt.savefig('../figures/'+filename+'.png', bbox_inches='tight');
+        plt.savefig('../figures/'+filename+'.svg', bbox_inches='tight');

@@ -201,7 +201,7 @@ def run():
             """)
             result_metrics = pd.read_pickle('./data/nb_3_results.p')
 
-            st.write('## $f_1$ score by model')
+            st.subheader('$f_1$ Score by Model')
             res_chart = alt.Chart(result_metrics).mark_bar().encode(
                 x='f1',
                 y="model"
@@ -211,7 +211,22 @@ def run():
             st.altair_chart(res_chart)
 
             # Plot confusion matrix
-            st.image('figures/stacking_conf.png')
+            st.subheader('Confusion Matrices for each Model')
+            tab_svc, tab_log_reg, tab_dt, tab_rf, tab_ada, tab_stacking = \
+                st.tabs(['SVC', 'Logistic Regression', 'Decision Tree', 
+                         'Random Forest', 'AdaBoost','Stacking'])
+            with tab_svc:
+                st.image('figures/svc_conf.png')
+            with tab_log_reg:
+                st.image('figures/log_reg_conf.png')
+            with tab_dt:
+                st.image('figures/dt_conf.png')
+            with tab_rf:
+                st.image('figures/rf_conf.png')                
+            with tab_ada:
+                st.image('figures/ada_conf.png')                                                
+            with tab_stacking:
+                st.image('figures/stacking_conf.png')
 
             # Display the metrics table
             #st.dataframe(data=result_metrics)
