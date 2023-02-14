@@ -1,8 +1,11 @@
+import datetime
 import numpy as np
 import pandas as pd
 import streamlit as st
 import altair as alt
 from PIL import Image
+from joblib import load
+from sklearn.pipeline import Pipeline
 
 def run():
     st.set_page_config(
@@ -65,6 +68,81 @@ def run():
         '''
         )
 
+        st.components.v1.html(height=3000, width=2500, html="""
+        <style type="text/css">
+        .tg  {border-collapse:collapse;border-color:#ccc;border-spacing:0;}
+        .tg td{background-color:#fff;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+        font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+        .tg th{background-color:#f0f0f0;border-color:#ccc;border-style:solid;border-width:1px;color:#333;
+        font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+        .tg .tg-0lax{text-align:left;vertical-align:top}
+        </style>
+        <table class="tg">
+        <thead>
+        <tr>
+            <th class="tg-0lax" colspan="4">Characteristics</th>
+            <th class="tg-0lax" colspan="2">Places</th>
+            <th class="tg-0lax" colspan="3">Vehicles</th>
+            <th class="tg-0lax" colspan="3">Users</th>
+        </tr>
+                <tr>
+            <td class="tg-0lax">Accident ID</td>
+            <td class="tg-0lax">Department</td>
+            <td class="tg-0lax">Weather</td>
+            <td class="tg-0lax">Collision Type</td>
+            <td class="tg-0lax"># Lanes</td>
+            <td class="tg-0lax">Road Condition</td>
+            <td class="tg-0lax">Vehicle ID</td>
+            <td class="tg-0lax"># Passengers</td>
+            <td class="tg-0lax">Obstacle type</td>
+            <td class="tg-0lax">Sex</td>
+            <td class="tg-0lax">Year of Birth</td>
+            <td class="tg-0lax">Severity</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="tg-0lax" rowspan="5">01</td>
+            <td class="tg-0lax" rowspan="5">33</td>
+            <td class="tg-0lax" rowspan="5">Light Rain</td>
+            <td class="tg-0lax" rowspan="5">Frontal</td>
+            <td class="tg-0lax" rowspan="5">2</td>
+            <td class="tg-0lax" rowspan="5">Wet</td>
+            <td class="tg-0lax" rowspan="3">01</td>
+            <td class="tg-0lax" rowspan="3">3</td>
+            <td class="tg-0lax" rowspan="3">Vehicle</td>
+            <td class="tg-0lax">Male</td>
+            <td class="tg-0lax">1985</td>
+            <td class="tg-0lax">Hospitalized</td>
+        </tr>
+        <tr>
+            <td class="tg-0lax">Female</td>
+            <td class="tg-0lax">1988</td>
+            <td class="tg-0lax">Unharmed</td>
+        </tr>
+        <tr>
+            <td class="tg-0lax">Female</td>
+            <td class="tg-0lax">1960</td>
+            <td class="tg-0lax">Unharmed</td>
+        </tr>
+        <tr>
+            <td class="tg-0lax" rowspan="2">02</td>
+            <td class="tg-0lax" rowspan="2">2</td>
+            <td class="tg-0lax" rowspan="2">Vehicle</td>
+            <td class="tg-0lax">Male</td>
+            <td class="tg-0lax">1972</td>
+            <td class="tg-0lax">Unharmed</td>
+        </tr>
+        <tr>
+            <td class="tg-0lax">Female</td>
+            <td class="tg-0lax">1979</td>
+            <td class="tg-0lax">Unharmed</td>
+        </tr>
+
+        </tbody>
+        </table>
+        """)
+
     if page==pages[2]:
         st.write('# Data Visualization')
         subpages = ['Hypothesis 1', 'Hypothesis 2', 'Hypothesis 3', 'Hypothesis 4' , 'Hypothesis 5' , 'Hypothesis 6']
@@ -105,11 +183,11 @@ def run():
 
     if page==pages[3]:
         st.write('# Modeling')
-        subpages = ['Model Comparison', 'Impact of Data Amount', 'Impact of Data Imbalance']
+        subpages = ['Model Comparison', 'Simulation', 'Impact of Input Size', 'Impact of Data Imbalance']
         subpage = st.sidebar.radio(label='', options=subpages)
 
         if subpage==subpages[0]:
-            st.write('## Model Comparison')
+            st.subheader(subpages[0])
             result_metrics = pd.read_pickle('./data/nb_3_results.p')
 
             st.write('## $f_1$ score by model')
@@ -125,10 +203,86 @@ def run():
             st.dataframe(data=result_metrics)
 
         if subpage==subpages[1]:
-            st.write('## Impact of Data Amount')
+            st.subheader(subpages[1])
+            log_reg_preprocessing_pipe = load('models/log_reg_preprocessing_pipeline.joblib')
+            svc_preprocessing_pipe = load('models/svc_preprocessing_pipeline.joblib')
+            log_reg_clf = load('models/log_reg_nb5.joblib')
+            svc = load('models/svc_nb5.joblib')
+
+            # Select Department
+            date = st.date_input("Select Date", datetime.date(2022,2,14))
+            time = st.time_input('Select time', datetime.time(18, 0))
+            weather = st.selectbox('Select weather', options=('Normal', 'Light Rain', 'Heavy Rain', 'Snow', 'Fog'))
+            year_of_birth = st.number_input('Select birthyear', min_value=1930, max_value=2022)
+            car_construct_year = st.number_input('Select year of car construction', min_value=1950, max_value=2022)
+            collision_type = st.selectbox('Select collision', options=['Two vehicles -- frontal', 
+                                                                       'Two vehicles -- rear-end',
+                                                                       'Two vehicles -- from the side',
+                                                                       'Three or more vehicles in a chain'])
+            n_sample = 1000
+            st.write('Result (based on', n_sample, ' data points)')
+            example_df = pd.read_pickle('data/streamlit_example.p').sample(n_sample)
+            example_df['YoB'] = year_of_birth
+            example_df['year'] = date.year
+            example_df['month'] = date.month
+            example_df['day'] = date.day
+            example_df['hhmm'] = int(str(time.hour) + str(time.minute))
+            example_df['day_of_week'] = date.weekday()
+            
+            if date.weekday() < 6:
+                example_df['is_weekend'] = 0
+            else:
+                example_df['is_weekend'] = 1
+            
+            # Atmospheric Conditions
+            atmo_columns = ['atmospheric_conditions_'+str(i)+'.0' for i in range(1,10)]
+            example_df[atmo_columns] = 0
+            if weather =='Normal':
+                example_df['atmospheric_conditions_1.0'] = 1
+            if weather == 'Light Rain':
+                example_df['atmospheric_conditions_2.0'] = 1
+            if weather == 'Heavy Rain':
+                example_df['atmospheric_conditions_3.0'] = 1
+            if weather == 'Snow':
+                example_df['atmospheric_conditions_4.0'] = 1
+            if weather == 'Fog':
+                example_df['atmospheric_conditions_5.0'] = 1
+
+            # Collision Type
+            collision_columns = ['collision_category_'+str(i)+'.0' for i in range(1,8)]
+            example_df[collision_columns] = 0
+            if collision_type =='Two vehicles -- frontal':
+                example_df['collision_category_1.0'] = 1
+            if collision_type == 'Two vehicles -- rear-end':
+                example_df['collision_category_2.0'] = 1
+            if collision_type == 'Two vehicles -- from the side':
+                example_df['collision_category_3.0'] = 1
+            if collision_type == 'Three or more vehicles in a chain':
+                example_df['collision_category_4.0'] = 1         
+
+            #st.dataframe(data=example_df)
+            example_df = log_reg_preprocessing_pipe.transform(example_df)
+            #st.write(log_reg_clf.feature_names_in_)
+            log_reg_pred, log_reg_pred_counts = np.unique(log_reg_clf.predict(example_df), return_counts=True)
+            #st.write(len(svc_pred_counts))
+            svc_pred, svc_pred_counts = np.unique(svc.predict(example_df), return_counts=True)
+            log_reg_predictions_df = pd.DataFrame(index=log_reg_pred, data={'P log. Reg.': log_reg_pred_counts*100/n_sample}) \
+                                        .sort_values(by='P log. Reg.', ascending=False)
+            svc_predictions_df = pd.DataFrame(index=svc_pred, data={'P SVC': svc_pred_counts*100/n_sample}) \
+                                        .sort_values(by='P SVC', ascending=False)  
+            predictions_df = pd.merge(log_reg_predictions_df, svc_predictions_df, how='outer', left_index=True, right_index=True) \
+                                    .fillna(0)
+            predictions_df['P log. Reg.'] = predictions_df['P log. Reg.'].apply(func=(lambda p: str(p)+' %'))
+            predictions_df['P SVC'] = predictions_df['P SVC'].apply(func=(lambda p: str(p)+' %'))
+            predictions_df.rename(index={1: 'Unharmed', 2: 'Killed', 3: 'Hospitalized', 4: 'Lightly Injured'}, inplace=True)
+            st.dataframe( predictions_df )
+            
 
         if subpage==subpages[2]:
-            st.write('## Impact of Data Imbalance')
+            st.subheader(subpages[2])
+
+        if subpage==subpages[3]:
+            st.subheader(subpages[3])
 
     if page==pages[4]:
         st.write('# Conclusion')
