@@ -29,9 +29,8 @@ def run():
         if not is_presentation:
             st.markdown(
                 """
-                PYFRA is a Data Science project, that analyzes goverment records of Car accidents in France
-                between the year 2005 till 2021, with the aim of building a machine learning model to expect the 
-                Severity of each car accident.
+                *Objective of this presentation is to explain the summary and objective of the project
+                *Full analysis and steps exist in the different notebooks
                 
                 ### Github
                 [Project Page](https://github.com/DataScientest-Studio/pyfra)
@@ -63,12 +62,25 @@ def run():
         
         ### Data import and cleaning
 
-        
+        * The Data present was of large volume
+        * There was incoherence in the variables across the csv files and years
+        * A high percentage of missing values
+
 
         '''
-        st.header("Undestanding The Data")
-        image = Image.open("./figures/Nan.svg")
+    
+        image = Image.open("./figures/Nan.png")
         st.image(image)
+
+        st.header('Data improvement for modelisation')
+        
+        '''
+        ##### Several Actions were taken to clean but preserve the data
+        * Replace with Mode,Mean
+        * Drop Certain columns
+        * Feature Engineering to create new common variables (security...)
+
+        '''
 
     if page==pages[2]:
         st.write('# Data Visualization')
@@ -212,6 +224,17 @@ def run():
 
     if page==pages[4]:
         st.write('# Conclusion')
+        '''
+        * Problems of the data(Size,Incoherence,time constraint...)
+        * Data Cleaning and Visualization to understand the project
+        * Accurate modeling techniques to get best results
+        * Future steps (improvement of models, better writing of code...)
+
+
+
+
+        '''
+
 
 if __name__ == "__main__":
     run()
