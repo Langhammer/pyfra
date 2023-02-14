@@ -320,16 +320,31 @@ def run():
                 
 
         if subpage==subpages[3]:
-            st.subheader(subpages[3])
+            st.write('## Remodeling with Imbalanced Datasets')
+            
+
+            st.write('### Model Comparison')
+            result_metrics = pd.read_pickle('./data/nb_4_results.p')
+
+            st.write('## $f_1$ score by model')
+            res_chart = alt.Chart(result_metrics).mark_bar().encode(
+                x='f1',
+                y="model"
+            ).properties(height=300, width=500)
+            
+            # Plot the f1 scores
+            st.altair_chart(res_chart)
+
+            st.write('### Analysis of the results according to the severity variables')
+
 
     if page==pages[4]:
         st.write('# Conclusion')
         '''
-        * Problems of the data(Size,Incoherence,time constraint...)
+        * Problems of the data (Size,Incoherence,missing data(Blood Alcohol levels))
         * Data Cleaning and Visualization to understand the project
-        * Accurate modeling techniques to get best results
-        * Future steps (improvement of models, better writing of code...)
-
+        * Several modeling techniques to get best results
+        * Deep learning model
 
 
 
