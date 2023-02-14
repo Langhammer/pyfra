@@ -149,35 +149,35 @@ def run():
         subpages = ['Hypothesis 1', 'Hypothesis 2', 'Hypothesis 3', 'Hypothesis 4' , 'Hypothesis 5' , 'Hypothesis 6']
         subpage = st.sidebar.radio(label='', options=subpages)
 
-        if subpage==subpages[2]:
+        if subpage==subpages[0]:
             st.header("Hypothesis 1  : Generally Accidents rarely result in serious injury or death")
             image3 = Image.open("./figures/Nb Accidents by Severity.png")
             st.image(image3)
         
-        if subpage==subpages[5]:
+        if subpage==subpages[1]:
             st.header("Hypothesis 2  : Number of Accidents generally should increase by year due to higher volume of traffic")
             image6 = Image.open("./figures/Accidents per Year.png")
             st.image(image6)
         
-        if subpage==subpages[4]:
+        if subpage==subpages[2]:
             st.header("Hypothesis 3  : Number of Accidents are higher for bad weather conditions")
             image5 = Image.open("./figures/Accidents by Weather conditions.png")
             st.image(image5)
 
 
-        if subpage==subpages[0]:
+        if subpage==subpages[3]:
             st.header("Hypothesis 4 : Accidents occur more often during a Specific time of the day and on weekends")
             image = Image.open("./figures/Accidents by Daytime.png")
             st.image(image)
 
-        if subpage==subpages[1]:
+        if subpage==subpages[4]:
             st.header("Hypothesis 5  : Accidents are split evenly among all age groups")
             image2 = Image.open("./figures/Accidents per Age.png")
             st.image(image2)
        
     
 
-        if subpage==subpages[3]:
+        if subpage==subpages[5]:
             st.header("Hypothesis 6  : Severity of Accidents are split uniformly across all ages and sex groups")
             image4 = Image.open("./figures/Violin Chart.png")
             st.image(image4)
