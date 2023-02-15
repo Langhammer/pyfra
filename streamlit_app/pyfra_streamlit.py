@@ -9,8 +9,8 @@ from sklearn.pipeline import Pipeline
 
 def run():
     st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
+        page_title="PYFRA",
+        page_icon=":car:",
     )
 
     pages = ["Project Presentation","Data Introduction and Cleaning","Data Visualization","Modeling","Conclusion"]
@@ -51,14 +51,16 @@ def run():
     if page==pages[1]:
         st.header('Data Introduction and Cleaning')
         
-        st.write(
-        '''
-        ### Data Source
-        The data used for this analysis is found in the official French goverment records and is split
-         each year into 4 categories that include csv files of: Users, Characteristics, Vehicules, and Location.
 
-        [Goverment Database](https://www.data.gouv.fr/en/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/)
-        ''')
+        st.subheader('Data Source')
+
+        if not is_presentation:
+            st.write('''
+            The data used for this analysis is found in the official French goverment records and is split
+            each year into 4 categories that include csv files of: Users, Characteristics, Vehicules, and Location.
+
+            [Goverment Database](https://www.data.gouv.fr/en/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/)
+            ''')
 
         st.components.v1.html(height=300, width=2500, html="""
         <style type="text/css">
@@ -323,7 +325,7 @@ def run():
             st.write('## Remodeling with Imbalanced Datasets')
             
 
-            st.write('### Model Comparison')
+            st.write('#### Model Comparison')
             result_metrics = pd.read_pickle('./data/nb_4_results.p')
 
             st.write('## $f_1$ score by model')
@@ -335,8 +337,9 @@ def run():
             # Plot the f1 scores
             st.altair_chart(res_chart)
 
-            st.write('### Analysis of the results according to the severity variables')
-
+            # Plot confusion matrix
+            st.subheader('Confusion Matrix for imbalanced dataset')
+            st.image('figures/Imb_LR.png')
 
     if page==pages[4]:
         st.write('# Conclusion')

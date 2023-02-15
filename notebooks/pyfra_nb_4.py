@@ -44,7 +44,7 @@ n_rows_complete = len(df)
 df = df.drop(columns=['adress','gps_origin','latitude','longitude'])
 df.municipality.fillna(55,inplace=True)
 
-df_sample=df.sample(frac=0.01,random_state=23)
+df_sample=df.sample(frac=0.007,random_state=23)
 data = df_sample.drop(columns='Severity',axis=1).select_dtypes(include=np.number).dropna(axis=1)
 target = df_sample.Severity
 target.value_counts()
@@ -54,6 +54,13 @@ X_train, X_test, y_train, y_test  = train_test_split(data, target, test_size=0.2
 std_scaler = preprocessing.StandardScaler().fit(X_train)
 X_train_scaled = std_scaler.transform(X_train)
 X_test_scaled = std_scaler.transform(X_test)
+
+k_features = 60
+kbest_selector = SelectKBest(k=k_features)
+kbest_selector.fit(X_train_scaled,y_train);
+X_train_scaled = kbest_selector.transform(X_train_scaled)
+X_test_scaled = kbest_selector.transform(X_test_scaled)
+print(f'We use {k_features} of the original {df.shape[1]} features')
 
 # Creating a matrix to store the results
 result_metrics = pd.DataFrame(columns=['model', 'f1', 'accuracy', 'recall'])
@@ -151,6 +158,10 @@ result_metrics = store_metrics(model=LR, model_name='Logistic Regression',
 result_metrics
 # -
 
+
+pyfra.print_confusion_matrix(y_test, y_LR, 
+                            model_name='Logistic Regression Classifier',
+                            filename='Imb_LR')
 
 # # Random Forest
 
