@@ -8,7 +8,6 @@ pyfra
 </small>
 
 # Table of Contents
-- [pyfra](#pyfra)
 - [Table of Contents](#table-of-contents)
 - [Overview](#overview)
   - [Notebooks](#notebooks)
@@ -27,7 +26,7 @@ pyfra
 | [pyfra_nb_1.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_1.ipynb) | Visualization | Exploring the dataset with different plots provided by Matplotlib and Seaborn |
 | [pyfra_nb_2.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_2.ipynb) | Data Cleaning & Feature Engineering | Import of unprocessed data, filling nans, renaming features, merging the relational datasets with multi-indexing, one-hot encoding, export to pickle format |
 | [pyfra_nb_3.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_3.ipynb) | Modelling, Training and Scoring | Import of preprocessed data, GridSearchCV (SVC, Logistic Regression, Decision Tree, Random Forest), Stacking, AdaBoost and performance comparison |
-| [coming soon] | Further Performance Analysis I |  |
+| [pyfra_nb_4.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_4.ipynb) | Further Performance Analysis I |  |
 | [pyfra_nb_5.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_5.ipynb) | Further Performance Analysis II | Sensitivity analysis of amount of training data |
 
 # Development
@@ -45,6 +44,7 @@ The notebooks of this project make use uf the following packages:
 The following packages were used for this project, but are not required to run the notebooks:
 * [Jupytext](https://github.com/mwouts/jupytext)
 * [Papermill](https://github.com/nteract/papermill) 
+* [Streamlit](https://github.com/streamlit/streamlit)
 
 The Repository consists mainly of Jupyter Notebooks. For simplifying the version control, we used [Jupytext](https://github.com/mwouts/jupytext) to convert the notebooks to .py files. These files do not contain any cell output by design. The latest version of .ipynb files (i.e. with cell output) is available on the Output branch of the project. You can directly access these files via the table above. 
 All the other notebooks, which are in .py format, can be obtained by running `jupytext --sync <FILENAME>` in the terminal after installing Jupytext. 
@@ -60,6 +60,11 @@ git clone https://github.com/DataScientest-Studio/pyfra.git
 Install the required packages by 
 ```
 pip install -r requirements.txt
+```
+
+To run the app
+```
+streamlit run ./streamlit_app/pyfra_streamlit.py
 ```
 
 # References
