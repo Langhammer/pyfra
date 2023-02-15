@@ -378,7 +378,7 @@ principal_maneuver_25.0,250962.0,0.0004144053681433843,0.020352770988833847,0.0,
 principal_maneuver_26.0,250962.0,0.005470947792892948,0.07376339338632526,0.0,0.0,0.0,0.0,1.0,,
 Severity,,,,,,,,,int64,0.0
 secu,,,,,,,,,float64,37257.0
-YoB,,,,,,,,,int64,0.0
+YoB,,,,,,,,,int32,0.0
 secu1,,,,,,,,,float64,213705.0
 secu2,,,,,,,,,float64,213705.0
 SecuA,,,,,,,,,float64,37257.0
@@ -399,7 +399,6 @@ latitude,,,,,,,,,object,106097.0
 longitude,,,,,,,,,object,106097.0
 date,,,,,,,,,datetime64[ns],0.0
 day_of_week,,,,,,,,,int64,0.0
-<<<<<<< Updated upstream
 is_weekend,,,,,,,,,int32,0.0
 Lanes,,,,,,,,,int32,0.0
 Landmark,,,,,,,,,int32,0.0
@@ -407,14 +406,6 @@ Dist_to_Landmark,,,,,,,,,int32,0.0
 Gre_Verge,,,,,,,,,int32,0.0
 Rd_Width,,,,,,,,,int32,0.0
 Age,,,,,,,,,int64,0.0
-=======
-is_weekend,,,,,,,,,int64,0.0
-Lanes,,,,,,,,,int64,0.0
-Landmark,,,,,,,,,int64,0.0
-Dist_to_Landmark,,,,,,,,,int64,0.0
-Gre_Verge,,,,,,,,,int64,0.0
-Rd_Width,,,,,,,,,int64,0.0
->>>>>>> Stashed changes
 daylight_1,,,,,,,,,uint8,0.0
 daylight_2,,,,,,,,,uint8,0.0
 daylight_3,,,,,,,,,uint8,0.0
