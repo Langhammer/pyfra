@@ -8,6 +8,7 @@ pyfra
 </small>
 
 # Table of Contents
+- [pyfra](#pyfra)
 - [Table of Contents](#table-of-contents)
 - [Overview](#overview)
   - [Notebooks](#notebooks)
@@ -15,7 +16,7 @@ pyfra
 - [Installation](#installation)
 - [References](#references)
 - [Credits](#credits)
-  - [Project Members](#project-members)
+  - [Project members](#project-members)
   - [Project Mentors](#project-mentors)
 
 # Overview
@@ -33,18 +34,21 @@ pyfra
 [(Back to top)](#table-of-contents)
 
 The notebooks of this project make use uf the following packages:
-* imblearn (0.0)
-* matplotlib (3.5.1)
-* numpy (1.21.5)
-* pandas (1.5.3)
-* pyspark (3.3.1)
-* scikit_learn (1.2.1)
-* seaborn (0.12.2)
+* imbalanced_learn==0.10.1
+* imblearn==0.0
+* joblib==1.1.1
+* matplotlib==3.6.2
+* numpy==1.24.2
+* pandas==1.5.3
+* Pillow==9.4.0
+* scikit_learn==1.2.1
+* seaborn==0.12.2
 
 The following packages were used for this project, but are not required to run the notebooks:
 * [Jupytext](https://github.com/mwouts/jupytext)
 * [Papermill](https://github.com/nteract/papermill) 
 * [Streamlit](https://github.com/streamlit/streamlit)
+* [Altair](https://github.com/altair-viz/altair)
 
 The Repository consists mainly of Jupyter Notebooks. For simplifying the version control, we used [Jupytext](https://github.com/mwouts/jupytext) to convert the notebooks to .py files. These files do not contain any cell output by design. The latest version of .ipynb files (i.e. with cell output) is available on the Output branch of the project. You can directly access these files via the table above. 
 All the other notebooks, which are in .py format, can be obtained by running `jupytext --sync <FILENAME>` in the terminal after installing Jupytext. 
