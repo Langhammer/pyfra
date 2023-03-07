@@ -1,6 +1,6 @@
 pyfra
 ==============
-![Pylint](https://github.com/DataScientest-Studio/pyfra/actions/workflows/pylint.yml/badge.svg)  
+![Pylint](https://github.com/Langhammer/pyfra/actions/workflows/pylint.yml/badge.svg)  
 <img src="images/stable_diffusion.jpeg" alt="drawing" width="300"/>
 <br>
 <small>
@@ -24,11 +24,11 @@ pyfra
 ## Notebooks
 | Notebook  | Content | Description |
 | --- | --- | --- |
-| [pyfra_nb_1.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_1.ipynb) | Visualization | Exploring the dataset with different plots provided by Matplotlib and Seaborn |
-| [pyfra_nb_2.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_2.ipynb) | Data Cleaning & Feature Engineering | Import of unprocessed data, filling nans, renaming features, merging the relational datasets with multi-indexing, one-hot encoding, export to pickle format |
-| [pyfra_nb_3.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_3.ipynb) | Modelling, Training and Scoring | Import of preprocessed data, GridSearchCV (SVC, Logistic Regression, Decision Tree, Random Forest), Stacking, AdaBoost and performance comparison |
-| [pyfra_nb_4.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_4.ipynb) | Further Performance Analysis I |  |
-| [pyfra_nb_5.ipynb](https://github.com/DataScientest-Studio/pyfra/tree/Output/notebooks/pyfra_nb_5.ipynb) | Further Performance Analysis II | Sensitivity analysis of amount of training data |
+| [pyfra_nb_1.ipynb](https://github.com/Langhammer/pyfra/tree/Output/notebooks/pyfra_nb_1.ipynb) | Visualization | Exploring the dataset with different plots provided by Matplotlib and Seaborn |
+| [pyfra_nb_2.ipynb](https://github.com/Langhammer/pyfra/tree/Output/notebooks/pyfra_nb_2.ipynb) | Data Cleaning & Feature Engineering | Import of unprocessed data, filling nans, renaming features, merging the relational datasets with multi-indexing, one-hot encoding, export to pickle format |
+| [pyfra_nb_3.ipynb](https://github.com/Langhammer/pyfra/tree/Output/notebooks/pyfra_nb_3.ipynb) | Modelling, Training and Scoring | Import of preprocessed data, GridSearchCV (SVC, Logistic Regression, Decision Tree, Random Forest), Stacking, AdaBoost and performance comparison |
+| [pyfra_nb_4.ipynb](https://github.com/Langhammer/pyfra/tree/Output/notebooks/pyfra_nb_4.ipynb) | Further Performance Analysis I |  |
+| [pyfra_nb_5.ipynb](https://github.com/Langhammer/pyfra/tree/Output/notebooks/pyfra_nb_5.ipynb) | Further Performance Analysis II | Sensitivity analysis of amount of training data |
 
 # Development
 [(Back to top)](#table-of-contents)
@@ -58,7 +58,7 @@ All the other notebooks, which are in .py format, can be obtained by running `ju
 
 Clone the Repository
 ```
-git clone https://github.com/DataScientest-Studio/pyfra.git
+git clone https://github.com/Langhammer/pyfra.git
 ```
 
 Install the required packages by 
